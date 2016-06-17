@@ -89,4 +89,12 @@ public class NeoPlayer {
 		
 	}
 	
+	public ServerPlayer getHostPlayer() {
+		return this.serverPlayer;
+	}
+	
+	public DatabasePlayer getDatabasePlayer() {
+		return this.databasePlayer;
+	}
+	
 }

@@ -1,5 +1,9 @@
 package io.neocore.host;
 
+import io.neocore.host.broadcast.BroadcastProvider;
+import io.neocore.host.chat.ChatProvider;
+import io.neocore.host.proxy.ProxyProvider;
+
 /**
  * Enumerates which kinds of services that host plugins can provide.
  * 
@@ -8,10 +12,10 @@ package io.neocore.host;
 public enum HostService {
 	
 	LOGIN(null), // When players connect.
-	PROXY(null), // Provides information as players connect and move around, as well as server statuses.
-	BROADCAST(null), // General broadcasts, regardless of scale.
+	PROXY(ProxyProvider.class), // Provides information as players connect and move around, as well as server statuses.  Generally just BungeeCord.
+	BROADCAST(BroadcastProvider.class), // General broadcasts, regardless of scale.
 	PERMISSIONS(null), // The ability to attach permissions onto players for everyone to use.
-	CHAT(null), // General communication bound to some player-like thing.
+	CHAT(ChatProvider.class), // General communication bound to some player-like thing.
 	GAMEPLAY(null); // Player teleportation, chest UI, scoreboards, etc.
 	
 	private Class<? extends HostServiceProvider> provider;

@@ -1,5 +1,6 @@
 package io.neocore.player;
 
+import java.net.InetAddress;
 import java.util.UUID;
 
 /**
@@ -10,13 +11,16 @@ import java.util.UUID;
 public interface ServerPlayer {
 	
 	public UUID getUniqueId();
-	
 	public String getName();
+	public InetAddress getAddress();
+	
 	public String getDisplayName();
 	
 	public void sendMessage(String string);
 	public boolean isOp();
 	
 	public boolean hasPermission(String perm);
+	
+	public void kick(String message);
 	
 }
