@@ -1,5 +1,7 @@
 package io.neocore;
 
+import io.neocore.host.HostPlugin;
+
 /**
  * Represents the main agent for accessing general components of Neocore.
  * 
@@ -7,6 +9,6 @@ package io.neocore;
  */
 public interface Neocore {
 	
-	public NeocorePlugin getPlugin();
+	public HostPlugin getHost();
 	
 }
