@@ -3,10 +3,27 @@ package io.neocore;
 /**
  * Main class for the Neocore API.
  * 
- * @author Treyzania
+ * @author treyzania
  */
 public class NeocoreAPI {
-
-	// Nothing yet to see here.  Just something to let Git make these directories.
+	
+	private static NeocoreAPI instance;
+	
+	private Neocore agent;
+	
+	private static NeocoreAPI getAPI() {
+		return instance;
+	}
+	
+	/**
+	 * @return An instance of the central Neocore Prime agent.
+	 */
+	public static Neocore getNeocore() {
+		return getAPI().agent;
+	}
+	
+	protected static void setNeocore(Neocore neo) {
+		getAPI().agent = neo;
+	}
 	
 }
