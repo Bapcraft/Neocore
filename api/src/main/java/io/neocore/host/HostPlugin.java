@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface HostPlugin {
 	
-	public List<HostService> getServices();
+	public List<HostServiceProvider> getServices();
 	
 }

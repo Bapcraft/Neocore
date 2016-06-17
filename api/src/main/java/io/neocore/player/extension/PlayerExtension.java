@@ -14,7 +14,7 @@ public abstract class PlayerExtension {
 		Class<? extends PlayerExtension> clazz = this.getClass();
 		Extension ext = clazz.getAnnotation(Extension.class);
 		
-		return ext != null ? ext.name() : null;
+		return ext != null ? ext.value() : null;
 		
 	}
 	

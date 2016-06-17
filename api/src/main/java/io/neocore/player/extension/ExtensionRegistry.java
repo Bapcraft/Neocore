@@ -24,7 +24,7 @@ public class ExtensionRegistry {
 		Extension ext = extClass.getAnnotation(Extension.class);
 		if (ext == null) throw new IllegalArgumentException("The class " + extClass + " does not have an @Extension annotation on it!");
 		
-		instance.mapping.put(extClass, ext.name());
+		instance.mapping.put(extClass, ext.value());
 		
 	}
 	

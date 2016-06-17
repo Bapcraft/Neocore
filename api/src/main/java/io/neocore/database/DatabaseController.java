@@ -22,6 +22,6 @@ public interface DatabaseController {
 	/**
 	 * @return A list of services that this database provider can use.
 	 */
-	public List<DatabaseService> getServices();
+	public List<DatabaseServiceProvider> getServices();
 	
 }
