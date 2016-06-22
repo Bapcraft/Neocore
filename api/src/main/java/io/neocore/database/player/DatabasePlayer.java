@@ -1,14 +1,15 @@
-package io.neocore.player;
+package io.neocore.database.player;
 
 import io.neocore.player.extension.PlayerExtension;
 import io.neocore.player.group.Group;
+import io.neocore.player.group.GroupMembership;
 
 public interface DatabasePlayer {
 	
 	/**
 	 * @return An array of all the groups this player has.
 	 */
-	public Group[] getGroups();
+	public GroupMembership[] getGroupMemberships();
 	
 	/**
 	 * Adds the group specified to the player in the database, and commits the change.

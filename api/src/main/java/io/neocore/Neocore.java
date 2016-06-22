@@ -1,6 +1,10 @@
 package io.neocore;
 
+import java.util.UUID;
+
+import io.neocore.database.DatabaseController;
 import io.neocore.host.HostPlugin;
+import io.neocore.player.NeoPlayer;
 
 /**
  * Represents the main agent for accessing general components of Neocore.
@@ -10,5 +14,8 @@ import io.neocore.host.HostPlugin;
 public interface Neocore {
 	
 	public HostPlugin getHost();
+	public DatabaseController getDatabase();
+	
+	public NeoPlayer getPlayer(UUID uuid);
 	
 }

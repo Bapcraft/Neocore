@@ -16,7 +16,7 @@ public enum DatabaseService {
 	PLAYER(PlayerProvider.class), // Core player data, extensions, etc.
 	GROUPS(GroupProvider.class), // Group definitions, flair, inheritance, tracks, etc.
 	ARTIFACT(null), // Warnings, evidence, etc.
-	CHAT_LOG(null),
+	ACTION_LOG(null),
 	
 	MISC(null); // Miscellaneous sets of data with schema defined by modules.
 	

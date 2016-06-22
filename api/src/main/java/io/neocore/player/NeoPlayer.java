@@ -1,32 +1,52 @@
 package io.neocore.player;
 
+import java.util.UUID;
+
+import io.neocore.database.player.DatabasePlayer;
+import io.neocore.host.chat.ChattablePlayer;
+import io.neocore.host.login.ServerPlayer;
+import io.neocore.host.permissions.PermissedPlayer;
+import io.neocore.host.proxy.ProxiedPlayer;
 import io.neocore.player.extension.PlayerExtension;
 import io.neocore.player.group.Group;
+import io.neocore.player.group.GroupMembership;
 
 public class NeoPlayer {
 	
-	protected ServerPlayer serverPlayer;
-	protected DatabasePlayer databasePlayer;
+	private UUID uuid;
 	
-	protected NeoPlayer(ServerPlayer sp, DatabasePlayer dbp) {
-		
-		this.serverPlayer = sp;
-		this.databasePlayer = dbp;
-		
+	// Host service providers
+	protected ServerPlayer playerPersona;
+	protected ProxiedPlayer playerProxyAgent;
+	protected PermissedPlayer playerPermissions;
+	protected ChattablePlayer playerChat;
+	
+	// Database service provider
+	protected DatabasePlayer playerRecord;
+	
+	protected NeoPlayer(UUID uuid) {
+		this.uuid = uuid;
+	}
+	
+	/**
+	 * @return The UUID of the player.
+	 */
+	public UUID getUniqueId() {
+		return this.uuid;
 	}
 	
 	/**
 	 * @return The username of the player.
 	 */
 	public String getUsername() {
-		return this.serverPlayer.getName();
+		return this.playerPersona.getName();
 	}
 	
 	/**
 	 * @return The name of the player that should actually be displayed in chat and such.
 	 */
 	public String getDisplayName() {
-		return this.serverPlayer.getDisplayName();
+		return this.playerChat.getDisplayName();
 	}
 	
 	/**
@@ -37,7 +57,7 @@ public class NeoPlayer {
 	 */
 	public PlayerExtension getExtension(Class<? extends PlayerExtension> clazz) {
 		
-		PlayerExtension[] exts = this.databasePlayer.getExtensions();
+		PlayerExtension[] exts = this.playerRecord.getExtensions();
 		
 		for (PlayerExtension pe : exts) {
 			if (clazz.isAssignableFrom(pe.getClass())) return pe;
@@ -55,9 +75,9 @@ public class NeoPlayer {
 	 */
 	public boolean hasInheritedGroup(Group group) {
 		
-		for (Group g : this.databasePlayer.getGroups()) {
+		for (GroupMembership g : this.playerRecord.getGroupMemberships()) {
 			
-			Group currentNode = g;
+			Group currentNode = g.getGroup();
 			
 			// Traverse up the graph and find one that matches.
 			while (currentNode != null) {
@@ -81,20 +101,12 @@ public class NeoPlayer {
 	 */
 	public boolean hasGroup(Group group) {
 		
-		for (Group g : this.databasePlayer.getGroups()) {
-			if (g.getName().equals(group.getName())) return true;
+		for (GroupMembership g : this.playerRecord.getGroupMemberships()) {
+			if (g.getGroup().getName().equals(group.getName())) return true;
 		}
 		
 		return false;
 		
-	}
-	
-	public ServerPlayer getHostPlayer() {
-		return this.serverPlayer;
-	}
-	
-	public DatabasePlayer getDatabasePlayer() {
-		return this.databasePlayer;
 	}
 	
 }

@@ -3,7 +3,6 @@ package io.neocore.database.player;
 import java.util.UUID;
 
 import io.neocore.database.DatabaseServiceProvider;
-import io.neocore.player.DatabasePlayer;
 
 public interface PlayerProvider extends DatabaseServiceProvider {
 	
