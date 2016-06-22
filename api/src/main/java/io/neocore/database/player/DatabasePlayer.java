@@ -1,10 +1,11 @@
 package io.neocore.database.player;
 
+import io.neocore.player.PlayerIdentity;
 import io.neocore.player.extension.PlayerExtension;
 import io.neocore.player.group.Group;
 import io.neocore.player.group.GroupMembership;
 
-public interface DatabasePlayer {
+public interface DatabasePlayer extends PlayerIdentity {
 	
 	/**
 	 * @return An array of all the groups this player has.

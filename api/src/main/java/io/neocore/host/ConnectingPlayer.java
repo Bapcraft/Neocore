@@ -2,7 +2,9 @@ package io.neocore.host;
 
 import java.net.InetAddress;
 
-public interface ConnectingPlayer {
+import io.neocore.player.PlayerIdentity;
+
+public interface ConnectingPlayer extends PlayerIdentity {
 	
 	/**
 	 * @return The InetAddress of the player.

@@ -1,5 +1,6 @@
 package io.neocore.host;
 
+import io.neocore.ServiceType;
 import io.neocore.host.broadcast.BroadcastProvider;
 import io.neocore.host.chat.ChatProvider;
 import io.neocore.host.login.LoginProvider;
@@ -11,7 +12,7 @@ import io.neocore.host.proxy.ProxyProvider;
  * 
  * @author treyzania
  */
-public enum HostService {
+public enum HostService implements ServiceType {
 	
 	LOGIN(LoginProvider.class), // When players connect, present on both endpoints and proxies.
 	PROXY(ProxyProvider.class), // Provides information as players connect and move around, as well as server statuses.  Generally just BungeeCord.
@@ -37,6 +38,11 @@ public enum HostService {
 		
 		return this.getProvider().isAssignableFrom(prov.getClass());
 		
+	}
+
+	@Override
+	public String getName() {
+		return this.name();
 	}
 	
 }

@@ -1,5 +1,6 @@
 package io.neocore.database;
 
+import io.neocore.ServiceType;
 import io.neocore.database.group.GroupProvider;
 import io.neocore.database.player.PlayerProvider;
 
@@ -8,7 +9,7 @@ import io.neocore.database.player.PlayerProvider;
  * 
  * @author treyzania
  */
-public enum DatabaseService {
+public enum DatabaseService implements ServiceType {
 
 	BAN(null), // Exactly what you think it is.
 	LOGINS(null), // Player UUID, username, connecting address.
@@ -37,6 +38,11 @@ public enum DatabaseService {
 		
 		return this.getProvider().isAssignableFrom(prov.getClass());
 		
+	}
+
+	@Override
+	public String getName() {
+		return this.name();
 	}
 	
 }

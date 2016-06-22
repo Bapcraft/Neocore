@@ -1,6 +1,8 @@
 package io.neocore.host.permissions;
 
-public interface PermissedPlayer {
+import io.neocore.player.PlayerIdentity;
+
+public interface PermissedPlayer extends PlayerIdentity {
 	
 	public boolean isOp();
 	public boolean hasPermission(String perm);

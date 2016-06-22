@@ -1,7 +1,5 @@
 package io.neocore.host.login;
 
-import java.util.UUID;
-
 import io.neocore.host.ConnectingPlayer;
 
 /**
@@ -10,8 +8,6 @@ import io.neocore.host.ConnectingPlayer;
  * @author treyzania
  */
 public interface ServerPlayer extends ConnectingPlayer {
-	
-	public UUID getUniqueId();
 	
 	public String getName();
 	
