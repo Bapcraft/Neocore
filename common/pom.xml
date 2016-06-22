@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>io.neocore</groupId>
-	<artifactId>neocore-prime</artifactId>
+	<artifactId>neocore-common</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Neocore-Prime</name>
 	
