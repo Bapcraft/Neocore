@@ -1,0 +1,4 @@
+name: Neocore
+version: 0.0.1
+main: io.neocore.NeocoreBukkitPlugin
+author: treyzania
