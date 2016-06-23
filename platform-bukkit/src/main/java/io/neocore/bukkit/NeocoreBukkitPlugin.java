@@ -1,4 +1,4 @@
-package io.neocore;
+package io.neocore.bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
