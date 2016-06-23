@@ -7,23 +7,14 @@ package io.neocore;
  */
 public class NeocoreAPI {
 	
-	private static NeocoreAPI instance;
+	protected static Neocore agent;
 	
-	private Neocore agent;
-	
-	private static NeocoreAPI getAPI() {
-		return instance;
+	protected static void getAgent(Neocore neo) {
+		agent = neo;
 	}
 	
-	/**
-	 * @return An instance of the central Neocore Prime agent.
-	 */
-	public static Neocore getNeocore() {
-		return getAPI().agent;
-	}
-	
-	protected static void setNeocore(Neocore neo) {
-		getAPI().agent = neo;
+	public static Neocore getAgent() {
+		return agent;
 	}
 	
 }

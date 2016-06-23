@@ -18,4 +18,8 @@ public interface Neocore {
 	
 	public NeoPlayer getPlayer(UUID uuid);
 	
+	public void registerServiceProvider(ServiceType type, ServiceProvider prov);
+	
+	public <T extends ServiceProvider> T getServiceProvider(ServiceType serviceType);
+	
 }

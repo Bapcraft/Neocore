@@ -13,7 +13,7 @@ import io.neocore.host.proxy.ProxiedPlayer;
 import io.neocore.player.group.Group;
 import io.neocore.player.group.GroupMembership;
 
-public class NeoPlayer implements PlayerIdentity {
+public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	
 	private UUID uuid;
 	
@@ -103,6 +103,11 @@ public class NeoPlayer implements PlayerIdentity {
 	
 	private static void verify(PlayerIdentity pi, ServiceType serv) {
 		if (pi == null) throw new UnsupportedServiceException(serv);
+	}
+
+	@Override
+	public int compareTo(NeoPlayer o) {
+		return this.uuid.compareTo(o.uuid);
 	}
 	
 }

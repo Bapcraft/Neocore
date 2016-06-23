@@ -1,5 +1,6 @@
 package io.neocore.host;
 
+import io.neocore.ServiceProvider;
 import io.neocore.ServiceType;
 import io.neocore.host.broadcast.BroadcastProvider;
 import io.neocore.host.chat.ChatProvider;
@@ -43,6 +44,11 @@ public enum HostService implements ServiceType {
 	@Override
 	public String getName() {
 		return this.name();
+	}
+
+	@Override
+	public Class<? extends ServiceProvider> getClassType() {
+		return this.provider;
 	}
 	
 }

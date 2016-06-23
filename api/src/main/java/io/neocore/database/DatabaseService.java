@@ -1,5 +1,6 @@
 package io.neocore.database;
 
+import io.neocore.ServiceProvider;
 import io.neocore.ServiceType;
 import io.neocore.database.group.GroupProvider;
 import io.neocore.database.player.PlayerProvider;
@@ -43,6 +44,11 @@ public enum DatabaseService implements ServiceType {
 	@Override
 	public String getName() {
 		return this.name();
+	}
+
+	@Override
+	public Class<? extends ServiceProvider> getClassType() {
+		return this.provider;
 	}
 	
 }

@@ -33,4 +33,14 @@ public interface DatabasePlayer extends PlayerIdentity {
 	 */
 	public PlayerExtension[] getExtensions();
 	
+	/**
+	 * Saves the data to the backend database.
+	 */
+	public void flush();
+	
+	/**
+	 * Saves the data to the backend, and invalidates any caches.  The reference to this player should be made invalid.
+	 */
+	public void unload();
+	
 }

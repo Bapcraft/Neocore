@@ -1,5 +1,7 @@
 package io.neocore.host;
 
-public interface HostServiceProvider {
+import io.neocore.ServiceProvider;
+
+public interface HostServiceProvider extends ServiceProvider {
 
 }

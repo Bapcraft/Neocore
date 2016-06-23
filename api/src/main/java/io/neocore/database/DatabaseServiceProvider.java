@@ -1,5 +1,7 @@
 package io.neocore.database;
 
-public interface DatabaseServiceProvider {
+import io.neocore.ServiceProvider;
+
+public interface DatabaseServiceProvider extends ServiceProvider {
 
 }
