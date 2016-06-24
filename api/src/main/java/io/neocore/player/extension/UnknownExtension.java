@@ -6,7 +6,7 @@ package io.neocore.player.extension;
  * 
  * @author treyzania
  */
-public class UnknownExtension extends PlayerExtension {
+public class UnknownExtension extends Extension {
 
 	private final String name;
 	

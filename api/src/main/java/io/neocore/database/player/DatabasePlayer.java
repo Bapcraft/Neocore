@@ -1,7 +1,7 @@
 package io.neocore.database.player;
 
 import io.neocore.player.PlayerIdentity;
-import io.neocore.player.extension.PlayerExtension;
+import io.neocore.player.extension.Extension;
 import io.neocore.player.group.Group;
 import io.neocore.player.group.GroupMembership;
 
@@ -31,7 +31,7 @@ public interface DatabasePlayer extends PlayerIdentity {
 	/**
 	 * @return An array of all of the extensions the player currently has.
 	 */
-	public PlayerExtension[] getExtensions();
+	public Extension[] getExtensions();
 	
 	/**
 	 * Saves the data to the backend database.
