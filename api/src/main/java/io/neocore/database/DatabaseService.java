@@ -19,6 +19,7 @@ public enum DatabaseService implements ServiceType {
 	GROUPS(GroupProvider.class), // Group definitions, flair, inheritance, tracks, etc.
 	ARTIFACT(null), // Warnings, evidence, etc.
 	ACTION_LOG(null),
+	ECO_TRANSACTION_LOG(DatabaseServiceProvider.class),
 	
 	MISC(null); // Miscellaneous sets of data with schema defined by modules.
 	
