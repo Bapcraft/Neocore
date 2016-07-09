@@ -1,12 +1,13 @@
 package io.neocore.module;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ModuleManager {
 	
 	public void registerModule(Module mod);
-	public void isAcceptingRegistrations();
+	public boolean isAcceptingRegistrations();
 	
-	public List<Module> getModules();
+	public Set<Module> getModules();
 	
 }
