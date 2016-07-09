@@ -29,6 +29,9 @@ public class NeocoreImpl implements Neocore {
 		this.playerManager = new PlayerManager();
 		this.moduleManager = new ModuleManagerImpl();
 		
+		// Register the host right now.
+		this.moduleManager.registerModule(host);
+		
 	}
 	
 	public HostPlugin getHost() {
