@@ -42,7 +42,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		this.chatService = new BukkitChatService(this.chatForwarder);
 		this.loginService = new BukkitLoginService();
 		
-		// TODO Register services properly with Neocore.
+		// Register services properly with Neocore.
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
 		neo.registerServiceProvider(HostService.CHAT, this.chatService, this);
 		neo.registerServiceProvider(HostService.LOGIN, this.loginService, this);
