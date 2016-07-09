@@ -6,6 +6,9 @@ import java.util.UUID;
 import io.neocore.Neocore;
 import io.neocore.database.DatabaseController;
 import io.neocore.host.HostPlugin;
+import io.neocore.module.Module;
+import io.neocore.module.ModuleManager;
+import io.neocore.module.ModuleManagerImpl;
 import io.neocore.player.NeoPlayer;
 import io.neocore.player.PlayerManager;
 
@@ -14,10 +17,18 @@ public class NeocoreImpl implements Neocore {
 	private final HostPlugin host;
 	
 	private PlayerManager playerManager;
+	private ModuleManagerImpl moduleManager;
+	private ServiceManagerImpl serviceManager;
+	
 	private Map<ServiceType, ServiceProvider> services;
 	
 	public NeocoreImpl(HostPlugin host) {
+		
 		this.host = host;
+		
+		this.playerManager = new PlayerManager();
+		this.moduleManager = new ModuleManagerImpl();
+		
 	}
 	
 	public HostPlugin getHost() {
@@ -35,21 +46,23 @@ public class NeocoreImpl implements Neocore {
 	}
 	
 	@Override
-	public void registerServiceProvider(ServiceType type, ServiceProvider prov) {
-		
-		Class<? extends ServiceProvider> typeClazz = type.getClassType();
-		Class<? extends ServiceProvider> clazz = prov.getClass();
-		if (!typeClazz.isAssignableFrom(clazz)) throw new ClassCastException("The class " + clazz + " is not an instance of " + typeClazz + "!");
-		
-		if (this.services.containsKey(type)) throw new IllegalStateException("A provider already exists for type " + type.getName() + " when registering " + prov + "!");
-		this.services.put(type, prov);
-		
+	public ServiceManager getServiceManager() {
+		return this.serviceManager;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends ServiceProvider> T getServiceProvider(ServiceType serviceType) {
-		return (T) this.services.get(serviceType);
+	public void registerServiceProvider(ServiceType type, ServiceProvider prov, Module module) {
+		this.getServiceManager().registerServiceProvider(module, type, prov);
+	}
+	
+	@Override
+	public ServiceProvider getServiceProvider(ServiceType serviceType) {
+		return this.services.get(serviceType);
+	}
+
+	@Override
+	public ModuleManager getModuleManager() {
+		return this.moduleManager;
 	}
 	
 }
