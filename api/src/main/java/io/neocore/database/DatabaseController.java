@@ -2,7 +2,10 @@ package io.neocore.database;
 
 import java.util.List;
 
-public interface DatabaseController {
+import io.neocore.module.Module;
+import io.neocore.module.ModuleType;
+
+public interface DatabaseController extends Module {
 	
 	/**
 	 * @return The name of the database this controller accesses.
@@ -22,6 +25,11 @@ public interface DatabaseController {
 	/**
 	 * @return A list of services that this database provider can use.
 	 */
-	public List<DatabaseServiceProvider> getServices();
+	public List<DatabaseServiceProvider> getDatabaseServices();
+	
+	@Override
+	default ModuleType getModuleType() {
+		return ModuleType.DATABASE;
+	}
 	
 }

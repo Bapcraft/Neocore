@@ -1,14 +1,18 @@
 package io.neocore.host;
 
-import java.util.List;
+import io.neocore.module.Module;
+import io.neocore.module.ModuleType;
 
 /**
  * Represents the plugin class used by whichever server is hosting a Neocore instance.
  * 
  * @author treyzania
  */
-public interface HostPlugin {
+public interface HostPlugin extends Module {
 	
-	public List<HostServiceProvider> getServices();
+	@Override
+	default ModuleType getModuleType() {
+		return ModuleType.HOST;
+	}
 	
 }

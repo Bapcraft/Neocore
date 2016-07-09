@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import io.neocore.database.DatabaseController;
 import io.neocore.host.HostPlugin;
+import io.neocore.module.Module;
+import io.neocore.module.ModuleManager;
 import io.neocore.player.NeoPlayer;
 
 /**
@@ -18,8 +20,11 @@ public interface Neocore {
 	
 	public NeoPlayer getPlayer(UUID uuid);
 	
-	public void registerServiceProvider(ServiceType type, ServiceProvider prov);
+	public ModuleManager getModuleManager();
 	
-	public <T extends ServiceProvider> T getServiceProvider(ServiceType serviceType);
+	public ServiceManager getServiceManager();
+	public void registerServiceProvider(ServiceType type, ServiceProvider prov, Module module);
+	
+	public ServiceProvider getServiceProvider(ServiceType serviceType);
 	
 }
