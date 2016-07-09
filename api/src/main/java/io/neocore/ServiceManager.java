@@ -12,5 +12,6 @@ public interface ServiceManager {
 	
 	public List<RegisteredService> getServices();
 	public RegisteredService getService(ServiceType type);
+	public <T extends ServiceProvider> T getService(Class<T> servClazz);
 	
 }
