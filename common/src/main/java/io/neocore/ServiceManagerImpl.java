@@ -58,19 +58,30 @@ public class ServiceManagerImpl implements ServiceManager {
 	}
 	
 	@Override
+	public List<RegisteredService> getServices() {
+		return new ArrayList<>(this.services);
+	}
+	
+	@Override
 	public RegisteredService getService(ServiceType type) {
 		
-		for (RegisteredServiceImpl sr : this.services) {
-			if (sr.getType() == type) return sr;
+		for (RegisteredServiceImpl rs : this.services) {
+			if (rs.getType() == type) return rs;
 		}
 		
 		return null;
 		
 	}
-
+	
 	@Override
-	public List<RegisteredService> getServices() {
-		return new ArrayList<>(this.services);
+	public <T extends ServiceProvider> T getService(Class<T> servClazz) {
+		
+		for (RegisteredServiceImpl rs : this.services) {
+			if (servClazz.isAssignableFrom(rs.getServiceProvider().getClass())) return (T) rs.getServiceProvider();
+		}
+		
+		return null;
+		
 	}
 	
 }
