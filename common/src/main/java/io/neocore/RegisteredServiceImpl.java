@@ -5,13 +5,13 @@ import io.neocore.ServiceProvider;
 import io.neocore.ServiceType;
 import io.neocore.module.Module;
 
-public class ServiceRegistration implements RegisteredService {
+public class RegisteredServiceImpl implements RegisteredService {
 	
 	private Module providingModule;
 	private ServiceType type;
 	private ServiceProvider provider;
 	
-	public ServiceRegistration(Module mod, ServiceType type, ServiceProvider prov) {
+	public RegisteredServiceImpl(Module mod, ServiceType type, ServiceProvider prov) {
 		
 		this.providingModule = mod;
 		this.type = type;

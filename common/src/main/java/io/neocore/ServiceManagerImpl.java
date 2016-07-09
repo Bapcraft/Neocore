@@ -11,7 +11,7 @@ import io.neocore.module.Module;
 
 public class ServiceManagerImpl implements ServiceManager {
 	
-	private List<ServiceRegistration> services;
+	private List<RegisteredServiceImpl> services;
 	
 	public ServiceManagerImpl() {
 		
@@ -28,7 +28,7 @@ public class ServiceManagerImpl implements ServiceManager {
 		types.addAll(Arrays.asList(DatabaseService.values()));
 		
 		// Loop through the services and see which there are to deal with.  This funny loop logic is to avoid checking types we've already ruled out.
-		for (ServiceRegistration sr : this.services) {
+		for (RegisteredServiceImpl sr : this.services) {
 			
 			Iterator<ServiceType> typesRemaining = types.iterator();
 			
@@ -53,14 +53,14 @@ public class ServiceManagerImpl implements ServiceManager {
 		if (!typeClazz.isAssignableFrom(clazz)) throw new ClassCastException("The class " + clazz + " is not an instance of " + typeClazz + "!");
 		
 		if (this.getService(type) != null) throw new IllegalStateException("A provider already exists for type " + type.getName() + " when registering " + provider + "!");
-		this.services.add(new ServiceRegistration(mod, type, provider));
+		this.services.add(new RegisteredServiceImpl(mod, type, provider));
 		
 	}
 	
 	@Override
 	public RegisteredService getService(ServiceType type) {
 		
-		for (ServiceRegistration sr : this.services) {
+		for (RegisteredServiceImpl sr : this.services) {
 			if (sr.getType() == type) return sr;
 		}
 		
