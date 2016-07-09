@@ -73,6 +73,7 @@ public class ServiceManagerImpl implements ServiceManager {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends ServiceProvider> T getService(Class<T> servClazz) {
 		
