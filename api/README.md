@@ -23,7 +23,7 @@ your environment.
 Examples:   
 
     // my/micromodule/package/MyMicromodule.java
-    pacakage my.micromodule.pacakage;
+    package my.micromodule.pacakage;
     public class MyMicromodule extends JavaMicromodule {
         // your code
     }
