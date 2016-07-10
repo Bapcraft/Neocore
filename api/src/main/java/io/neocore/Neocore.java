@@ -2,7 +2,7 @@ package io.neocore;
 
 import java.util.UUID;
 
-import io.neocore.database.DatabaseController;
+import io.neocore.database.DatabaseManager;
 import io.neocore.host.HostPlugin;
 import io.neocore.module.Module;
 import io.neocore.module.ModuleManager;
@@ -16,7 +16,7 @@ import io.neocore.player.NeoPlayer;
 public interface Neocore {
 	
 	public HostPlugin getHost();
-	public DatabaseController getDatabase();
+	public DatabaseManager getDatabaseManager();
 	
 	public NeoPlayer getPlayer(UUID uuid);
 	
