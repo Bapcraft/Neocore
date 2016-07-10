@@ -3,8 +3,8 @@ package io.neocore;
 import java.util.Map;
 import java.util.UUID;
 
-import io.neocore.Neocore;
-import io.neocore.database.DatabaseController;
+import io.neocore.database.DatabaseManager;
+import io.neocore.database.DatabaseManagerImpl;
 import io.neocore.host.HostPlugin;
 import io.neocore.module.Module;
 import io.neocore.module.ModuleManager;
@@ -17,6 +17,8 @@ public class NeocoreImpl implements Neocore {
 	private final HostPlugin host;
 	
 	private PlayerManager playerManager;
+	
+	private DatabaseManagerImpl dbManager;
 	private ModuleManagerImpl moduleManager;
 	private ServiceManagerImpl serviceManager;
 	
@@ -26,6 +28,7 @@ public class NeocoreImpl implements Neocore {
 		
 		this.host = host;
 		
+		this.dbManager = new DatabaseManagerImpl();
 		this.playerManager = new PlayerManager();
 		this.moduleManager = new ModuleManagerImpl();
 		
@@ -34,15 +37,16 @@ public class NeocoreImpl implements Neocore {
 		
 	}
 	
+	@Override
 	public HostPlugin getHost() {
 		return this.host;
 	}
-
+	
 	@Override
-	public DatabaseController getDatabase() {
-		return null; // TODO
+	public DatabaseManager getDatabaseManager() {
+		return this.dbManager;
 	}
-
+	
 	@Override
 	public NeoPlayer getPlayer(UUID uuid) {
 		return this.playerManager.getPlayer(uuid);
