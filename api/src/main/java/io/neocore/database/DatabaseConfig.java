@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import io.neocore.ServiceType;
 
-public interface DatabaseConfiguraton {
+public interface DatabaseConfig {
 	
 	public boolean hasDefinition(ServiceType type);
 	public DatabaseController getControllerForService(ServiceType type);
