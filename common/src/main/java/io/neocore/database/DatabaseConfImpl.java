@@ -14,7 +14,7 @@ import com.typesafe.config.ConfigValueType;
 
 import io.neocore.ServiceType;
 
-public class DatabaseConfImpl implements DatabaseConfiguraton {
+public class DatabaseConfImpl implements DatabaseConfig {
 	
 	private Map<String, DatabaseController> databases;
 	
