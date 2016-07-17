@@ -1,11 +1,6 @@
 package io.neocore.api.database;
 
-import java.util.List;
-
-import io.neocore.api.module.Module;
-import io.neocore.api.module.ModuleType;
-
-public interface DatabaseController extends Module {
+public interface DatabaseController {
 	
 	/**
 	 * @return The name of the database this controller accesses.
@@ -23,13 +18,11 @@ public interface DatabaseController extends Module {
 	public void onDisable();
 	
 	/**
-	 * @return A list of services that this database provider can use.
+	 * Gets a <code>DatabaseServiceProvider</code> for the specified service type.
+	 * 
+	 * @param type The type of database service to find the provider for.
+	 * @return The database's service provider, or null if unsupported.
 	 */
-	public List<DatabaseServiceProvider> getDatabaseServices();
-	
-	@Override
-	default ModuleType getModuleType() {
-		return ModuleType.DATABASE;
-	}
+	public DatabaseServiceProvider getProvider(DatabaseService type);
 	
 }
