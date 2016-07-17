@@ -3,9 +3,11 @@ This is the public API for the Neocore Minecraft server management library
 created by Treyzania for Bapcraft.  The actual underlying implementation of
 this API and its support features (such as the actual Bukkit plugin and the
 MongoDB database controller) are currently private.  This may change in the
-future.
+future.  **The whole API is in a state of flux at the moment, so please don't
+expect any code you write against this project to be binary-compatible for a
+while.**
 
-# How to implement
+# How to *use*
 There are two different ways one can access the API.  First, one can simply
 use it as a way to interact the the core libraries from a conventional server
 plugin, be it Bukkit, Spigot, BungeeCord, Sponge, or any other.  Or one could
@@ -23,7 +25,7 @@ your environment.
 Examples:   
 
     // my/micromodule/package/MyMicromodule.java
-    package my.micromodule.pacakage;
+    package my.micromodule.package;
     public class MyMicromodule extends JavaMicromodule {
         // your code
     }
@@ -57,4 +59,22 @@ registry in `NeocoreAPI`, so use something maybe like this:
 Of course, in this case, you don't need to do all that stuff with the
 `micromodule.conf`.
 
-**TODO:** Explanation of host and database stuff.
+# Databases
+In order to set up a database contorller, you need a class implementing the
+interface `DatabaseController`.  You also should either be doing this in a
+micromodule of some integrator plugin.  Preferably the former as it integrates
+a lot more smoothly.
+
+The database controller can be registered using some code along the lines of
+the following...
+
+    DatabaseManager dbm = NeocoreAPI.getAgent().getDatabaseManager();
+    dbm.registerController("My-Fancy-Controller", MyFancyController.class);
+
+The database contorller must have a contructor accepting a single argument,
+a HOCON `Config` object.  The controller should derive all configuration
+from this object.  As it is taken from the `database.conf` file that the host
+plugin provides.  If you do not have a constructor like this, the database
+manager will throw an exception at runtime.
+
+**TODO:** Explanation of host stuff.
