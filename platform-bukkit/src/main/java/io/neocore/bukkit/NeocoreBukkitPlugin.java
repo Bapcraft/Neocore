@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.neocore.Neocore;
 import io.neocore.NeocoreImpl;
+import io.neocore.api.Neocore;
+import io.neocore.api.host.HostPlugin;
+import io.neocore.api.host.HostService;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
 import io.neocore.bukkit.providers.BukkitBroadcastService;
 import io.neocore.bukkit.providers.BukkitChatService;
 import io.neocore.bukkit.providers.BukkitLoginService;
-import io.neocore.host.HostPlugin;
-import io.neocore.host.HostService;
 
 public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	

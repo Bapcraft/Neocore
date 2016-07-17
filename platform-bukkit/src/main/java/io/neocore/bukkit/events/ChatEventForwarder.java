@@ -3,7 +3,7 @@ package io.neocore.bukkit.events;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import io.neocore.host.chat.ChatAcceptor;
+import io.neocore.api.host.chat.ChatAcceptor;
 
 public class ChatEventForwarder extends EventForwarder {
 	

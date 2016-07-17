@@ -2,8 +2,8 @@ package io.neocore.bukkit.events;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import io.neocore.host.chat.ChatEvent;
-import io.neocore.player.NeoPlayer;
+import io.neocore.api.host.chat.ChatEvent;
+import io.neocore.api.player.NeoPlayer;
 
 public class BukkitChatEvent implements ChatEvent {
 	

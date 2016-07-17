@@ -6,11 +6,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import io.neocore.api.host.chat.ChatAcceptor;
+import io.neocore.api.host.chat.ChatProvider;
+import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.bukkit.NeocoreBukkitPlugin;
 import io.neocore.bukkit.events.ChatEventForwarder;
-import io.neocore.host.chat.ChatAcceptor;
-import io.neocore.host.chat.ChatProvider;
-import io.neocore.host.chat.ChattablePlayer;
 
 public class BukkitChatService implements ChatProvider {
 	

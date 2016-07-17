@@ -1,7 +1,8 @@
 package io.neocore.bukkit.providers;
 
 import org.bukkit.Bukkit;
-import io.neocore.host.broadcast.BroadcastProvider;
+
+import io.neocore.api.host.broadcast.BroadcastProvider;
 
 public class BukkitBroadcastService implements BroadcastProvider {
 

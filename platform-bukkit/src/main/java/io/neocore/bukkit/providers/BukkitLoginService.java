@@ -2,9 +2,9 @@ package io.neocore.bukkit.providers;
 
 import java.util.UUID;
 
-import io.neocore.host.login.LoginAcceptor;
-import io.neocore.host.login.LoginProvider;
-import io.neocore.host.login.ServerPlayer;
+import io.neocore.api.host.login.LoginAcceptor;
+import io.neocore.api.host.login.LoginProvider;
+import io.neocore.api.host.login.ServerPlayer;
 
 public class BukkitLoginService implements LoginProvider {
 	

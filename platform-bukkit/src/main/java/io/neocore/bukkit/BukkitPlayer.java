@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import io.neocore.host.chat.ChattablePlayer;
-import io.neocore.host.login.ServerPlayer;
+import io.neocore.api.host.chat.ChattablePlayer;
+import io.neocore.api.host.login.ServerPlayer;
 
 public class BukkitPlayer implements ServerPlayer, ChattablePlayer {
 	
