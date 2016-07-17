@@ -26,7 +26,7 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	// Database service provider
 	protected DatabasePlayer playerRecord;
 	
-	protected NeoPlayer(UUID uuid) {
+	public NeoPlayer(UUID uuid) {
 		this.uuid = uuid;
 	}
 	
