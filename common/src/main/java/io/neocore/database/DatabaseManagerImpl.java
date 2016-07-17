@@ -6,6 +6,9 @@ import java.util.Map;
 
 import com.typesafe.config.Config;
 
+import io.neocore.api.database.DatabaseController;
+import io.neocore.api.database.DatabaseManager;
+
 public class DatabaseManagerImpl implements DatabaseManager {
 	
 	private Map<String, Class<? extends DatabaseController>> dbTypes;

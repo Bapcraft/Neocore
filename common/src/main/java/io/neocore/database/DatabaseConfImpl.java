@@ -12,7 +12,10 @@ import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
 
-import io.neocore.ServiceType;
+import io.neocore.api.ServiceType;
+import io.neocore.api.database.DatabaseConfig;
+import io.neocore.api.database.DatabaseController;
+import io.neocore.api.database.DatabaseManager;
 
 public class DatabaseConfImpl implements DatabaseConfig {
 	

@@ -4,8 +4,8 @@ import java.util.Set;
 
 import com.treyzania.jzania.data.MemberReferenceSet;
 
-import io.neocore.module.Module;
-import io.neocore.module.ModuleManager;
+import io.neocore.api.module.Module;
+import io.neocore.api.module.ModuleManager;
 
 public class ModuleManagerImpl implements ModuleManager {
 	

@@ -3,13 +3,17 @@ package io.neocore;
 import java.util.Map;
 import java.util.UUID;
 
-import io.neocore.database.DatabaseManager;
+import io.neocore.api.Neocore;
+import io.neocore.api.ServiceManager;
+import io.neocore.api.ServiceProvider;
+import io.neocore.api.ServiceType;
+import io.neocore.api.database.DatabaseManager;
+import io.neocore.api.host.HostPlugin;
+import io.neocore.api.module.Module;
+import io.neocore.api.module.ModuleManager;
+import io.neocore.api.player.NeoPlayer;
 import io.neocore.database.DatabaseManagerImpl;
-import io.neocore.host.HostPlugin;
-import io.neocore.module.Module;
-import io.neocore.module.ModuleManager;
 import io.neocore.module.ModuleManagerImpl;
-import io.neocore.player.NeoPlayer;
 import io.neocore.player.PlayerManager;
 
 public class NeocoreImpl implements Neocore {

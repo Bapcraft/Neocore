@@ -1,9 +1,9 @@
 package io.neocore;
 
-import io.neocore.RegisteredService;
-import io.neocore.ServiceProvider;
-import io.neocore.ServiceType;
-import io.neocore.module.Module;
+import io.neocore.api.RegisteredService;
+import io.neocore.api.ServiceProvider;
+import io.neocore.api.ServiceType;
+import io.neocore.api.module.Module;
 
 public class RegisteredServiceImpl implements RegisteredService {
 	

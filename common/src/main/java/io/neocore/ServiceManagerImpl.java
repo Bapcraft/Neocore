@@ -5,9 +5,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import io.neocore.database.DatabaseService;
-import io.neocore.host.HostService;
-import io.neocore.module.Module;
+import io.neocore.api.RegisteredService;
+import io.neocore.api.ServiceManager;
+import io.neocore.api.ServiceProvider;
+import io.neocore.api.ServiceType;
+import io.neocore.api.database.DatabaseService;
+import io.neocore.api.host.HostService;
+import io.neocore.api.module.Module;
 
 public class ServiceManagerImpl implements ServiceManager {
 	

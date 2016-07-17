@@ -1,5 +1,7 @@
 package io.neocore;
 
+import io.neocore.api.NeocoreConfig;
+
 public class NeocoreConfigImpl implements NeocoreConfig {
 
 	@Override

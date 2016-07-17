@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import io.neocore.player.NeoPlayer;
+import io.neocore.api.player.NeoPlayer;
 
 public class PlayerManager {
 	
