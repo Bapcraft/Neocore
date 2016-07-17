@@ -1,6 +1,6 @@
 package io.neocore.module;
 
-public abstract class JavaMicromodule implements Module {
+public abstract class JavaMicromodule implements Micromodule {
 	
 	private String name, version;
 
