@@ -17,6 +17,7 @@ import java.util.zip.ZipFile;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.module.JavaMicromodule;
 import io.neocore.api.module.Micromodule;
 import io.neocore.api.module.Module;
@@ -62,9 +63,15 @@ public class MicromoduleLoader {
 		
 		if (!jar.exists()) throw new IllegalArgumentException("Tried to load a jar that doesn't exist.");
 		
-		// Get the config.
+		// Get the important stuff.
 		Config conf = getConfigFromFile(jar);
 		String mainClass = conf.getString("module.main");
+		
+		// Pull out the general information
+		String name = conf.getString("module.name");
+		String version = conf.getString("module.version");
+		
+		NeocoreAPI.getLogger().info("Loading " + name + " v" + version + "...");
 		
 		// Set up the class loader.
 		MicromoduleClassLoader loader = null;
@@ -77,19 +84,15 @@ public class MicromoduleLoader {
 			throw new IllegalArgumentException("wat.", e);
 		}
 		
-		// Pull out the general information
-		String name = conf.getString("module.name");
-		String version = conf.getString("module.version");
-		
 		// Apply the general information.
 		JavaMicromodule jm = loader.getMicromodule();
-		Class<? extends JavaMicromodule> modClass = jm.getClass();
+		Class<JavaMicromodule> jmmc = JavaMicromodule.class;
 		
 		// Really roundabout way of defining these values.
 		try {
 			
-			Field nameField = modClass.getField("name");
-			Field verField = modClass.getField("version");
+			Field nameField = jmmc.getDeclaredField("name");
+			Field verField = jmmc.getDeclaredField("version");
 			
 			boolean nameAcc = nameField.isAccessible();
 			nameField.setAccessible(true);

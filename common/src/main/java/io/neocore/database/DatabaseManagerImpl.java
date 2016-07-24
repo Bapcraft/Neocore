@@ -1,6 +1,7 @@
 package io.neocore.database;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,6 +87,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
 	
 	private static NullPointerException prepNoConstNpe(Class<? extends DatabaseController> clazz) {
 		return new NullPointerException("No constructor for class " + clazz.getName() + " that takes a " + Config.class.getName() + " as the single argument.");
+	}
+
+	@Override
+	public Collection<Class<? extends DatabaseController>> getControllers() {
+		return this.dbTypes.values();
 	}
 	
 }

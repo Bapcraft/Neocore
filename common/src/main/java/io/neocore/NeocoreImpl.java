@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.neocore.api.Neocore;
+import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
@@ -32,12 +33,18 @@ public class NeocoreImpl implements Neocore {
 		
 		this.host = host;
 		
+		NeocoreInstaller.install(this);
+		
 		this.dbManager = new DatabaseManagerImpl();
 		this.playerManager = new PlayerManager();
-		this.moduleManager = new ModuleManagerImpl();
+		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
+		this.serviceManager = new ServiceManagerImpl();
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);
+		
+		// Enable things
+		this.moduleManager.enableMicromodules();
 		
 	}
 	

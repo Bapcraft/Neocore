@@ -39,7 +39,8 @@ public class ServiceManagerImpl implements ServiceManager {
 			while (typesRemaining.hasNext()) {
 				
 				// Check if compatible and remove if necessary.
-				if (typesRemaining.next().getClassType().isAssignableFrom(sr.getServiceProvider().getClass())) typesRemaining.remove();
+				ServiceType type = typesRemaining.next();
+				if (type.getClassType() != null && type.getClassType().isAssignableFrom(sr.getServiceProvider().getClass())) typesRemaining.remove();
 				
 			}
 			

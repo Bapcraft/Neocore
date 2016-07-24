@@ -18,7 +18,7 @@ public class MicromoduleClassLoader extends URLClassLoader {
 		
 		try {
 			
-			Class<?> mainClassTest = Class.forName(mainClass);
+			Class<?> mainClassTest = Class.forName(mainClass, true, this);
 			this.mainClass = mainClassTest.asSubclass(JavaMicromodule.class);
 			
 			// Needs a no-args constructor to work.
