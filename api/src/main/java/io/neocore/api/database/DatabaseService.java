@@ -13,13 +13,13 @@ import io.neocore.api.database.player.PlayerProvider;
 public enum DatabaseService implements ServiceType {
 
 	BAN(null), // Exactly what you think it is.
-	LOGINS(null), // Player UUID, username, connecting address.
+	LOGIN(null), // Player UUID, username, connecting address.
 	SESSION(null), // Everything the SIMPLE_SESSION has, but also includes transactions as they move between proxied servers.
 	PLAYER(PlayerProvider.class), // Core player data, extensions, etc.
-	GROUPS(GroupProvider.class), // Group definitions, flair, inheritance, tracks, etc.
+	GROUP(GroupProvider.class), // Group definitions, flair, inheritance, tracks, etc.
 	ARTIFACT(null), // Warnings, evidence, etc.
-	ACTION_LOG(null),
-	ECO_TRANSACTION_LOG(DatabaseServiceProvider.class),
+	ACTION_RECORD(null),
+	ECO_TRANSACTION_RECORD(DatabaseServiceProvider.class),
 	
 	MISC(null); // Miscellaneous sets of data with schema defined by modules.
 	

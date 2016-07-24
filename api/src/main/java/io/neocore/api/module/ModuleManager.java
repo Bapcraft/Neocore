@@ -9,4 +9,6 @@ public interface ModuleManager {
 	
 	public Set<Module> getModules();
 	
+	public void enableMicromodules();
+	
 }

@@ -1,5 +1,7 @@
 package io.neocore.api;
 
+import java.util.logging.Logger;
+
 /**
  * Main class for the Neocore API.
  * 
@@ -8,13 +10,14 @@ package io.neocore.api;
 public class NeocoreAPI {
 	
 	protected static Neocore agent;
-	
-	protected static void getAgent(Neocore neo) {
-		agent = neo;
-	}
+	protected static Logger logger;
 	
 	public static Neocore getAgent() {
 		return agent;
+	}
+	
+	public static Logger getLogger() {
+		return logger;
 	}
 	
 }
