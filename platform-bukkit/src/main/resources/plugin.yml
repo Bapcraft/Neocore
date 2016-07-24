@@ -1,4 +1,5 @@
 name: Neocore
-version: ${project.version}
+version: 0.0-DEVELOPMENT
 main: io.neocore.bukkit.NeocoreBukkitPlugin
 author: treyzania
+load: STARTUP
