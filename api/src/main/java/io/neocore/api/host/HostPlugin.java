@@ -2,6 +2,7 @@ package io.neocore.api.host;
 
 import java.io.File;
 
+import io.neocore.api.NeocoreConfig;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleType;
 
@@ -13,6 +14,8 @@ import io.neocore.api.module.ModuleType;
 public interface HostPlugin extends Module {
 	
 	public File getMicromoduleDirectory();
+	
+	public NeocoreConfig getNeocoreConfig();
 	
 	@Override
 	public default ModuleType getModuleType() {
