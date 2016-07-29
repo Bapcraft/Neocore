@@ -10,7 +10,7 @@ import io.neocore.api.event.PlayerEvent;
  */
 public interface DownstreamTransferEvent extends PlayerEvent {
 	
-	public void setDestination(DownstreamServer dest);
-	public DownstreamServer getDestination();
+	public void setDestination(NetworkEndpoint dest);
+	public NetworkEndpoint getDestination();
 	
 }

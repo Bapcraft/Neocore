@@ -9,7 +9,7 @@ import io.neocore.api.host.HostService;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.ServerPlayer;
 import io.neocore.api.host.permissions.PermissedPlayer;
-import io.neocore.api.host.proxy.ProxiedPlayer;
+import io.neocore.api.host.proxy.NetworkPlayer;
 import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
@@ -19,7 +19,7 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	
 	// Host service providers
 	protected ServerPlayer playerPersona;
-	protected ProxiedPlayer playerProxyAgent;
+	protected NetworkPlayer playerNetworkEntity;
 	protected PermissedPlayer playerPermissions;
 	protected ChattablePlayer playerChat;
 	

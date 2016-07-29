@@ -6,6 +6,7 @@ import io.neocore.api.host.broadcast.BroadcastProvider;
 import io.neocore.api.host.chat.ChatProvider;
 import io.neocore.api.host.login.LoginProvider;
 import io.neocore.api.host.permissions.PermissionsProvider;
+import io.neocore.api.host.proxy.EndpointProvider;
 import io.neocore.api.host.proxy.ProxyProvider;
 
 /**
@@ -17,6 +18,7 @@ public enum HostService implements ServiceType {
 	
 	LOGIN(LoginProvider.class), // When players connect, present on both endpoints and proxies.
 	PROXY(ProxyProvider.class), // Provides information as players connect and move around, as well as server statuses.  Generally just BungeeCord.
+	ENDPOINT(EndpointProvider.class), // If this server is an endpoint that proxied players connect to via something like BungeeCord.
 	BROADCAST(BroadcastProvider.class), // General broadcasts, regardless of scale.
 	PERMISSIONS(PermissionsProvider.class), // The ability to attach permissions onto players for everyone to use.
 	CHAT(ChatProvider.class), // General communication bound to some player-like thing.

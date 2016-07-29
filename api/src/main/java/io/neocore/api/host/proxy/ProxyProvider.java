@@ -1,11 +1,9 @@
 package io.neocore.api.host.proxy;
 
-import java.util.UUID;
-
 import io.neocore.api.host.HostServiceProvider;
 import io.neocore.api.player.NeoPlayer;
 
-public interface ProxyProvider extends HostServiceProvider {
+public interface ProxyProvider extends HostServiceProvider, NetworkParticipant {
 	
 	public void setProxyAcceptor(ProxyAcceptor acceptor);
 	public ProxyAcceptor getProxyAcceptor();
@@ -16,19 +14,6 @@ public interface ProxyProvider extends HostServiceProvider {
 	 * @param player The player
 	 * @param server The server
 	 */
-	public void move(NeoPlayer player, DownstreamServer server);
-	
-	/**
-	 * @return An array of all downstream servers this host can connect to.
-	 */
-	public DownstreamServer[] getDownstreamServers();
-	
-	/**
-	 * Gets the proxied player information for the specified player.
-	 * 
-	 * @param uuid The UUID of the player
-	 * @return The proxy state information
-	 */
-	public ProxiedPlayer getPlayer(UUID uuid);
+	public void move(NeoPlayer player, NetworkEndpoint server);
 	
 }
