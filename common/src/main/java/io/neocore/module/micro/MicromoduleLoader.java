@@ -87,7 +87,6 @@ public class MicromoduleLoader {
 		
 		// Apply the general information.
 		JavaMicromodule jm = loader.getMicromodule();
-		Class<JavaMicromodule> jmmc = JavaMicromodule.class;
 		
 		// Really roundabout way of defining these values.
 		try {
@@ -97,11 +96,12 @@ public class MicromoduleLoader {
 			injections.put("version", version);
 			
 			// Iterate through the field names and inject the values into the relevant actual fields.
-			for (Entry<String, Object> e : injections.entrySet()) {
+			for (Entry<String, Object> entry : injections.entrySet()) {
 				
-				Field f = jmmc.getDeclaredField((String) e.getKey());
+				Field f = JavaMicromodule.class.getDeclaredField((String) entry.getKey());
 				boolean acc = f.isAccessible();
-				f.set(jmmc, e.getValue());
+				f.setAccessible(true);
+				f.set(jm, entry.getValue());
 				f.setAccessible(acc);
 				
 			}
