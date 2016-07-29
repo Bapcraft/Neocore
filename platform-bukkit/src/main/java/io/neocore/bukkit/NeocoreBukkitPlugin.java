@@ -47,6 +47,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		NeocoreInstaller.applyLogger(Bukkit.getLogger());
 		Neocore neo = new NeocoreImpl(this);
 		
+		BukkitNeocoreConfig.verifyConfig(this.getConfigFile(), this);
 		this.config = new BukkitNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
 		
 		// Support classes
@@ -114,7 +115,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	}
 	
 	public File getConfigFile() {
-		return new File(this.getDataFolder(), "neocore.conf");
+		return new File(this.getDataFolder(), BukkitNeocoreConfig.CONFIG_FILE_NAME);
 	}
 
 }

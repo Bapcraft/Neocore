@@ -14,7 +14,7 @@ import io.neocore.api.NeocoreConfig;
 
 public class BukkitNeocoreConfig implements NeocoreConfig {
 	
-	private static final String CONFIG_FILE_NAME = "neocore.conf";
+	public static final String CONFIG_FILE_NAME = "neocore.conf";
 	
 	private String serverName;
 	
@@ -46,9 +46,7 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 	}
 	
 	@SuppressWarnings("resource")
-	protected static void verifyConfig(Plugin plugin) {
-		
-		File config = new File(plugin.getDataFolder(), CONFIG_FILE_NAME);
+	protected static void verifyConfig(File config, Plugin plugin) {
 		
 		if (!config.exists()) {
 			
@@ -60,6 +58,9 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 			s.close();
 			
 			try {
+				
+				// Ensure that the parents all exist.
+				config.getParentFile().mkdirs();
 				
 				// Then write it.
 				FileWriter fw = new FileWriter(config);
