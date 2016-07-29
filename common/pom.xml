@@ -5,7 +5,7 @@
 	<groupId>io.neocore</groupId>
 	<artifactId>neocore-common</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Neocore-Prime</name>
+	<name>Neocore-Common</name>
 	
 	<dependencies>
 		
