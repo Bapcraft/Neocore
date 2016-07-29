@@ -11,6 +11,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -91,18 +92,19 @@ public class MicromoduleLoader {
 		// Really roundabout way of defining these values.
 		try {
 			
-			Field nameField = jmmc.getDeclaredField("name");
-			Field verField = jmmc.getDeclaredField("version");
+			Map<String, Object> injections = new HashMap<>();
+			injections.put("name", name);
+			injections.put("version", version);
 			
-			boolean nameAcc = nameField.isAccessible();
-			nameField.setAccessible(true);
-			nameField.set(jm, name);
-			nameField.setAccessible(nameAcc);
-			
-			boolean verAcc = verField.isAccessible();
-			verField.setAccessible(true);
-			verField.set(jm, version);
-			verField.setAccessible(verAcc);
+			// Iterate through the field names and inject the values into the relevant actual fields.
+			for (Entry<String, Object> e : injections.entrySet()) {
+				
+				Field f = jmmc.getDeclaredField((String) e.getKey());
+				boolean acc = f.isAccessible();
+				f.set(jmmc, e.getValue());
+				f.setAccessible(acc);
+				
+			}
 			
 		} catch (Exception e) {
 			throw new RuntimeException("Something went wrong when populating the micromodule classes.", e);
