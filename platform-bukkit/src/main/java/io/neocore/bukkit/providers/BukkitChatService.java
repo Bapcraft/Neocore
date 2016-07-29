@@ -1,6 +1,7 @@
 package io.neocore.bukkit.providers;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,6 +12,7 @@ import io.neocore.api.host.chat.ChatProvider;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.bukkit.NeocoreBukkitPlugin;
 import io.neocore.bukkit.events.ChatEventForwarder;
+import io.neocore.bukkit.providers.chat.BukkitChattablePlayer;
 
 public class BukkitChatService implements ChatProvider {
 	
@@ -18,6 +20,11 @@ public class BukkitChatService implements ChatProvider {
 	
 	public BukkitChatService(ChatEventForwarder fwdr) {
 		this.forwarder = fwdr;
+	}
+	
+	@Override
+	public ChattablePlayer getPlayer(UUID uuid) {
+		return new BukkitChattablePlayer(Bukkit.getPlayer(uuid));
 	}
 	
 	@Override
@@ -38,5 +45,5 @@ public class BukkitChatService implements ChatProvider {
 		NeocoreBukkitPlugin.inst.getServer().getPluginManager().callEvent(event);
 		
 	}
-
+	
 }
