@@ -3,7 +3,9 @@ package io.neocore.api.host.proxy;
 import java.util.Set;
 import java.util.UUID;
 
-public interface NetworkParticipant {
+import io.neocore.api.host.HostServiceProvider;
+
+public interface NetworkParticipant extends HostServiceProvider {
 	
 	/**
 	 * Gets the proxied player information for the specified player.

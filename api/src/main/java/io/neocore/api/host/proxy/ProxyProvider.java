@@ -1,9 +1,8 @@
 package io.neocore.api.host.proxy;
 
-import io.neocore.api.host.HostServiceProvider;
 import io.neocore.api.player.NeoPlayer;
 
-public interface ProxyProvider extends HostServiceProvider, NetworkParticipant {
+public interface ProxyProvider extends NetworkParticipant {
 	
 	public void setProxyAcceptor(ProxyAcceptor acceptor);
 	public ProxyAcceptor getProxyAcceptor();
