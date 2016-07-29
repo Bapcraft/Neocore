@@ -3,12 +3,17 @@ package io.neocore.bukkit;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.justisr.BungeeCom;
+import com.typesafe.config.ConfigFactory;
 
 import io.neocore.NeocoreImpl;
 import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.HostService;
@@ -22,12 +27,16 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	
 	public static NeocoreBukkitPlugin inst;
 	
+	private BukkitNeocoreConfig config;
+	
 	private BukkitBroadcastService broadcastService;
 	private BukkitChatService chatService;
 	private BukkitLoginService loginService;
 	
 	private List<EventForwarder> forwarders = new ArrayList<>();
 	private ChatEventForwarder chatForwarder;
+	
+	private BungeeCom bungee;
 	
 	@Override
 	public void onEnable() {
@@ -37,6 +46,8 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		// Initialize and install Neocore.
 		NeocoreInstaller.applyLogger(Bukkit.getLogger());
 		Neocore neo = new NeocoreImpl(this);
+		
+		this.config = new BukkitNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
 		
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
@@ -89,4 +100,17 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		return new File("micromodules");
 	}
 	
+	@Override
+	public NeocoreConfig getNeocoreConfig() {
+		return this.config;
+	}
+	
+	public BungeeCom getProxyCommunication() {
+		return this.bungee;
+	}
+	
+	public File getConfigFile() {
+		return new File(this.getDataFolder(), "neocore.conf");
+	}
+
 }
