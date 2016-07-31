@@ -15,6 +15,7 @@ import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
+import io.neocore.api.host.HostPlayerInjector;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.HostService;
 import io.neocore.bukkit.events.ChatEventForwarder;
@@ -116,6 +117,11 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	
 	public File getConfigFile() {
 		return new File(this.getDataFolder(), BukkitNeocoreConfig.CONFIG_FILE_NAME);
+	}
+
+	@Override
+	public HostPlayerInjector getPlayerInjector() {
+		return new BukkitPlayerInjector();
 	}
 
 }
