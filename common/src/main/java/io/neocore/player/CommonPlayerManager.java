@@ -10,6 +10,7 @@ import java.util.logging.Level;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
+import io.neocore.api.host.HostPlayerInjector;
 import io.neocore.api.host.chat.ChatProvider;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.LoginProvider;
@@ -21,15 +22,17 @@ import io.neocore.api.host.proxy.NetworkPlayer;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
 
-public class PlayerManager {
+public class CommonPlayerManager {
 	
 	private Set<NeoPlayer> playerCache = new TreeSet<>();
 	
 	private ServiceManager serviceManager;
+	private HostPlayerInjector hostPlayerInjector;
 	
-	public PlayerManager(ServiceManager sm) {
+	public CommonPlayerManager(ServiceManager sm, HostPlayerInjector injector) {
 		
 		this.serviceManager = sm;
+		this.hostPlayerInjector = injector;
 		
 	}
 	
@@ -45,7 +48,7 @@ public class PlayerManager {
 		
 	}
 	
-	public NeoPlayer assemblePlayer(UUID uuid) {
+	private NeoPlayer assemblePlayer(UUID uuid) {
 		
 		NeoPlayer np = new NeoPlayer(uuid);
 		
@@ -84,6 +87,9 @@ public class PlayerManager {
 			}
 			
 		}
+		
+		// TODO Do something with the supplier this generate
+		this.hostPlayerInjector.injectPermissions(np);
 		
 		this.playerCache.add(np);
 		return np;

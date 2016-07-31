@@ -15,13 +15,13 @@ import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.database.DatabaseManagerImpl;
 import io.neocore.module.ModuleManagerImpl;
-import io.neocore.player.PlayerManager;
+import io.neocore.player.CommonPlayerManager;
 
 public class NeocoreImpl implements Neocore {
 	
 	private final HostPlugin host;
 	
-	private PlayerManager playerManager;
+	private CommonPlayerManager playerManager;
 	
 	private DatabaseManagerImpl dbManager;
 	private ModuleManagerImpl moduleManager;
@@ -38,7 +38,7 @@ public class NeocoreImpl implements Neocore {
 		this.dbManager = new DatabaseManagerImpl();
 		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
 		this.serviceManager = new ServiceManagerImpl();
-		this.playerManager = new PlayerManager(this.serviceManager);
+		this.playerManager = new CommonPlayerManager(this.serviceManager, host.getPlayerInjector());
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);
