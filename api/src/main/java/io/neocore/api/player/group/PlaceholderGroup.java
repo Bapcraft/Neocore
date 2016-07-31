@@ -26,8 +26,8 @@ public class PlaceholderGroup implements Group {
 	}
 
 	@Override
-	public Flair[] getFlair() {
-		return new Flair[0];
+	public AbstractFlair[] getFlairs() {
+		return new AbstractFlair[0];
 	}
 
 	@Override

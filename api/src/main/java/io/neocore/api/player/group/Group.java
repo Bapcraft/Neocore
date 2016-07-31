@@ -15,9 +15,9 @@ public interface Group {
 	public Group getParent();
 	
 	/**
-	 * @return An array of all the Flair that this Group provides to the player.
+	 * @return An array of all the Flairs that this Group provides to the player.
 	 */
-	public Flair[] getFlair();
+	public AbstractFlair[] getFlairs();
 	
 	/**
 	 * Get information about what state the permission is in the group's configuration.
