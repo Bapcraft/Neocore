@@ -2,10 +2,12 @@ package io.neocore.event;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import io.neocore.api.event.Event;
 import io.neocore.api.event.EventBus;
 import io.neocore.api.event.EventManager;
+import io.neocore.api.module.Module;
 
 public class CommonEventManager extends EventManager {
 	
@@ -17,6 +19,19 @@ public class CommonEventManager extends EventManager {
 		
 		// Set up the internal events.
 		EventManager.setupNeocoreEvents(this);
+		
+	}
+	
+	@SuppressWarnings("unchecked") // I hope this doesn't come to bite me in the ass.
+	@Override
+	public <T extends Event> EventBus<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority) {
+		
+		// Find and register the listener in the bus.
+		EventBus<T> bus = (EventBus<T>) this.busses.get(clazz);
+		bus.register(mod, listener, priority);
+		
+		// Return for convenience.
+		return bus;
 		
 	}
 	
@@ -35,7 +50,7 @@ public class CommonEventManager extends EventManager {
 		return bus;
 		
 	}
-
+	
 	@Override
 	public void broadcast(Event event) {
 		this.busses.get(event.getClass()).broadcast(event);
