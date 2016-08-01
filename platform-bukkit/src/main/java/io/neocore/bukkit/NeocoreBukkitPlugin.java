@@ -20,6 +20,7 @@ import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.HostService;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
+import io.neocore.bukkit.events.PlayerConnectionForwarder;
 import io.neocore.bukkit.providers.BukkitBroadcastService;
 import io.neocore.bukkit.providers.BukkitChatService;
 import io.neocore.bukkit.providers.BukkitLoginService;
@@ -36,6 +37,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	
 	private List<EventForwarder> forwarders = new ArrayList<>();
 	private ChatEventForwarder chatForwarder;
+	private PlayerConnectionForwarder connectionForwarder;
 	
 	private BungeeCom bungee;
 	
@@ -54,6 +56,8 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
 		this.forwarders.add(this.chatForwarder);
+		this.connectionForwarder = new PlayerConnectionForwarder();
+		this.forwarders.add(this.connectionForwarder);
 		
 		// Services
 		this.broadcastService = new BukkitBroadcastService();
