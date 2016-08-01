@@ -77,4 +77,36 @@ from this object.  As it is taken from the `database.conf` file that the host
 plugin provides.  If you do not have a constructor like this, the database
 manager will throw an exception at runtime.
 
+# Event Listeners
+Events in Neocore are handled slightly differently to how they are handled in
+Bukkit, though it may seem similar at first glance.  In order to get to the
+Event Manager, you can do something like this:
+
+    EventManager em = NeocoreAPI.getAgent().getEventManager();
+
+And this is about as far the similarities go.  In Neocore, we have a much more
+direct priority system than Bukkit.  Our priorities are explicit numbers
+instead of the general ranges that Bukkit has.  We also use the nice Java 8
+features that makes our job just a little bit easier.  Here's roughly how we'd
+register a listener in Neocore.
+
+    Module mod = myModule;
+    em.registerListener(mod, SomeEvent.class, event -> {
+        
+        // Example
+        event.setCancelled(true);
+        
+    }, 1000);
+
+(Of course, you don't *have* to use a lambda expression there, but it helps.)
+The value of `1000` there is just a "medium" value.  The higher the number, the
+higher the priority.  If you want something akin the the "monitor" priority
+that Bukkit has, use `Integer.MAX_VALUE`.  High values should be around 1
+million.  And low values would be under 100.  And please don't use values
+*less than or equal to* 0 unless you're doing something really special.  The
+class mentioned in there is the name of the events you want to listen for.
+Please don't do anything fancy like trying to capture all `PlayerEvent`s or
+it'll probably cause something to get all mucked up or at least thrown an
+exception somewhere in there.
+
 **TODO:** Explanation of host stuff.
