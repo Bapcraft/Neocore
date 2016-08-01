@@ -13,4 +13,9 @@ public interface InitialLoginEvent {
 	public UUID getPlayerUniqueId();
 	public InetAddress getAddress();
 	
+	public void allow();
+	public void disallow(String message);
+	
+	public boolean isPermitted();
+	
 }

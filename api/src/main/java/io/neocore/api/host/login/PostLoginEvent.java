@@ -4,6 +4,7 @@ import io.neocore.api.event.PlayerEvent;
 
 public interface PostLoginEvent extends PlayerEvent {
 	
-	// TODO Add methods for finding, for example, where the player is.
+	public void setJoinMessage(String message);
+	public String getJoinMessage();
 	
 }
