@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import io.neocore.api.event.Event;
 import io.neocore.api.event.EventBus;
 import io.neocore.api.event.EventManager;
+import io.neocore.api.event.RegisteredListener;
 import io.neocore.api.module.Module;
 
 public class CommonEventManager extends EventManager {
@@ -24,14 +25,14 @@ public class CommonEventManager extends EventManager {
 	
 	@SuppressWarnings("unchecked") // I hope this doesn't come to bite me in the ass.
 	@Override
-	public <T extends Event> EventBus<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority) {
+	public <T extends Event> RegisteredListener<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority) {
 		
 		// Find and register the listener in the bus.
 		EventBus<T> bus = (EventBus<T>) this.busses.get(clazz);
-		bus.register(mod, listener, priority);
+		RegisteredListener<T> rl = bus.register(mod, listener, priority);
 		
 		// Return for convenience.
-		return bus;
+		return rl;
 		
 	}
 	
