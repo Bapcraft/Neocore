@@ -1,6 +1,7 @@
 package io.neocore.bukkit.events;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -16,6 +17,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	
 	public LoginAcceptor acceptor;
 	
+	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		
 		BukkitInitialLoginEvent neoEvent = new BukkitInitialLoginEvent(event);
@@ -23,16 +25,16 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		
 	}
 	
+	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		
-		Player p = event.getPlayer();
-		NeoPlayer np = NeocoreAPI.getAgent().getPlayer(p.getUniqueId());
-		
+		NeoPlayer np = NeocoreAPI.getAgent().getPlayer(event.getPlayer().getUniqueId());
 		BukkitPostJoinEvent neoEvent = new BukkitPostJoinEvent(event, np);
 		this.acceptor.onPostLoginEvent(neoEvent);
 		
 	}
 	
+	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		
 		NeoPlayer np = NeocoreAPI.getAgent().getPlayer(event.getPlayer().getUniqueId());

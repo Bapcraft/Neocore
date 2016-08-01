@@ -14,17 +14,17 @@ public class ChatEventForwarder extends EventForwarder {
 		
 	}
 	
-	@EventHandler
-	public void onChatEvent(AsyncPlayerChatEvent event) {
-		this.dest.onChatMessage(new BukkitChatEvent(event));
-	}
-	
 	public void setAcceptor(ChatAcceptor acc) {
 		this.dest = acc;
 	}
 	
 	public ChatAcceptor getAcceptor() {
 		return this.dest;
+	}
+	
+	@EventHandler
+	public void onChatEvent(AsyncPlayerChatEvent event) {
+		this.dest.onChatMessage(new BukkitChatEvent(event));
 	}
 	
 }
