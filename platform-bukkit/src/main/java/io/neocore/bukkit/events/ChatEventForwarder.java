@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import io.neocore.api.host.chat.ChatAcceptor;
+import io.neocore.bukkit.events.wrappers.BukkitChatEvent;
 
 public class ChatEventForwarder extends EventForwarder {
 	

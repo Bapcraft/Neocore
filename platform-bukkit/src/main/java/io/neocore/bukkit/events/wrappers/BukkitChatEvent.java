@@ -1,4 +1,4 @@
-package io.neocore.bukkit.events;
+package io.neocore.bukkit.events.wrappers;
 
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 

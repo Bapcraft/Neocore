@@ -62,12 +62,13 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		
 		// Register services properly with Neocore.
 		neo.registerServiceProvider(HostService.LOGIN, this.loginService, this);
-		// TODO Endpoint, if in bungeecord mode.
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
 		// TODO Permissions
 		neo.registerServiceProvider(HostService.CHAT, this.chatService, this);
 		// TODO Gameplay (needs API interface definitions first)
-		
+		if (this.config.isNetworked()) {
+			// TODO Endpoint, if in bungeecord mode.
+		}
 		
 		// Event forwarder registration
 		for (EventForwarder fwdr : this.forwarders) {
