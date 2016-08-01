@@ -1,6 +1,5 @@
 package io.neocore.api.event;
 
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -13,9 +12,7 @@ public class EventBus<T extends Event> {
 	private TreeSet<RegisteredListener<T>> listeners;
 	
 	public EventBus() {
-		
 		this.listeners = new TreeSet<>();
-		
 	}
 	
 	public RegisteredListener<T> register(Module mod, Consumer<T> listener, int priority) {
