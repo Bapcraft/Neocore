@@ -3,6 +3,7 @@ package io.neocore.api;
 import java.util.UUID;
 
 import io.neocore.api.database.DatabaseManager;
+import io.neocore.api.event.EventManager;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
@@ -26,5 +27,7 @@ public interface Neocore {
 	public void registerServiceProvider(ServiceType type, ServiceProvider prov, Module module);
 	
 	public ServiceProvider getServiceProvider(ServiceType serviceType);
+	
+	public EventManager getEventManager();
 	
 }

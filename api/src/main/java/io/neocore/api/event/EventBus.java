@@ -38,7 +38,8 @@ public class EventBus<T extends Event> {
 		return this.listeners.remove(rl);
 	}
 	
-	public void broadcast(T event) {
+	@SuppressWarnings("unchecked") // I hope this doesn't come bite me in the ass but I can't think of a better way of doing it right now.
+	public void broadcast(Event event) {
 		
 		for (RegisteredListener<T> rl : this.listeners.descendingSet()) {
 			
@@ -48,7 +49,7 @@ public class EventBus<T extends Event> {
 				if (rl.listener == null) continue;
 				
 				// Actually invoke the event
-				rl.listener.accept(event);
+				rl.listener.accept((T) event);
 				
 			} catch (Exception e) {
 				NeocoreAPI.getLogger().log(Level.WARNING, String.format("Exception thrown while processing event for module %s!", rl.module.getName()), e);
