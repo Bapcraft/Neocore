@@ -9,11 +9,13 @@ import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseManager;
+import io.neocore.api.event.EventManager;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.database.DatabaseManagerImpl;
+import io.neocore.event.CommonEventManager;
 import io.neocore.module.ModuleManagerImpl;
 import io.neocore.player.CommonPlayerManager;
 
@@ -26,6 +28,7 @@ public class NeocoreImpl implements Neocore {
 	private DatabaseManagerImpl dbManager;
 	private ModuleManagerImpl moduleManager;
 	private ServiceManagerImpl serviceManager;
+	private CommonEventManager eventManager;
 	
 	private Map<ServiceType, ServiceProvider> services;
 	
@@ -39,6 +42,7 @@ public class NeocoreImpl implements Neocore {
 		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
 		this.serviceManager = new ServiceManagerImpl();
 		this.playerManager = new CommonPlayerManager(this.serviceManager, host.getPlayerInjector());
+		this.eventManager = new CommonEventManager();
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);
@@ -81,6 +85,11 @@ public class NeocoreImpl implements Neocore {
 	@Override
 	public ModuleManager getModuleManager() {
 		return this.moduleManager;
+	}
+
+	@Override
+	public EventManager getEventManager() {
+		return this.eventManager;
 	}
 	
 }
