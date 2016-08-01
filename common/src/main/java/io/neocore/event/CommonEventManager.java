@@ -12,7 +12,12 @@ public class CommonEventManager extends EventManager {
 	private Map<Class<? extends Event>, EventBus<?>> busses;
 	
 	public CommonEventManager() {
+		
 		this.busses = new HashMap<>();
+		
+		// Set up the internal events.
+		EventManager.setupNeocoreEvents(this);
+		
 	}
 	
 	@SuppressWarnings("unchecked") // I hope this doesn't come to bite me in the ass.
