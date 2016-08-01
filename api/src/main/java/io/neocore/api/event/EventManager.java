@@ -11,7 +11,7 @@ import io.neocore.api.module.Module;
 
 public abstract class EventManager {
 	
-	public abstract <T extends Event> EventBus<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority);
+	public abstract <T extends Event> RegisteredListener<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority);
 	public abstract <T extends Event> EventBus<T> registerEventType(Class<T> event);
 	public abstract <T extends Event> void broadcast(T event);
 	
