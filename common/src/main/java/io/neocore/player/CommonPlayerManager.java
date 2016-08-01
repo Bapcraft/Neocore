@@ -43,12 +43,12 @@ public class CommonPlayerManager {
 			if (np.getUniqueId().equals(uuid)) return np;
 		}
 		
-		// Otherwise assemble a new one.
-		return this.assemblePlayer(uuid);
+		// Don't assemble a new one.  That shouldn't be allowed except after post logins.
+		return null;
 		
 	}
 	
-	private NeoPlayer assemblePlayer(UUID uuid) {
+	protected NeoPlayer assemblePlayer(UUID uuid) {
 		
 		NeoPlayer np = new NeoPlayer(uuid);
 		
