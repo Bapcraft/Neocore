@@ -1,5 +1,6 @@
 package io.neocore.player;
 
+import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.host.login.InitialLoginEvent;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.PostLoginEvent;
@@ -29,6 +30,16 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 	@Override
 	public void onPostLoginEvent(PostLoginEvent event) {
 		// TODO Forward to event bus
+	}
+
+	@Override
+	public void onDisconnectEvent(DisconnectEvent event) {
+		
+		// TODO Forward to event bus.
+		
+		// Unload once we're sure everyone is done using it.
+		this.manager.unloadPlayer(event.getPlayer());
+		
 	}
 
 }
