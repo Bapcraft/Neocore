@@ -2,10 +2,12 @@ package io.neocore.api.event;
 
 import java.util.function.Consumer;
 
+import io.neocore.api.host.ServerInitializedEvent;
 import io.neocore.api.host.chat.ChatEvent;
 import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.host.login.InitialLoginEvent;
 import io.neocore.api.host.login.PostLoginEvent;
+import io.neocore.api.host.login.ServerListPingEvent;
 import io.neocore.api.host.proxy.DownstreamTransferEvent;
 import io.neocore.api.module.Module;
 
@@ -16,6 +18,10 @@ public abstract class EventManager {
 	public abstract <T extends Event> void broadcast(T event);
 	
 	public static void setupNeocoreEvents(EventManager man) {
+		
+		// Neocore-specific
+		man.registerEventType(ServerInitializedEvent.class);
+		man.registerEventType(ServerListPingEvent.class);
 		
 		// Connection mediation stuff
 		man.registerEventType(InitialLoginEvent.class);
