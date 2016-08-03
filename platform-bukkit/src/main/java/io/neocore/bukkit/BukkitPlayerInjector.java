@@ -20,11 +20,15 @@ import io.neocore.bukkit.permissions.DynamicPermissibleBase;
 
 public class BukkitPlayerInjector implements HostPlayerInjector {
 	
+	private static boolean inited = false;
+	
 	private static Field craftHumanEntityDotPerm;
 	private static List<Field> permissibleBaseFields = new ArrayList<>();
 	
 	@Override
 	public Supplier<DynamicPermissionCollection> injectPermissions(NeoPlayer player) {
+		
+		init();
 		
 		Player p = Bukkit.getPlayer(player.getUniqueId());
 		
@@ -54,7 +58,9 @@ public class BukkitPlayerInjector implements HostPlayerInjector {
 		
 	}
 	
-	static {
+	private static void init() {
+		
+		if (inited) return;
 		
 		// TODO This whole `try` block is terrible.  Replace this system that doesn't risk being broken in a future update.
 		try {
@@ -87,6 +93,8 @@ public class BukkitPlayerInjector implements HostPlayerInjector {
 		
 		// Same for all of these...
 		permissibleBaseFields.forEach(f -> f.setAccessible(true));
+		
+		inited = true;
 		
 	}
 	
