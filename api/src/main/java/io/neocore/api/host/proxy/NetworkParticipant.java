@@ -16,7 +16,7 @@ public interface NetworkParticipant extends HostServiceProvider {
 	public NetworkPlayer getPlayer(UUID uuid);
 	
 	/**
-	 * @return An array of all downstream servers this host can connect to.
+	 * @return An array of all downstream servers this host knows about.
 	 */
 	public Set<NetworkEndpoint> getNetworkEndpoints();
 	
@@ -28,5 +28,13 @@ public interface NetworkParticipant extends HostServiceProvider {
 	public default String getServerNetworkName() {
 		return this.getServerEndpoint().getName();
 	}
+	
+	/**
+	 * Moves the player from their current downstream server to another server. 
+	 * 
+	 * @param player The player
+	 * @param server The server
+	 */
+	public void move(NetworkPlayer player, NetworkEndpoint server);
 	
 }
