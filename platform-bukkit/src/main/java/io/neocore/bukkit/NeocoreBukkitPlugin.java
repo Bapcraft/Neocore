@@ -21,6 +21,7 @@ import io.neocore.api.host.HostService;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
+import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
 import io.neocore.bukkit.providers.BukkitBroadcastService;
 import io.neocore.bukkit.providers.BukkitChatService;
 import io.neocore.bukkit.providers.BukkitLoginService;
@@ -78,6 +79,15 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		for (EventForwarder fwdr : this.forwarders) {
 			Bukkit.getPluginManager().registerEvents(fwdr, this);
 		}
+		
+		// Set up a broadcast for server initialization.
+		// FIXME Move this to a better place.
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+			
+			// TODO Add better setup for things that happen after server initialization.
+			neo.getEventManager().broadcast(new BukkitServerInitializedEvent());
+			
+		});
 		
 		NeocoreAPI.announceCompletion();
 		
