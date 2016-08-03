@@ -13,7 +13,15 @@ public class NMSHelper {
 	}
 	
 	public static Class<?> formatNmsClass(String sourcePackage, String simpleName) throws ClassNotFoundException {
-		return Class.forName(String.format("%s.%s.%s", sourcePackage, getNmsPackageName(), simpleName));
+		
+		String fullName = String.format("%s.%s.%s", sourcePackage, getNmsPackageName(), simpleName);
+		
+		try {
+			return Class.forName(fullName);
+		} catch (Exception e) {
+			return Class.forName(fullName, true, Bukkit.class.getClassLoader());
+		}
+		
 	}
 	
 }
