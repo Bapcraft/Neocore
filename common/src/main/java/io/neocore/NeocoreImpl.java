@@ -15,10 +15,13 @@ import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.task.TaskQueue;
+import io.neocore.database.DatabaseConfImpl;
 import io.neocore.database.DatabaseManagerImpl;
 import io.neocore.event.CommonEventManager;
 import io.neocore.module.ModuleManagerImpl;
 import io.neocore.player.CommonPlayerManager;
+import io.neocore.tasks.DatabaseInitializerTask;
+import io.neocore.tasks.NeocoreTaskDelegator;
 
 public class NeocoreImpl implements Neocore {
 	
@@ -34,6 +37,7 @@ public class NeocoreImpl implements Neocore {
 	private Map<ServiceType, ServiceProvider> services;
 	
 	private TaskQueue tasks;
+	private NeocoreTaskDelegator taskDelegator;
 	
 	public NeocoreImpl(HostPlugin host) {
 		
@@ -50,6 +54,8 @@ public class NeocoreImpl implements Neocore {
 		
 		// Set up the task queue.
 		this.tasks = new TaskQueue();
+		this.taskDelegator = new NeocoreTaskDelegator();
+		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, new DatabaseConfImpl(host.getDatabaseConfigFile()), this.dbManager));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);
