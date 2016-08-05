@@ -18,6 +18,7 @@ import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.host.HostPlayerInjector;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.HostService;
+import io.neocore.api.task.Task;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
@@ -25,6 +26,7 @@ import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
 import io.neocore.bukkit.providers.BukkitBroadcastService;
 import io.neocore.bukkit.providers.BukkitChatService;
 import io.neocore.bukkit.providers.BukkitLoginService;
+import io.neocore.tasks.Worker;
 
 public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	
@@ -42,6 +44,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	
 	private BungeeCom bungee;
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
 		
@@ -65,6 +68,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		this.chatService = new BukkitChatService(this.chatForwarder);
 		this.loginService = new BukkitLoginService();
 		
+		// FIXME Make these register *before* we load the micromodules, somehow.
 		// Register services properly with Neocore.
 		neo.registerServiceProvider(HostService.LOGIN, this.loginService, this);
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
@@ -80,14 +84,20 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 			Bukkit.getPluginManager().registerEvents(fwdr, this);
 		}
 		
+		// FIXME Clean up how the server start tasks and stuff are set up.
+		
 		// Set up a broadcast for server initialization.
-		// FIXME Move this to a better place.
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+		neo.getTaskQueue().enqueue(new Task(null) {
 			
-			// TODO Add better setup for things that happen after server initialization.
-			neo.getEventManager().broadcast(new BukkitServerInitializedEvent());
+			@Override
+			public void run() {
+				neo.getEventManager().broadcast(new BukkitServerInitializedEvent());
+			}
 			
 		});
+		
+		// This is deprecated because "the name is misleading".
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(this, new Worker(neo.getTaskQueue(), NeocoreAPI.getLogger()));
 		
 		NeocoreAPI.announceCompletion();
 		
