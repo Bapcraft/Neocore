@@ -133,10 +133,15 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	public File getConfigFile() {
 		return new File(this.getDataFolder(), BukkitNeocoreConfig.CONFIG_FILE_NAME);
 	}
-
+	
+	@Override
+	public File getDatabaseConfigFile() {
+		return new File(this.getDataFolder(), "databases.conf");
+	}
+	
 	@Override
 	public HostPlayerInjector getPlayerInjector() {
 		return new BukkitPlayerInjector();
 	}
-
+	
 }
