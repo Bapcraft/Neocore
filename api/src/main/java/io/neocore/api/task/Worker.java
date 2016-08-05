@@ -29,11 +29,28 @@ public class Worker implements Runnable {
 		while (true) {
 			
 			Task task = this.queue.dequeue();
+			TaskDelegator delegator = task.getDelegator();
 			
 			try {
 				task.run();
 			} catch (Throwable t) {			
-				this.reporter.log(Level.WARNING, "Error processing Task for delegator + " + task.getDelegator().getName() + "!", t);
+				
+				this.reporter.warning(
+					String.format(
+						"Problem when executing task %s, attemping recovery with %s... (Message: %s)",
+						task.getName(),
+						delegator.getName(),
+						t.getMessage()
+					)
+				);
+				
+				// Attempt recovery and report accordingly.
+				if (!delegator.recoverFromProblem(task, t)) {
+					this.reporter.log(Level.WARNING, "Problem recovery for task " + task.getName() + " unsuccessful:", t);
+				} else {
+					this.reporter.info("Task recovery successful!");
+				}
+				
 			}
 			
 		}

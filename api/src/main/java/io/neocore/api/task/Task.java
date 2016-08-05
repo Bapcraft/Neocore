@@ -12,6 +12,10 @@ public abstract class Task {
 		return this.delegator;
 	}
 	
+	public String getName() {
+		return this.getClass().getSimpleName();
+	}
+	
 	public abstract void run();
 	
 }
