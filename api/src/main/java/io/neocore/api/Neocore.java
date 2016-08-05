@@ -8,6 +8,7 @@ import io.neocore.api.host.HostPlugin;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.task.TaskQueue;
 
 /**
  * Represents the main agent for accessing general components of Neocore.
@@ -29,5 +30,7 @@ public interface Neocore {
 	public ServiceProvider getServiceProvider(ServiceType serviceType);
 	
 	public EventManager getEventManager();
+	
+	public TaskQueue getTaskQueue();
 	
 }
