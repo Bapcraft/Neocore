@@ -14,6 +14,7 @@ import io.neocore.api.host.HostPlugin;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.task.TaskQueue;
 import io.neocore.database.DatabaseManagerImpl;
 import io.neocore.event.CommonEventManager;
 import io.neocore.module.ModuleManagerImpl;
@@ -32,17 +33,23 @@ public class NeocoreImpl implements Neocore {
 	
 	private Map<ServiceType, ServiceProvider> services;
 	
+	private TaskQueue tasks;
+	
 	public NeocoreImpl(HostPlugin host) {
 		
 		this.host = host;
 		
 		NeocoreInstaller.install(this);
 		
+		// Define various managers.
 		this.dbManager = new DatabaseManagerImpl();
 		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
 		this.serviceManager = new ServiceManagerImpl();
 		this.playerManager = new CommonPlayerManager(this.serviceManager, host.getPlayerInjector());
 		this.eventManager = new CommonEventManager();
+		
+		// Set up the task queue.
+		this.tasks = new TaskQueue();
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);
@@ -81,15 +88,20 @@ public class NeocoreImpl implements Neocore {
 	public ServiceProvider getServiceProvider(ServiceType serviceType) {
 		return this.services.get(serviceType);
 	}
-
+	
 	@Override
 	public ModuleManager getModuleManager() {
 		return this.moduleManager;
 	}
-
+	
 	@Override
 	public EventManager getEventManager() {
 		return this.eventManager;
+	}
+	
+	@Override
+	public TaskQueue getTaskQueue() {
+		return this.tasks;
 	}
 	
 }
