@@ -12,6 +12,7 @@ public class Worker implements Runnable {
 	private TaskQueue queue;
 	private Logger reporter;
 	
+	private volatile boolean isRunning;
 	private Thread thread;
 	
 	public Worker(TaskQueue q, Logger log) {
@@ -19,16 +20,22 @@ public class Worker implements Runnable {
 		this.queue = q;
 		this.reporter = log;
 		
-		this.thread = new Thread(this, "TaskWorker-" + Integer.toHexString(this.hashCode())); // Need better names.
-		
 	}
 	
 	public void begin() {
+		
+		if (this.isRunning) throw new IllegalStateException("Worker is already working!");
+		
+		this.thread = new Thread(this, "TaskWorker-" + Integer.toHexString(this.hashCode())); // Need better names.
 		this.thread.start();
+		
 	}
 	
 	@Override
 	public void run() {
+		
+		if (this.isRunning) throw new IllegalStateException("Worker is already working!");
+		this.isRunning = true;
 		
 		while (true) {
 			
