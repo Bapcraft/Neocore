@@ -10,12 +10,12 @@ public interface DatabaseController {
 	/**
 	 * Called when the database connection should be initialized.
 	 */
-	public void onEnable();
+	public void initialize();
 	
 	/**
 	 * Called when the database connection should be closed and the library should be shut down.
 	 */
-	public void onDisable();
+	public void shutdown();
 	
 	/**
 	 * Gets a <code>DatabaseServiceProvider</code> for the specified service type.

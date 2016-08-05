@@ -44,7 +44,7 @@ public class NeocoreAPI {
 		// Display database engines
 		logger.info("Database Controllers:");
 		DatabaseManager dbm = agent.getDatabaseManager();
-		for (Class<? extends DatabaseController> dbc : dbm.getControllers()) {
+		for (Class<? extends DatabaseController> dbc : dbm.getControllerClasses()) {
 			logger.info(" - " + dbc.getSimpleName());
 		}
 		
