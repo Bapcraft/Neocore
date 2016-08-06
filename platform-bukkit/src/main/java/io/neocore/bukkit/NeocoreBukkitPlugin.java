@@ -18,6 +18,7 @@ import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.host.HostPlayerInjector;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.HostService;
+import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
@@ -87,7 +88,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		// FIXME Clean up how the server start tasks and stuff are set up.
 		
 		// Set up a broadcast for server initialization.
-		neo.getTaskQueue().enqueue(new Task(null) {
+		neo.getTaskQueue().enqueue(new Task(new DumbTaskDelegator("Neocore-Init")) {
 			
 			@Override
 			public void run() {
