@@ -21,6 +21,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 	public DatabaseManagerImpl() {
 		
 		this.dbTypes = new HashMap<>();
+		this.databases = new HashMap<>();
 		
 	}
 	

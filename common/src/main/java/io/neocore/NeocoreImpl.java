@@ -15,7 +15,6 @@ import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.task.TaskQueue;
-import io.neocore.database.DatabaseConfImpl;
 import io.neocore.database.DatabaseManagerImpl;
 import io.neocore.event.CommonEventManager;
 import io.neocore.module.ModuleManagerImpl;
@@ -55,7 +54,7 @@ public class NeocoreImpl implements Neocore {
 		// Set up the task queue.
 		this.tasks = new TaskQueue();
 		this.taskDelegator = new NeocoreTaskDelegator();
-		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, new DatabaseConfImpl(host.getDatabaseConfigFile()), this.dbManager));
+		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, host, this.dbManager));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);

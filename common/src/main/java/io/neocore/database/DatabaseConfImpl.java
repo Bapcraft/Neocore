@@ -54,10 +54,10 @@ public class DatabaseConfImpl implements DatabaseConfig {
 			if (database.valueType() != ConfigValueType.STRING) throw new NullPointerException("Provider definition for " + service + " is not a string!");
 			
 			String dbName = database.unwrapped().toString();
-			if (!this.databaseConfigs.containsKey(service)) throw new NullPointerException("Provider name for " + service + " (\"" + dbName + "\") not found!");
+			if (!this.databaseConfigs.containsKey(dbName)) throw new NullPointerException("Provider name for " + service + " (\"" + dbName + "\") not found!");
 			
 			// If it's set to default then just set that one directly.
-			if (!dbName.equals("default")) {
+			if (!service.equals("default")) {
 				this.provisions.put(service, dbName);
 			} else {
 				this.defaultProvider = dbName;
