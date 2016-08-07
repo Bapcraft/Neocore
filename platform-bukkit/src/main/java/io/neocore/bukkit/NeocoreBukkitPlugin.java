@@ -18,6 +18,7 @@ import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.host.HostPlayerInjector;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.HostService;
+import io.neocore.api.host.ServerInitializedEvent;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bukkit.events.ChatEventForwarder;
@@ -92,7 +93,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 			
 			@Override
 			public void run() {
-				neo.getEventManager().broadcast(new BukkitServerInitializedEvent());
+				neo.getEventManager().broadcast(ServerInitializedEvent.class, new BukkitServerInitializedEvent());
 			}
 			
 		});

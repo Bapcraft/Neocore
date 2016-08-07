@@ -4,10 +4,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.server.ServerListPingEvent;
-
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.host.login.LoginAcceptor;
+import io.neocore.api.host.login.ServerListPingEvent;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.bukkit.events.wrappers.BukkitInitialLoginEvent;
 import io.neocore.bukkit.events.wrappers.BukkitPostJoinEvent;
@@ -19,12 +18,12 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	public LoginAcceptor acceptor;
 	
 	@EventHandler
-	public void onPing(ServerListPingEvent event) {
+	public void onPing(org.bukkit.event.server.ServerListPingEvent event) {
 		
 		BukkitServerPingEvent neoEvent = new BukkitServerPingEvent(event);
 		
 		// We don't need to do anything special for this so a standard broadcast event.
-		NeocoreAPI.getAgent().getEventManager().broadcast(neoEvent); 
+		NeocoreAPI.getAgent().getEventManager().broadcast(ServerListPingEvent.class, neoEvent); 
 		
 	}
 	
