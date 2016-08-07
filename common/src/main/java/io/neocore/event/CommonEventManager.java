@@ -53,8 +53,8 @@ public class CommonEventManager extends EventManager {
 	}
 	
 	@Override
-	public void broadcast(Event event) {
-		this.busses.get(event.getClass()).broadcast(event);
+	public <T extends Event> void broadcast(Class<? extends Event> type, T event) {
+		this.busses.get(type).broadcast(event);
 	}
 	
 }

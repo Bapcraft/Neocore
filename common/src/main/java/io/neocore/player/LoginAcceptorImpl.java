@@ -26,7 +26,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		NeoPlayer np = this.players.assemblePlayer(event.getPlayerUniqueId());
 		
 		// Broadcast the event.
-		this.events.broadcast(event);
+		this.events.broadcast(InitialLoginEvent.class, event);
 		
 		// Unload the player if necessary.
 		if (!event.isPermitted()) this.players.unloadPlayer(np);
@@ -35,14 +35,14 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 
 	@Override
 	public void onPostLoginEvent(PostLoginEvent event) {
-		this.events.broadcast(event);
+		this.events.broadcast(PostLoginEvent.class, event);
 	}
 
 	@Override
 	public void onDisconnectEvent(DisconnectEvent event) {
 		
 		// Broadcast the event straightaway.
-		this.events.broadcast(event);
+		this.events.broadcast(DisconnectEvent.class, event);
 		
 		// Unload once we're sure everyone is done using it.
 		this.players.unloadPlayer(event.getPlayer());
