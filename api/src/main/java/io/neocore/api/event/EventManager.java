@@ -15,7 +15,7 @@ public abstract class EventManager {
 	
 	public abstract <T extends Event> RegisteredListener<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority);
 	public abstract <T extends Event> EventBus<T> registerEventType(Class<T> event);
-	public abstract <T extends Event> void broadcast(T event);
+	public abstract <T extends Event> void broadcast(Class<? extends Event> type, T event);
 	
 	public static void setupNeocoreEvents(EventManager man) {
 		
