@@ -11,7 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.justisr.BungeeCom;
 import com.typesafe.config.ConfigFactory;
 
-import io.neocore.NeocoreImpl;
 import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.NeocoreConfig;
@@ -30,7 +29,8 @@ import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
 import io.neocore.bukkit.services.BukkitBroadcastService;
 import io.neocore.bukkit.services.BukkitChatService;
 import io.neocore.bukkit.services.BukkitLoginService;
-import io.neocore.tasks.Worker;
+import io.neocore.common.NeocoreImpl;
+import io.neocore.common.tasks.Worker;
 
 public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	
