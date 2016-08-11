@@ -1,19 +1,10 @@
 package io.neocore.api.host.proxy;
 
 import java.util.Set;
-import java.util.UUID;
-
 import io.neocore.api.host.HostServiceProvider;
+import io.neocore.api.player.IdentityProvider;
 
-public interface NetworkParticipant extends HostServiceProvider {
-	
-	/**
-	 * Gets the proxied player information for the specified player.
-	 * 
-	 * @param uuid The UUID of the player
-	 * @return The proxy state information
-	 */
-	public NetworkPlayer getPlayer(UUID uuid);
+public interface NetworkParticipant extends HostServiceProvider, IdentityProvider<NetworkPlayer> {
 	
 	/**
 	 * @return An array of all downstream servers this host knows about.

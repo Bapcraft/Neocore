@@ -3,8 +3,9 @@ package io.neocore.api.host.chat;
 import java.util.UUID;
 
 import io.neocore.api.host.HostServiceProvider;
+import io.neocore.api.player.IdentityProvider;
 
-public interface ChatService extends HostServiceProvider {
+public interface ChatService extends HostServiceProvider, IdentityProvider<ChattablePlayer> {
 	
 	public ChattablePlayer getPlayer(UUID uuid);
 	
