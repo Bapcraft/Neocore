@@ -51,10 +51,10 @@ public class DatabaseConfImpl implements DatabaseConfig {
 			String service = e.getKey();
 			ConfigValue database = e.getValue();
 			
-			if (database.valueType() != ConfigValueType.STRING) throw new NullPointerException("Provider definition for " + service + " is not a string!");
+			if (database.valueType() != ConfigValueType.STRING) throw new NullPointerException("Database definition for " + service + " is not a string!");
 			
 			String dbName = database.unwrapped().toString();
-			if (!this.databaseConfigs.containsKey(dbName)) throw new NullPointerException("Provider name for " + service + " (\"" + dbName + "\") not found!");
+			if (!this.databaseConfigs.containsKey(dbName)) throw new NullPointerException("Database name for " + service + " (\"" + dbName + "\") not found!");
 			
 			// If it's set to default then just set that one directly.
 			if (!service.equals("default")) {
@@ -96,7 +96,7 @@ public class DatabaseConfImpl implements DatabaseConfig {
 		if (this.databaseConfigs.containsKey(ctrlName)) {
 			return this.databaseConfigs.get(ctrlName);
 		} else {
-			throw new NullPointerException("Service " + typeStr + " does not have a provider defined and there is no default set!");
+			throw new NullPointerException("Service " + typeStr + " does not have a provider class defined and there is no default set!");
 		}
 		
 	}

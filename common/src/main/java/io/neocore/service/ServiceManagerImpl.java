@@ -1,4 +1,4 @@
-package io.neocore;
+package io.neocore.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +45,7 @@ public class ServiceManagerImpl implements ServiceManager {
 				
 				// Check if compatible and remove if necessary.
 				ServiceType type = typesRemaining.next();
-				if (type.getClassType() != null && type.getClassType().isAssignableFrom(sr.getServiceProvider().getClass())) typesRemaining.remove();
+				if (type.getServiceClass() != null && type.getServiceClass().isAssignableFrom(sr.getServiceProvider().getClass())) typesRemaining.remove();
 				
 			}
 			
@@ -56,20 +56,20 @@ public class ServiceManagerImpl implements ServiceManager {
 	}
 	
 	@Override
-	public void registerServiceProvider(Module mod, ServiceType type, ServiceProvider provider) {
+	public void registerServiceProvider(Module mod, ServiceType type, ServiceProvider service) {
 		
-		Class<? extends ServiceProvider> typeClazz = type.getClassType();
-		Class<? extends ServiceProvider> clazz = provider.getClass();
+		Class<? extends ServiceProvider> typeClazz = type.getServiceClass();
+		Class<? extends ServiceProvider> clazz = service.getClass();
 		if (!typeClazz.isAssignableFrom(clazz)) throw new ClassCastException("The class " + clazz + " is not an instance of " + typeClazz + "!");
 		
-		if (this.getService(type) != null) throw new IllegalStateException("A provider already exists for type " + type.getName() + " when registering " + provider + "!");
+		if (this.getService(type) != null) throw new IllegalStateException("A provider already exists for type " + type.getName() + " when registering " + service + "!");
 		
-		RegisteredServiceImpl rs = new RegisteredServiceImpl(mod, type, provider);
+		RegisteredServiceImpl rs = new RegisteredServiceImpl(mod, type, service);
 		this.services.add(rs);
 		
 		// Then we go notify people
 		for (Entry<Class<? extends ServiceProvider>, List<ServiceRegistrationHandler>> e : this.registrationHandlers.entrySet()) {
-			if (e.getKey().isAssignableFrom(provider.getClass())) {
+			if (e.getKey().isAssignableFrom(service.getClass())) {
 				for (ServiceRegistrationHandler handler : e.getValue()) handler.onRegister(rs);
 			}
 		}
@@ -104,17 +104,17 @@ public class ServiceManagerImpl implements ServiceManager {
 		
 	}
 	
-	public void registerRegistrationHandler(Class<? extends ServiceProvider> prov, ServiceRegistrationHandler handler) {
+	public void registerRegistrationHandler(Class<? extends ServiceProvider> servClazz, ServiceRegistrationHandler handler) {
 		
 		// Get a valid list to add these things to.
 		List<ServiceRegistrationHandler> handlers = null;
-		if (!this.registrationHandlers.containsKey(prov)) {
+		if (!this.registrationHandlers.containsKey(servClazz)) {
 			
 			handlers = new ArrayList<>();
-			this.registrationHandlers.put(prov, handlers);
+			this.registrationHandlers.put(servClazz, handlers);
 			
 		} else {
-			handlers = this.registrationHandlers.get(prov);
+			handlers = this.registrationHandlers.get(servClazz);
 		}
 		
 		// Then just actually add it.

@@ -19,6 +19,7 @@ import io.neocore.database.DatabaseManagerImpl;
 import io.neocore.event.CommonEventManager;
 import io.neocore.module.ModuleManagerImpl;
 import io.neocore.player.CommonPlayerManager;
+import io.neocore.service.ServiceManagerImpl;
 import io.neocore.tasks.DatabaseInitializerTask;
 import io.neocore.tasks.NeocoreTaskDelegator;
 
@@ -90,7 +91,7 @@ public class NeocoreImpl implements Neocore {
 	}
 	
 	@Override
-	public ServiceProvider getServiceProvider(ServiceType serviceType) {
+	public ServiceProvider getService(ServiceType serviceType) {
 		return this.services.get(serviceType);
 	}
 	

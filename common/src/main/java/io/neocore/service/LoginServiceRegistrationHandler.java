@@ -1,12 +1,12 @@
-package io.neocore;
+package io.neocore.service;
 
 import io.neocore.api.RegisteredService;
 import io.neocore.api.host.login.LoginAcceptor;
-import io.neocore.api.host.login.LoginProvider;
+import io.neocore.api.host.login.LoginService;
 
 public class LoginServiceRegistrationHandler implements ServiceRegistrationHandler {
 	
-	private LoginProvider previousProvider;
+	private LoginService prevService;
 	private LoginAcceptor acceptor;
 	
 	public LoginServiceRegistrationHandler(LoginAcceptor acceptor) {
@@ -16,11 +16,11 @@ public class LoginServiceRegistrationHandler implements ServiceRegistrationHandl
 	@Override
 	public void onRegister(RegisteredService entry) {
 		
-		if (this.previousProvider != null) this.previousProvider.setLoginAcceptor(null);
+		if (this.prevService != null) this.prevService.setLoginAcceptor(null);
 		
-		LoginProvider prov = (LoginProvider) entry.getServiceProvider();
-		prov.setLoginAcceptor(this.acceptor);
-		this.previousProvider = prov;
+		LoginService serv = (LoginService) entry.getServiceProvider();
+		serv.setLoginAcceptor(this.acceptor);
+		this.prevService = serv;
 		
 	}
 	

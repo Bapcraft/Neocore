@@ -1,4 +1,4 @@
-package io.neocore;
+package io.neocore.service;
 
 import io.neocore.api.RegisteredService;
 
