@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import io.neocore.api.host.HostServiceProvider;
 
-public interface LoginProvider extends HostServiceProvider {
+public interface LoginService extends HostServiceProvider {
 	
 	public void setLoginAcceptor(LoginAcceptor acceptor);
 	public LoginAcceptor getLoginAcceptor();

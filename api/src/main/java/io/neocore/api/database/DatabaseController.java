@@ -23,6 +23,6 @@ public interface DatabaseController {
 	 * @param type The type of database service to find the provider for.
 	 * @return The database's service provider, or null if unsupported.
 	 */
-	public DatabaseServiceProvider getProvider(DatabaseService type);
+	public DatabaseServiceProvider getService(DatabaseService type);
 	
 }

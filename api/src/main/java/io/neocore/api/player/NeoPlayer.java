@@ -17,13 +17,13 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	
 	private UUID uuid;
 	
-	// Host service providers
+	// Host service identities
 	protected ServerPlayer playerPersona;
 	protected NetworkPlayer playerNetworkEntity;
 	protected PermissedPlayer playerPermissions;
 	protected ChattablePlayer playerChat;
 	
-	// Database service provider
+	// Database service identities
 	protected DatabasePlayer playerRecord;
 	
 	public NeoPlayer(UUID uuid) {

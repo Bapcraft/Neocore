@@ -27,7 +27,7 @@ public interface Neocore {
 	public ServiceManager getServiceManager();
 	public void registerServiceProvider(ServiceType type, ServiceProvider prov, Module module);
 	
-	public ServiceProvider getServiceProvider(ServiceType serviceType);
+	public ServiceProvider getService(ServiceType serviceType);
 	
 	public EventManager getEventManager();
 	

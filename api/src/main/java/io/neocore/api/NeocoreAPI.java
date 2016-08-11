@@ -38,7 +38,7 @@ public class NeocoreAPI {
 		logger.info("Registered Modules:");
 		Set<Module> mods = agent.getModuleManager().getModules();
 		for (Module m : mods) {
-			logger.info(String.format(" - %s v%s", m.getName(), m.getVersion()));
+			logger.info(String.format(" - %s v%s (%s)", m.getName(), m.getVersion(), m.getModuleType().name()));
 		}
 		
 		// Display database engines
@@ -49,7 +49,7 @@ public class NeocoreAPI {
 		}
 		
 		// Display service info
-		logger.info("Registerd Service Providers:");
+		logger.info("Registerd Services:");
 		List<RegisteredService> servs = agent.getServiceManager().getServices();
 		for (RegisteredService rs : servs) {
 			ServiceType st = rs.getType();

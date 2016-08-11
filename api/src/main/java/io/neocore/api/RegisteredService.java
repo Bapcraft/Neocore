@@ -25,7 +25,7 @@ public interface RegisteredService {
 	 * @return
 	 */
 	public default boolean verify() {
-		return this.getType().getClassType().isAssignableFrom(this.getServiceProvider().getClass());
+		return this.getType().getServiceClass().isAssignableFrom(this.getServiceProvider().getClass());
 	}
 	
 }

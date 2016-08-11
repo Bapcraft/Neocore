@@ -11,8 +11,8 @@ public interface Module {
 	
 	public ModuleType getModuleType();
 	
-	public default void registerService(ServiceType type, ServiceProvider provider) {
-		NeocoreAPI.getAgent().getServiceManager().registerServiceProvider(this, type, provider);
+	public default void registerService(ServiceType type, ServiceProvider service) {
+		NeocoreAPI.getAgent().getServiceManager().registerServiceProvider(this, type, service);
 	}
 	
 }

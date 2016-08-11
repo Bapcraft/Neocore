@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import io.neocore.api.host.HostServiceProvider;
 
-public interface PermissionsProvider extends HostServiceProvider {
+public interface PermissionsService extends HostServiceProvider {
 	
 	public PermissedPlayer getPlayer(UUID uuid);
 	

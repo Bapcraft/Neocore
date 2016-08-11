@@ -4,7 +4,7 @@ import io.neocore.api.database.DatabaseServiceProvider;
 import io.neocore.api.player.group.Group;
 
 
-public interface GroupProvider extends DatabaseServiceProvider {
+public interface GroupService extends DatabaseServiceProvider {
 	
 	/**
 	 * @return A list of all of the groups in the database.
