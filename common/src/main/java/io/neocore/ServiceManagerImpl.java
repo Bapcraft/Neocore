@@ -2,8 +2,11 @@ package io.neocore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import io.neocore.api.RegisteredService;
 import io.neocore.api.ServiceManager;
@@ -16,10 +19,12 @@ import io.neocore.api.module.Module;
 public class ServiceManagerImpl implements ServiceManager {
 	
 	private List<RegisteredServiceImpl> services;
+	private Map<Class<? extends ServiceProvider>, List<ServiceRegistrationHandler>> registrationHandlers;
 	
 	public ServiceManagerImpl() {
 		
 		this.services = new ArrayList<>();
+		this.registrationHandlers = new HashMap<>();
 		
 	}
 	
@@ -49,7 +54,7 @@ public class ServiceManagerImpl implements ServiceManager {
 		return types;
 		
 	}
-
+	
 	@Override
 	public void registerServiceProvider(Module mod, ServiceType type, ServiceProvider provider) {
 		
@@ -58,7 +63,16 @@ public class ServiceManagerImpl implements ServiceManager {
 		if (!typeClazz.isAssignableFrom(clazz)) throw new ClassCastException("The class " + clazz + " is not an instance of " + typeClazz + "!");
 		
 		if (this.getService(type) != null) throw new IllegalStateException("A provider already exists for type " + type.getName() + " when registering " + provider + "!");
-		this.services.add(new RegisteredServiceImpl(mod, type, provider));
+		
+		RegisteredServiceImpl rs = new RegisteredServiceImpl(mod, type, provider);
+		this.services.add(rs);
+		
+		// Then we go notify people
+		for (Entry<Class<? extends ServiceProvider>, List<ServiceRegistrationHandler>> e : this.registrationHandlers.entrySet()) {
+			if (e.getKey().isAssignableFrom(provider.getClass())) {
+				for (ServiceRegistrationHandler handler : e.getValue()) handler.onRegister(rs);
+			}
+		}
 		
 	}
 	
@@ -87,6 +101,24 @@ public class ServiceManagerImpl implements ServiceManager {
 		}
 		
 		return null;
+		
+	}
+	
+	public void registerRegistrationHandler(Class<? extends ServiceProvider> prov, ServiceRegistrationHandler handler) {
+		
+		// Get a valid list to add these things to.
+		List<ServiceRegistrationHandler> handlers = null;
+		if (!this.registrationHandlers.containsKey(prov)) {
+			
+			handlers = new ArrayList<>();
+			this.registrationHandlers.put(prov, handlers);
+			
+		} else {
+			handlers = this.registrationHandlers.get(prov);
+		}
+		
+		// Then just actually add it.
+		handlers.add(handler);
 		
 	}
 	
