@@ -1,4 +1,4 @@
-package io.neocore.bukkit.providers;
+package io.neocore.bukkit.services;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -8,13 +8,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import io.neocore.api.host.chat.ChatAcceptor;
-import io.neocore.api.host.chat.ChatProvider;
+import io.neocore.api.host.chat.ChatService;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.bukkit.NeocoreBukkitPlugin;
 import io.neocore.bukkit.events.ChatEventForwarder;
-import io.neocore.bukkit.providers.chat.BukkitChattablePlayer;
+import io.neocore.bukkit.services.chat.BukkitChattablePlayer;
 
-public class BukkitChatService implements ChatProvider {
+public class BukkitChatService implements ChatService {
 	
 	private ChatEventForwarder forwarder;
 	

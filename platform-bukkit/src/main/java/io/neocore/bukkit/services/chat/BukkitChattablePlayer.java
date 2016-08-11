@@ -1,4 +1,4 @@
-package io.neocore.bukkit.providers.chat;
+package io.neocore.bukkit.services.chat;
 
 import java.util.UUID;
 

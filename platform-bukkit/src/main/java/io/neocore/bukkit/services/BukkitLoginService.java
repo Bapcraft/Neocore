@@ -1,13 +1,13 @@
-package io.neocore.bukkit.providers;
+package io.neocore.bukkit.services;
 
 import java.util.UUID;
 
 import io.neocore.api.host.login.LoginAcceptor;
-import io.neocore.api.host.login.LoginProvider;
+import io.neocore.api.host.login.LoginService;
 import io.neocore.api.host.login.ServerPlayer;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
 
-public class BukkitLoginService implements LoginProvider {
+public class BukkitLoginService implements LoginService {
 	
 	private LoginAcceptor acceptor;
 	private PlayerConnectionForwarder forwarder;

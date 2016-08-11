@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.justisr.BungeeCom;
@@ -23,11 +24,12 @@ import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
+import io.neocore.bukkit.events.NeocoreRevalidator;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
 import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
-import io.neocore.bukkit.providers.BukkitBroadcastService;
-import io.neocore.bukkit.providers.BukkitChatService;
-import io.neocore.bukkit.providers.BukkitLoginService;
+import io.neocore.bukkit.services.BukkitBroadcastService;
+import io.neocore.bukkit.services.BukkitChatService;
+import io.neocore.bukkit.services.BukkitLoginService;
 import io.neocore.tasks.Worker;
 
 public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
@@ -82,26 +84,29 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		}
 		
 		// Event forwarder registration
+		PluginManager pl = Bukkit.getPluginManager();
 		for (EventForwarder fwdr : this.forwarders) {
-			Bukkit.getPluginManager().registerEvents(fwdr, this);
+			pl.registerEvents(fwdr, this);
 		}
 		
 		// FIXME Clean up how the server start tasks and stuff are set up.
+		pl.registerEvents(new NeocoreRevalidator(pl), this);
 		
 		// Set up a broadcast for server initialization.
 		neo.getTaskQueue().enqueue(new Task(new DumbTaskDelegator("Neocore-Init")) {
 			
 			@Override
 			public void run() {
+				
 				neo.getEventManager().broadcast(ServerInitializedEvent.class, new BukkitServerInitializedEvent());
+				NeocoreAPI.announceCompletion();
+				
 			}
 			
 		});
 		
 		// This is deprecated because "the name is misleading".
 		Bukkit.getScheduler().scheduleAsyncDelayedTask(this, new Worker(neo.getTaskQueue(), NeocoreAPI.getLogger()));
-		
-		NeocoreAPI.announceCompletion();
 		
 	}
 	
