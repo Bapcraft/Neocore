@@ -70,7 +70,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 		// Services
 		this.broadcastService = new BukkitBroadcastService();
 		this.chatService = new BukkitChatService(this.chatForwarder);
-		this.loginService = new BukkitLoginService();
+		this.loginService = new BukkitLoginService(this.connectionForwarder);
 		
 		// FIXME Make these register *before* we load the micromodules, somehow.
 		// Register services properly with Neocore.

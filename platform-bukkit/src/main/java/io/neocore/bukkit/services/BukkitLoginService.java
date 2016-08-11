@@ -12,6 +12,10 @@ public class BukkitLoginService implements LoginService {
 	private LoginAcceptor acceptor;
 	private PlayerConnectionForwarder forwarder;
 	
+	public BukkitLoginService(PlayerConnectionForwarder fwdr) {
+		this.forwarder = fwdr;
+	}
+	
 	@Override
 	public void setLoginAcceptor(LoginAcceptor acceptor) {
 		

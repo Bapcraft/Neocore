@@ -30,6 +30,8 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		
+		if (this.acceptor == null) return;
+		
 		BukkitInitialLoginEvent neoEvent = new BukkitInitialLoginEvent(event);
 		this.acceptor.onInitialLoginEvent(neoEvent);
 		
@@ -37,6 +39,8 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		
+		if (this.acceptor == null) return;
 		
 		NeoPlayer np = NeocoreAPI.getAgent().getPlayer(event.getPlayer().getUniqueId());
 		BukkitPostJoinEvent neoEvent = new BukkitPostJoinEvent(event, np);
@@ -46,6 +50,8 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		
+		if (this.acceptor == null) return;
 		
 		NeoPlayer np = NeocoreAPI.getAgent().getPlayer(event.getPlayer().getUniqueId());
 		BukkitQuitEvent neoEvent = new BukkitQuitEvent(event, np);
