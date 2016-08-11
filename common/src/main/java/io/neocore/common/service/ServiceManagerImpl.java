@@ -1,4 +1,4 @@
-package io.neocore.service;
+package io.neocore.common.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;

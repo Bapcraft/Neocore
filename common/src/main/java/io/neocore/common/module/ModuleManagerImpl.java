@@ -1,4 +1,4 @@
-package io.neocore.module;
+package io.neocore.common.module;
 
 import java.io.File;
 import java.util.Set;
@@ -10,7 +10,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.module.Micromodule;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
-import io.neocore.module.micro.MicromoduleLoader;
+import io.neocore.common.module.micro.MicromoduleLoader;
 
 public class ModuleManagerImpl implements ModuleManager {
 	

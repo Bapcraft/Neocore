@@ -1,4 +1,4 @@
-package io.neocore;
+package io.neocore.common;
 
 import java.util.UUID;
 
@@ -16,15 +16,15 @@ import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.task.TaskQueue;
-import io.neocore.database.DatabaseManagerImpl;
-import io.neocore.event.CommonEventManager;
-import io.neocore.module.ModuleManagerImpl;
-import io.neocore.player.CommonPlayerManager;
-import io.neocore.player.LoginAcceptorImpl;
-import io.neocore.service.LoginServiceRegHandler;
-import io.neocore.service.ServiceManagerImpl;
-import io.neocore.tasks.DatabaseInitializerTask;
-import io.neocore.tasks.NeocoreTaskDelegator;
+import io.neocore.common.database.DatabaseManagerImpl;
+import io.neocore.common.event.CommonEventManager;
+import io.neocore.common.module.ModuleManagerImpl;
+import io.neocore.common.player.CommonPlayerManager;
+import io.neocore.common.player.LoginAcceptorImpl;
+import io.neocore.common.service.LoginServiceRegHandler;
+import io.neocore.common.service.ServiceManagerImpl;
+import io.neocore.common.tasks.DatabaseInitializerTask;
+import io.neocore.common.tasks.NeocoreTaskDelegator;
 
 public class NeocoreImpl implements Neocore {
 	

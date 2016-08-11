@@ -1,4 +1,4 @@
-package io.neocore.database;
+package io.neocore.common.database;
 
 import java.io.File;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package io.neocore.tasks;
+package io.neocore.common.tasks;
 
 import io.neocore.api.task.Task;
 import io.neocore.api.task.TaskDelegator;

@@ -1,4 +1,4 @@
-package io.neocore.database;
+package io.neocore.common.database;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;

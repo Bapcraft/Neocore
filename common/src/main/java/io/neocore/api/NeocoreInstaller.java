@@ -2,6 +2,9 @@ package io.neocore.api;
 
 import java.util.logging.Logger;
 
+import io.neocore.api.Neocore;
+import io.neocore.api.NeocoreAPI;
+
 public class NeocoreInstaller {
 	
 	private static boolean done = false; 

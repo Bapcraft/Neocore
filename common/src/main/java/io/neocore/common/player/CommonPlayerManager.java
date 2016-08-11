@@ -1,4 +1,4 @@
-package io.neocore.player;
+package io.neocore.common.player;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package io.neocore.tasks;
+package io.neocore.common.tasks;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;

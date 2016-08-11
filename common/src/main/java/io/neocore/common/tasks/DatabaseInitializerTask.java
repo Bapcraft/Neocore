@@ -1,4 +1,4 @@
-package io.neocore.tasks;
+package io.neocore.common.tasks;
 
 import java.util.logging.Logger;
 
@@ -7,8 +7,8 @@ import io.neocore.api.database.DatabaseConfig;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.task.Task;
 import io.neocore.api.task.TaskDelegator;
-import io.neocore.database.DatabaseConfImpl;
-import io.neocore.database.DatabaseManagerImpl;
+import io.neocore.common.database.DatabaseConfImpl;
+import io.neocore.common.database.DatabaseManagerImpl;
 
 public class DatabaseInitializerTask extends Task {
 	

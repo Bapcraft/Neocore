@@ -1,4 +1,4 @@
-package io.neocore.event;
+package io.neocore.common.event;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package io.neocore.module.micro;
+package io.neocore.common.module.micro;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.module.JavaMicromodule;
 import io.neocore.api.module.Micromodule;
 import io.neocore.api.module.Module;
-import io.neocore.module.ModuleManagerImpl;
+import io.neocore.common.module.ModuleManagerImpl;
 
 public class MicromoduleLoader {
 	

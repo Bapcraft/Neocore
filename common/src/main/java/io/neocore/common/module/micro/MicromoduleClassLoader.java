@@ -1,4 +1,4 @@
-package io.neocore.module.micro;
+package io.neocore.common.module.micro;
 
 import java.io.File;
 import java.net.MalformedURLException;

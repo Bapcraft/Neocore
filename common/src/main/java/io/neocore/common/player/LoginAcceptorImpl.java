@@ -1,11 +1,11 @@
-package io.neocore.player;
+package io.neocore.common.player;
 
 import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.host.login.InitialLoginEvent;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.PostLoginEvent;
 import io.neocore.api.player.NeoPlayer;
-import io.neocore.event.CommonEventManager;
+import io.neocore.common.event.CommonEventManager;
 
 public class LoginAcceptorImpl implements LoginAcceptor {
 	
