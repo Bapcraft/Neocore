@@ -2,3 +2,4 @@ name: Neocore
 version: 0.0-DEVELOPMENT
 main: io.neocore.bukkit.NeocoreBukkitPlugin
 author: treyzania
+load: STARTUP
