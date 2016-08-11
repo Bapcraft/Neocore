@@ -4,12 +4,12 @@ import io.neocore.api.RegisteredService;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.LoginService;
 
-public class LoginServiceRegistrationHandler implements ServiceRegistrationHandler {
+public class LoginServiceRegHandler implements ServiceRegistrationHandler {
 	
 	private LoginService prevService;
 	private LoginAcceptor acceptor;
 	
-	public LoginServiceRegistrationHandler(LoginAcceptor acceptor) {
+	public LoginServiceRegHandler(LoginAcceptor acceptor) {
 		this.acceptor = acceptor;
 	}
 	

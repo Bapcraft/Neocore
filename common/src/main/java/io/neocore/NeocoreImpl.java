@@ -1,6 +1,5 @@
 package io.neocore;
 
-import java.util.Map;
 import java.util.UUID;
 
 import io.neocore.api.Neocore;
@@ -11,6 +10,8 @@ import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseManager;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.host.HostPlugin;
+import io.neocore.api.host.login.LoginAcceptor;
+import io.neocore.api.host.login.LoginService;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
@@ -19,6 +20,8 @@ import io.neocore.database.DatabaseManagerImpl;
 import io.neocore.event.CommonEventManager;
 import io.neocore.module.ModuleManagerImpl;
 import io.neocore.player.CommonPlayerManager;
+import io.neocore.player.LoginAcceptorImpl;
+import io.neocore.service.LoginServiceRegHandler;
 import io.neocore.service.ServiceManagerImpl;
 import io.neocore.tasks.DatabaseInitializerTask;
 import io.neocore.tasks.NeocoreTaskDelegator;
@@ -34,7 +37,7 @@ public class NeocoreImpl implements Neocore {
 	private ServiceManagerImpl serviceManager;
 	private CommonEventManager eventManager;
 	
-	private Map<ServiceType, ServiceProvider> services;
+	private LoginAcceptor loginAcceptor;
 	
 	private TaskQueue tasks;
 	private NeocoreTaskDelegator taskDelegator;
@@ -51,6 +54,12 @@ public class NeocoreImpl implements Neocore {
 		this.serviceManager = new ServiceManagerImpl();
 		this.playerManager = new CommonPlayerManager(this.serviceManager, host.getPlayerInjector());
 		this.eventManager = new CommonEventManager();
+		
+		// Set up acceptors
+		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager);
+		
+		// Set up the service manager with the listeners we want
+		this.serviceManager.registerRegistrationHandler(LoginService.class, new LoginServiceRegHandler(this.loginAcceptor));
 		
 		// Set up the task queue.
 		this.tasks = new TaskQueue();
@@ -92,7 +101,7 @@ public class NeocoreImpl implements Neocore {
 	
 	@Override
 	public ServiceProvider getService(ServiceType serviceType) {
-		return this.services.get(serviceType);
+		return this.getServiceManager().getService(serviceType.getServiceClass());
 	}
 	
 	@Override
