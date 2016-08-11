@@ -8,7 +8,7 @@ public interface ServiceManager {
 	
 	public List<ServiceType> getUnprovidedServices();
 	
-	public void registerServiceProvider(Module mod, ServiceType type, ServiceProvider provider);
+	public void registerServiceProvider(Module mod, ServiceType type, ServiceProvider service);
 	
 	public List<RegisteredService> getServices();
 	public RegisteredService getService(ServiceType type);
