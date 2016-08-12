@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import io.neocore.api.database.DatabaseController;
 import io.neocore.api.database.DatabaseManager;
+import io.neocore.api.host.Context;
 import io.neocore.api.module.Module;
 
 /**
@@ -33,6 +34,13 @@ public class NeocoreAPI {
 		// Display host info
 		logger.info("Host Class: " + agent.getHost().getClass().getName());
 		logger.info("Host Version: " + agent.getHost().getVersion());
+		
+		// Display contexts listed
+		logger.info("Host Contexts:");
+		List<Context> contexts = agent.getHost().getContexts();
+		for (Context c : contexts) {
+			logger.info(" - " + c.getName());
+		}
 		
 		// Display module info
 		logger.info("Registered Modules:");
