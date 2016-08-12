@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.bukkit.plugin.Plugin;
@@ -11,6 +13,9 @@ import org.bukkit.plugin.Plugin;
 import com.typesafe.config.Config;
 
 import io.neocore.api.NeocoreConfig;
+import io.neocore.api.host.Context;
+import io.neocore.api.host.HostContext;
+import io.neocore.api.host.LesserContext;
 
 public class BukkitNeocoreConfig implements NeocoreConfig {
 	
@@ -21,12 +26,24 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 	private boolean enforceBans;
 	private boolean networked;
 	
+	private HostContext primaryContext;
+	private List<Context> contexts;
+	
 	public BukkitNeocoreConfig(Config conf) {
 		
 		this.serverName = conf.getString("server.name");
 		
 		this.enforceBans = conf.getBoolean("server.enforceBans");
 		this.networked = conf.getBoolean("server.isBungeecord");
+		
+		this.primaryContext = new BukkitHostContext(conf.getString("context.proxy"), conf.getString("context.primary"));
+		this.contexts = new ArrayList<>();
+		this.contexts.add(this.primaryContext);
+		
+		List<String> ctxStrs = conf.getStringList("context.secondaries");
+		for (String ctx : ctxStrs) {
+			this.contexts.add(new LesserContext(ctx));
+		}
 		
 	}
 	
@@ -73,6 +90,16 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 			
 		}
 		
+	}
+
+	@Override
+	public HostContext getPrimaryContext() {
+		return this.primaryContext;
+	}
+
+	@Override
+	public List<Context> getContexts() {
+		return this.contexts;
 	}
 	
 }

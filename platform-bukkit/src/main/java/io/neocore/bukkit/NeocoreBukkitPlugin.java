@@ -15,6 +15,8 @@ import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
+import io.neocore.api.host.Context;
+import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostPlayerInjector;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.HostService;
@@ -159,6 +161,16 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
 	@Override
 	public HostPlayerInjector getPlayerInjector() {
 		return new BukkitPlayerInjector();
+	}
+
+	@Override
+	public HostContext getPrimaryContext() {
+		return this.config.getPrimaryContext();
+	}
+
+	@Override
+	public List<Context> getContexts() {
+		return this.config.getContexts();
 	}
 	
 }
