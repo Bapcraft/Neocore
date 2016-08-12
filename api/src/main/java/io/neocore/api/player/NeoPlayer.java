@@ -5,6 +5,7 @@ import java.util.UUID;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseService;
 import io.neocore.api.database.player.DatabasePlayer;
+import io.neocore.api.database.session.Session;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.ServerPlayer;
@@ -16,6 +17,7 @@ import io.neocore.api.player.group.GroupMembership;
 public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	
 	private UUID uuid;
+	private Session session;
 	
 	// Host service identities
 	protected ServerPlayer playerPersona;
@@ -36,6 +38,13 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	@Override
 	public UUID getUniqueId() {
 		return this.uuid;
+	}
+	
+	/**
+	 * @return The session of this player, or <code>null</code> if the player is not connected.
+	 */
+	public Session getSession() {
+		return this.session;
 	}
 	
 	/**
