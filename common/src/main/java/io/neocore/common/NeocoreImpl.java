@@ -56,7 +56,7 @@ public class NeocoreImpl implements Neocore {
 		this.eventManager = new CommonEventManager();
 		
 		// Set up acceptors
-		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager);
+		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, host.getContexts());
 		
 		// Set up the service manager with the listeners we want
 		this.serviceManager.registerRegistrationHandler(LoginService.class, new LoginServiceRegHandler(this.loginAcceptor));

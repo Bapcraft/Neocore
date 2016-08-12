@@ -1,29 +1,58 @@
 package io.neocore.common.player;
 
+import java.util.List;
+import java.util.UUID;
+
+import io.neocore.api.database.ban.BanList;
+import io.neocore.api.database.ban.BanService;
+import io.neocore.api.host.Context;
 import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.host.login.InitialLoginEvent;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.PostLoginEvent;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.common.event.CommonEventManager;
+import io.neocore.common.service.ServiceManagerImpl;
 
 public class LoginAcceptorImpl implements LoginAcceptor {
 	
 	private CommonPlayerManager players;
 	private CommonEventManager events;
+	private ServiceManagerImpl services;
 	
-	public LoginAcceptorImpl(CommonPlayerManager players, CommonEventManager events) {
+	private List<Context> contexts;
+	
+	public LoginAcceptorImpl(CommonPlayerManager players, CommonEventManager events, ServiceManagerImpl services, List<Context> ctxs) {
 		
 		this.players = players;
 		this.events = events;
+		this.services = services;
+		
+		this.contexts = ctxs;
 		
 	}
 	
 	@Override
 	public void onInitialLoginEvent(InitialLoginEvent event) {
 		
+		UUID uuid = event.getPlayerUniqueId();
+		
 		// Load the player data.
-		NeoPlayer np = this.players.assemblePlayer(event.getPlayerUniqueId());
+		NeoPlayer np = this.players.assemblePlayer(uuid);
+		
+		// Verify bans
+		// TODO Flesh this out a lot to actually report the reasons and make the messages more configurable.
+		BanList playerBans = this.services.getService(BanService.class).getBans(uuid);
+		for (Context ctx : this.contexts) {
+			
+			if (playerBans.isBannedInContext(ctx)) {
+				
+				event.disallow("You're banned!");
+				return;
+				
+			}
+			
+		}
 		
 		// Broadcast the event.
 		this.events.broadcast(InitialLoginEvent.class, event);
@@ -32,12 +61,12 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		if (!event.isPermitted()) this.players.unloadPlayer(np);
 		
 	}
-
+	
 	@Override
 	public void onPostLoginEvent(PostLoginEvent event) {
 		this.events.broadcast(PostLoginEvent.class, event);
 	}
-
+	
 	@Override
 	public void onDisconnectEvent(DisconnectEvent event) {
 		
@@ -48,5 +77,5 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		this.players.unloadPlayer(event.getPlayer());
 		
 	}
-
+	
 }
