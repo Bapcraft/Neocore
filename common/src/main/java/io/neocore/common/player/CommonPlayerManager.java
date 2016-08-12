@@ -9,8 +9,14 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.RegisteredService;
 import io.neocore.api.ServiceManager;
+import io.neocore.api.ServiceProvider;
+import io.neocore.api.ServiceType;
+import io.neocore.api.database.DatabaseService;
+import io.neocore.api.database.player.PlayerService;
 import io.neocore.api.host.HostPlayerInjector;
+import io.neocore.api.host.HostService;
 import io.neocore.api.host.chat.ChatService;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.LoginService;
@@ -19,6 +25,7 @@ import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.host.permissions.PermissionsService;
 import io.neocore.api.host.proxy.NetworkParticipant;
 import io.neocore.api.host.proxy.NetworkPlayer;
+import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
 
@@ -52,17 +59,28 @@ public class CommonPlayerManager {
 		
 		NeoPlayer np = new NeoPlayer(uuid);
 		
-		ServerPlayer server = this.serviceManager.getService(LoginService.class).getPlayer(uuid);
-		NetworkPlayer network = this.serviceManager.getService(NetworkParticipant.class).getPlayer(uuid);
-		PermissedPlayer permissions = this.serviceManager.getService(PermissionsService.class).getPlayer(uuid);
-		ChattablePlayer chat = this.serviceManager.getService(ChatService.class).getPlayer(uuid);
+		// Tabluate the services we need player data from.
+		List<ServiceType> idents = new ArrayList<>();
+		idents.add(HostService.LOGIN);
+		idents.add(HostService.PERMISSIONS);
+		idents.add(HostService.CHAT);
+		idents.add(DatabaseService.PLAYER);
 		
-		// XXX Messy but quick way to inject these objects.  Should I be using Guice at this point?
+		// We take both of these because only one will ever be present but we should need a Network thing at some point regardless.
+		idents.add(HostService.PROXY); 
+		idents.add(HostService.ENDPOINT);
+		
+		// Get the actual objects we need to inject.
 		List<Object> injections = new ArrayList<>();
-		injections.add(server);
-		injections.add(network);
-		injections.add(permissions);
-		injections.add(chat);
+		for (ServiceType type : idents) {
+			
+			RegisteredService reg = this.serviceManager.getService(type);
+			ServiceProvider prov = reg.getServiceProvider();
+			
+			if (prov instanceof IdentityProvider) injections.add(((IdentityProvider<?>) prov).getPlayer(np));
+			
+		}
+		
 		for (Object o : injections) {
 			
 			if (o == null) continue;
