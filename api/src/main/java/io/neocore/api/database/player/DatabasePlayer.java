@@ -1,5 +1,8 @@
 package io.neocore.api.database.player;
 
+import io.neocore.api.NeocoreAPI;
+import io.neocore.api.database.ban.BanList;
+import io.neocore.api.database.ban.BanService;
 import io.neocore.api.player.PlayerIdentity;
 import io.neocore.api.player.extension.Extension;
 import io.neocore.api.player.group.Group;
@@ -42,5 +45,9 @@ public interface DatabasePlayer extends PlayerIdentity {
 	 * Saves the data to the backend, and invalidates any caches.  The reference to this player should be made invalid.
 	 */
 	public void unload();
+	
+	public default BanList getBans() {
+		return NeocoreAPI.getAgent().getServiceManager().getService(BanService.class).getBans(this.getUniqueId());
+	}
 	
 }

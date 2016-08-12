@@ -13,4 +13,10 @@ public interface PlayerService extends DatabaseServiceProvider, IdentityProvider
 	 */
 	public DatabasePlayer getPlayer(UUID id);
 	
+	/**
+	 * @param id The UUID of the player who's last known username we're looking up.
+	 * @return The player's last known username, of <code>null</code> if unknown.
+	 */
+	public String getLastUsername(UUID id);
+	
 }

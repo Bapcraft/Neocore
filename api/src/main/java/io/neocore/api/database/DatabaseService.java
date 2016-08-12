@@ -2,6 +2,7 @@ package io.neocore.api.database;
 
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
+import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.group.GroupService;
 import io.neocore.api.database.player.PlayerService;
 
@@ -12,7 +13,7 @@ import io.neocore.api.database.player.PlayerService;
  */
 public enum DatabaseService implements ServiceType {
 
-	BAN(null), // Exactly what you think it is.
+	BAN(BanService.class), // Exactly what you think it is.
 	LOGIN(null), // Player UUID, username, connecting address.
 	SESSION(null), // Everything the SIMPLE_SESSION has, but also includes transactions as they move between proxied servers.
 	PLAYER(PlayerService.class), // Core player data, extensions, etc.

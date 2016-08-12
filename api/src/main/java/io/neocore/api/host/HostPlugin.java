@@ -1,6 +1,7 @@
 package io.neocore.api.host;
 
 import java.io.File;
+import java.util.List;
 
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.module.Module;
@@ -23,5 +24,8 @@ public interface HostPlugin extends Module {
 	public default ModuleType getModuleType() {
 		return ModuleType.HOST;
 	}
+	
+	public HostContext getPrimaryContext();
+	public List<Context> getContexts();
 	
 }
