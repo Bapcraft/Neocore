@@ -55,8 +55,16 @@ public class BanEntry {
 		return this.getContext() == null;
 	}
 	
+	public BanIssuer getIssuer() {
+		return this.issuer;
+	}
+	
 	public String getReason() {
 		return this.reason;
+	}
+	
+	public void save() {
+		// TODO
 	}
 	
 }

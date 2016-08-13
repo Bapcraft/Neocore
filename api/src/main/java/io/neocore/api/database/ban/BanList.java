@@ -3,15 +3,27 @@ package io.neocore.api.database.ban;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import io.neocore.api.host.Context;
 
 public class BanList implements Iterable<BanEntry> {
 	
+	private UUID uuid;
 	private List<BanEntry> bans;
 	
-	public BanList() {
+	public BanList(UUID uuid) {
+		
+		this.uuid = uuid;
 		this.bans = new ArrayList<>();
+		
+	}
+	
+	public void addBan(BanEntry entry) {
+		
+		if (this.uuid.equals(entry.getUniqueId())) throw new IllegalArgumentException("Tried to add ban to incompatible ban list.");
+		this.bans.add(entry);
+		
 	}
 	
 	public boolean hasActiveGlobalBans() {
@@ -68,6 +80,10 @@ public class BanList implements Iterable<BanEntry> {
 		
 		return count;
 		
+	}
+	
+	public UUID getUniqueId() {
+		return this.uuid;
 	}
 	
 	@Override

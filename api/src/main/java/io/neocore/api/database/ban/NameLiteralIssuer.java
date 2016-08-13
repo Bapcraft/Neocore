@@ -12,5 +12,10 @@ public class NameLiteralIssuer extends BanIssuer {
 	public String getDisplayName() {
 		return this.name;
 	}
+
+	@Override
+	public String toString() {
+		return "explicit:" + this.name;
+	}
 	
 }

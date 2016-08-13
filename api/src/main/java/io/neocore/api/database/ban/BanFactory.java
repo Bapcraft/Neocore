@@ -2,7 +2,9 @@ package io.neocore.api.database.ban;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
+import io.neocore.api.host.Context;
 import io.neocore.api.player.PlayerIdentity;
 
 public class BanFactory {
@@ -29,6 +31,20 @@ public class BanFactory {
 		
 		// Adjust expiration
 		ban.expiration = Date.from(ban.issued.toInstant().plusMillis(duration));
+		
+		return ban;
+		
+	}
+	
+	public static BanEntry newExplicitBan(UUID uuid, Context ctx, BanIssuer issuer, String reason, Date start, Date end) {
+		
+		BanEntry ban = new BanEntry(uuid, ctx);
+		
+		ban.issuer = issuer;
+		ban.reason = reason;
+		
+		ban.issued = start;
+		ban.expiration = end;
 		
 		return ban;
 		
