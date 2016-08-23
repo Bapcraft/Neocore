@@ -1,11 +1,12 @@
 # Neocore API
 This is the public API for the Neocore Minecraft server management library
 created by Treyzania for Bapcraft.  The actual underlying implementation of
-this API and its support features (such as the actual Bukkit plugin and the
-MongoDB database controller) are currently private.  This may change in the
-future.  **The whole API is in a state of flux at the moment, so please don't
-expect any code you write against this project to be binary-compatible for a
-while.**
+this API and its support features (the MongoDB database controller we use on
+our server) are currently private.  There is an alternative JSON database
+controller for testing purposes.  This may change in the future.
+
+**The whole API is in a state of flux at the moment, so please don't expect
+any code you write against this project to be binary-compatible for a while.**
 
 # How to *use*
 There are two different ways one can access the API.  First, one can simply
