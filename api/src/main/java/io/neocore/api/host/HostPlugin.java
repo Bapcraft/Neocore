@@ -18,7 +18,6 @@ public interface HostPlugin extends Module {
 	
 	public NeocoreConfig getNeocoreConfig();
 	public File getDatabaseConfigFile();
-	public HostPlayerInjector getPlayerInjector();
 	
 	@Override
 	public default ModuleType getModuleType() {
