@@ -28,7 +28,7 @@ import io.neocore.common.tasks.NeocoreTaskDelegator;
 
 public class NeocoreImpl implements Neocore {
 	
-	private final HostPlugin host;
+	private final FullHostPlugin host;
 	
 	private CommonPlayerManager playerManager;
 	
@@ -42,7 +42,7 @@ public class NeocoreImpl implements Neocore {
 	private TaskQueue tasks;
 	private NeocoreTaskDelegator taskDelegator;
 	
-	public NeocoreImpl(HostPlugin host) {
+	public NeocoreImpl(FullHostPlugin host) {
 		
 		this.host = host;
 		

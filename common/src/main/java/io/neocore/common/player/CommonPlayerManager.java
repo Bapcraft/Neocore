@@ -14,11 +14,11 @@ import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseService;
-import io.neocore.api.host.HostPlayerInjector;
 import io.neocore.api.host.HostService;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
+import io.neocore.common.HostPlayerInjector;
 
 public class CommonPlayerManager {
 	
