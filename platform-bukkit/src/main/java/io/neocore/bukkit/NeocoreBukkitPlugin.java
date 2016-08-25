@@ -17,8 +17,6 @@ import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.HostContext;
-import io.neocore.api.host.HostPlayerInjector;
-import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.ServerInitializedEvent;
 import io.neocore.api.task.DumbTaskDelegator;
@@ -31,10 +29,12 @@ import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
 import io.neocore.bukkit.services.BukkitBroadcastService;
 import io.neocore.bukkit.services.BukkitChatService;
 import io.neocore.bukkit.services.BukkitLoginService;
+import io.neocore.common.FullHostPlugin;
+import io.neocore.common.HostPlayerInjector;
 import io.neocore.common.NeocoreImpl;
 import io.neocore.common.tasks.Worker;
 
-public class NeocoreBukkitPlugin extends JavaPlugin implements HostPlugin {
+public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	
 	public static NeocoreBukkitPlugin inst;
 	

@@ -13,10 +13,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissibleBase;
 
 import io.neocore.api.NeocoreAPI;
-import io.neocore.api.host.HostPlayerInjector;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.permission.DynamicPermissionCollection;
 import io.neocore.bukkit.permissions.DynamicPermissibleBase;
+import io.neocore.common.HostPlayerInjector;
 
 public class BukkitPlayerInjector implements HostPlayerInjector {
 	
