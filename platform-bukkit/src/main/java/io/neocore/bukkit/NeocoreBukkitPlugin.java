@@ -29,6 +29,8 @@ import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
 import io.neocore.bukkit.services.BukkitBroadcastService;
 import io.neocore.bukkit.services.BukkitChatService;
 import io.neocore.bukkit.services.BukkitLoginService;
+import io.neocore.bukkit.services.network.BukkitEndpointService;
+import io.neocore.bukkit.services.network.SelfEndpoint;
 import io.neocore.common.FullHostPlugin;
 import io.neocore.common.HostPlayerInjector;
 import io.neocore.common.NeocoreImpl;
@@ -43,6 +45,9 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	private BukkitBroadcastService broadcastService;
 	private BukkitChatService chatService;
 	private BukkitLoginService loginService;
+	
+	private SelfEndpoint selfEndpoint;
+	private BukkitEndpointService endpointService;
 	
 	private List<EventForwarder> forwarders = new ArrayList<>();
 	private ChatEventForwarder chatForwarder;
@@ -81,8 +86,14 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		// TODO Permissions
 		neo.registerServiceProvider(HostService.CHAT, this.chatService, this);
 		// TODO Gameplay (needs API interface definitions first)
+		
+		// Do the network stuff all at once if we need to do it at all.
 		if (this.config.isNetworked()) {
-			// TODO Endpoint, if in bungeecord mode.
+			
+			this.selfEndpoint = new SelfEndpoint(this.getNeocoreConfig());
+			this.endpointService = new BukkitEndpointService(this.selfEndpoint);
+			neo.registerServiceProvider(HostService.ENDPOINT, this.endpointService, this);
+			
 		}
 		
 		// Event forwarder registration
