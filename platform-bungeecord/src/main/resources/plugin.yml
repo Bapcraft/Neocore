@@ -1,0 +1,4 @@
+name: Neocore
+main: io.neocore.bungee.NeocoreBungeePlugin
+version: 0.0.1-DEVELOPMENT
+author: treyzania
