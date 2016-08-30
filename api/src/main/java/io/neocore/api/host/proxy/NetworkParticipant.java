@@ -12,15 +12,6 @@ public interface NetworkParticipant extends HostServiceProvider, IdentityProvide
 	public Set<NetworkEndpoint> getNetworkEndpoints();
 	
 	/**
-	 * @return A network endpoint representing <i>this</i> server.
-	 */
-	public NetworkEndpoint getServerEndpoint();
-	
-	public default String getServerNetworkName() {
-		return this.getServerEndpoint().getName();
-	}
-	
-	/**
 	 * Moves the player from their current downstream server to another server. 
 	 * 
 	 * @param player The player
