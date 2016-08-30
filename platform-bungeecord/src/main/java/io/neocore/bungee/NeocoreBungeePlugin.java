@@ -1,6 +1,7 @@
 package io.neocore.bungee;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import com.typesafe.config.ConfigFactory;
 
@@ -13,6 +14,7 @@ import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
+import io.neocore.bungee.broadcast.BungeeBroadcastService;
 import io.neocore.bungee.events.EventForwarder;
 import io.neocore.bungee.events.ProxyForwarder;
 import io.neocore.bungee.network.BungeeProxyService;
@@ -28,6 +30,7 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	private BungeeNeocoreConfig config;
 	
 	private BungeeProxyService proxyService;
+	private BungeeBroadcastService broadcastService;
 	
 	private List<EventForwarder> forwarders = new ArrayList<>();
 	private ProxyForwarder proxyForwarder;
@@ -49,11 +52,12 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		
 		// Services
 		this.proxyService = new BungeeProxyService(this.getProxy());
+		this.broadcastService = new BungeeBroadcastService();
 		
 		// Actually register the services.
 		// TODO Login
 		// TODO Session
-		// TODO Broadcast
+		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
 		neo.registerServiceProvider(HostService.PROXY, this.proxyService, this);
 		// TODO Permissions
 		
