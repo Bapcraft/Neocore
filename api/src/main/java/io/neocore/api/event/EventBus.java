@@ -7,6 +7,13 @@ import java.util.logging.Level;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.module.Module;
 
+/**
+ * Represents a conduit for passing events to listeners.  This works only on one type of event.
+ * 
+ * @author treyzania
+ *
+ * @param <T> The type of events that can pass through this bus.
+ */
 public class EventBus<T extends Event> {
 	
 	private TreeSet<RegisteredListener<T>> listeners;
@@ -15,6 +22,14 @@ public class EventBus<T extends Event> {
 		this.listeners = new TreeSet<>();
 	}
 	
+	/**
+	 * Registers a listener for an event.  The higher the priority the later it will be called.
+	 * 
+	 * @param mod The module that is doing the listening.
+	 * @param listener The listener itself.
+	 * @param priority The priority of the listener.
+	 * @return
+	 */
 	public RegisteredListener<T> register(Module mod, Consumer<T> listener, int priority) {
 		
 		if (mod == null) throw new NullPointerException("Module cannot be null!");
@@ -34,10 +49,21 @@ public class EventBus<T extends Event> {
 		
 	}
 	
+	/**
+	 * Removes the listener from the bus.
+	 * 
+	 * @param rl The listener registration to remove.
+	 * @return If it was present in the bus.
+	 */
 	public boolean unregister(RegisteredListener<T> rl) {
 		return this.listeners.remove(rl);
 	}
 	
+	/**
+	 * Broadcasts events to the listeners in order of increasing priority.
+	 * 
+	 * @param event The event to broadcast.
+	 */
 	@SuppressWarnings("unchecked") // I hope this doesn't come bite me in the ass but I can't think of a better way of doing it right now.
 	public void broadcast(Event event) {
 		
