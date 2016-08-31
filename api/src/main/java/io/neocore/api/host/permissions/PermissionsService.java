@@ -4,5 +4,5 @@ import io.neocore.api.host.HostServiceProvider;
 import io.neocore.api.player.IdentityProvider;
 
 public interface PermissionsService extends HostServiceProvider, IdentityProvider<PermissedPlayer> {
-	
+	// TODO Add a permission API.
 }

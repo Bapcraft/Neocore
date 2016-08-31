@@ -10,7 +10,16 @@ import io.neocore.api.event.PlayerEvent;
  */
 public interface DownstreamTransferEvent extends PlayerEvent {
 	
+	/**
+	 * Overrides the destination of the player.
+	 * 
+	 * @param dest The new destination.
+	 */
 	public void setDestination(NetworkEndpoint dest);
+	
+	/**
+	 * @return The current expected destination of the player.
+	 */
 	public NetworkEndpoint getDestination();
 	
 }
