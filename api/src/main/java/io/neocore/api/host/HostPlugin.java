@@ -14,9 +14,19 @@ import io.neocore.api.module.ModuleType;
  */
 public interface HostPlugin extends Module {
 	
+	/**
+	 * @return The directory to place micrmodules to be loaded.
+	 */
 	public File getMicromoduleDirectory();
 	
+	/**
+	 * @return The configuration loaded from file about how Neocore is configured currently.
+	 */
 	public NeocoreConfig getNeocoreConfig();
+	
+	/**
+	 * @return The database configuration file.
+	 */
 	public File getDatabaseConfigFile();
 	
 	@Override
@@ -24,7 +34,14 @@ public interface HostPlugin extends Module {
 		return ModuleType.HOST;
 	}
 	
+	/**
+	 * @return The primary context of this server.
+	 */
 	public HostContext getPrimaryContext();
+	
+	/**
+	 * @return The total list of contexts present on this server.
+	 */
 	public List<Context> getContexts();
 	
 }

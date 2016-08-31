@@ -7,6 +7,9 @@ package io.neocore.api.host;
  */
 public interface Context {
 	
+	/**
+	 * @return The human-readable name of the context.
+	 */
 	public String getName();
 	
 }
