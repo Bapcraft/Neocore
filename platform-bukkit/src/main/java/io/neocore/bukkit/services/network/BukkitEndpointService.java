@@ -4,9 +4,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import com.justisr.BungeeCom;
-
-import io.neocore.api.NeocoreConfig;
 import io.neocore.api.host.proxy.EndpointService;
 import io.neocore.api.host.proxy.NetworkEndpoint;
 import io.neocore.api.host.proxy.NetworkPlayer;

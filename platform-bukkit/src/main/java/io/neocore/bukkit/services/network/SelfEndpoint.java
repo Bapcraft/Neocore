@@ -3,10 +3,6 @@ package io.neocore.bukkit.services.network;
 import java.net.InetSocketAddress;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
-
-import com.justisr.BungeeCom;
-
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.host.proxy.NetworkEndpoint;
 import io.neocore.api.host.proxy.NetworkPlayer;
