@@ -1,10 +1,34 @@
 package io.neocore.api.eco;
 
+/**
+ * A bank account interface representing the amount of a specific currency in
+ * one location.  This location is usually a player's personal, universal
+ * account.
+ * 
+ * @author treyzania
+ */
 public interface Account {
 	
+	/**
+	 * Sets the balance of the account's currency to the specified amount.
+	 * 
+	 * @param val The value to set the account to.
+	 */
 	public void setBalance(float val);
+	
+	/**
+	 * Gets the balance of the account.
+	 * 
+	 * @return The balance of the account.
+	 */
 	public float getBalance();
 	
+	/**
+	 * Adds the specified amount of money to the account.
+	 * 
+	 * @param val The value to add.
+	 * @return The value after the transaction.
+	 */
 	public default float deposit(float val) {
 		
 		float newQty = this.getBalance() + val;
@@ -14,6 +38,12 @@ public interface Account {
 		
 	}
 	
+	/**
+	 * Removed the specified amount of money from the account.
+	 * 
+	 * @param val The value to remove.
+	 * @return The value after the transaction.
+	 */
 	public default float withdraw(float val) {
 		
 		float newQty = this.getBalance() - val;
