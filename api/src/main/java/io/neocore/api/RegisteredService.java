@@ -22,7 +22,7 @@ public interface RegisteredService {
 	/**
 	 * Verifies that the type is actually consistent with the service provider.
 	 * 
-	 * @return
+	 * @return If this is a valid registered service.
 	 */
 	public default boolean verify() {
 		return this.getType().getServiceClass().isAssignableFrom(this.getServiceProvider().getClass());

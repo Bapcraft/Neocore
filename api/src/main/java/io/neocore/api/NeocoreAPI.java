@@ -19,14 +19,23 @@ public class NeocoreAPI {
 	protected static Neocore agent;
 	protected static Logger logger;
 	
+	/**
+	 * @return The Neocore instance managing all of the suite
+	 */
 	public static Neocore getAgent() {
 		return agent;
 	}
 	
+	/**
+	 * @return The server-provided logger
+	 */
 	public static Logger getLogger() {
 		return logger;
 	}
 	
+	/**
+	 * Logs all the current state of Neocore services and state to the logger provided.
+	 */
 	public static void announceCompletion() {
 		
 		logger.info("=== Neocore Initialization Complete ===");

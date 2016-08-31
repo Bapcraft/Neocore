@@ -23,7 +23,7 @@ public interface NeocoreConfig {
 	public boolean isNetworked();
 	
 	/**
-	 * @return The "primary" context of the host
+	 * @return The "primary" context of the host.
 	 */
 	public HostContext getPrimaryContext();
 	
