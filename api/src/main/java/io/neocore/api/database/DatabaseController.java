@@ -1,5 +1,10 @@
 package io.neocore.api.database;
 
+/**
+ * Agent for providing database services by following the configuration.
+ * 
+ * @author treyzania
+ */
 public interface DatabaseController {
 	
 	/**
