@@ -8,6 +8,11 @@ import java.util.UUID;
 import io.neocore.api.host.HostContext;
 import io.neocore.api.host.proxy.NetworkEndpoint;
 
+/**
+ * A player's session withing a proxied network.
+ * 
+ * @author treyzania
+ */
 public class ProxiedSession extends Session {
 	
 	private List<EndpointMove> moves;
@@ -20,10 +25,16 @@ public class ProxiedSession extends Session {
 		
 	}
 	
+	/**
+	 * @return A list of moves between endpoints on the server.
+	 */
 	public List<EndpointMove> getMoves() {
 		return this.moves;
 	}
 	
+	/**
+	 * @return The first endpoint that the player connected to.
+	 */
 	public NetworkEndpoint getInitialEndpoint() {
 		return this.getMoves().get(0).destination;
 	}

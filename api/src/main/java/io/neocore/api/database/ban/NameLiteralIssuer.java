@@ -1,5 +1,10 @@
 package io.neocore.api.database.ban;
 
+/**
+ * A ban issuer that always displays the given string as the "name".
+ * 
+ * @author treyzania
+ */
 public class NameLiteralIssuer extends BanIssuer {
 	
 	private String name;

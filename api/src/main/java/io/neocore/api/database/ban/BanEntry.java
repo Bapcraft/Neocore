@@ -22,18 +22,30 @@ public class BanEntry {
 		
 	}
 	
+	/**
+	 * @return The UUID of the banned player.
+	 */
 	public UUID getUniqueId() {
 		return this.bannedUuid;
 	}
 	
+	/**
+	 * @return The date that the ban goes into effect, also usually the date that the ban was issued.
+	 */
 	public Date getDateIssued() {
 		return this.issued;
 	}
 	
+	/**
+	 * @return The date that the ban expires on, <code>null</code> if permanent.
+	 */
 	public Date getDateExpires() {
 		return this.expiration;
 	}
 	
+	/**
+	 * @return If the ban is currently active at the time of invocation.
+	 */
 	public boolean isActive() {
 		
 		Date now = Date.from(Instant.now());
@@ -43,22 +55,37 @@ public class BanEntry {
 		
 	}
 	
+	/**
+	 * @return If the ban is permanent.
+	 */
 	public boolean isPermanent() {
 		return this.expiration == null;
 	}
 	
+	/**
+	 * @return The context that the ban is applied for, <code>null</code> if global.
+	 */
 	public Context getContext() {
 		return this.context;
 	}
 	
+	/**
+	 * @return <code>true</code> if this is a global ban.
+	 */
 	public boolean isGlobal() {
 		return this.getContext() == null;
 	}
 	
+	/**
+	 * @return The "thing" that issued this ban.
+	 */
 	public BanIssuer getIssuer() {
 		return this.issuer;
 	}
 	
+	/**
+	 * @return The reason for the ban.
+	 */
 	public String getReason() {
 		return this.reason;
 	}

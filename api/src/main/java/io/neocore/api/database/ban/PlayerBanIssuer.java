@@ -6,6 +6,11 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.player.PlayerService;
 import io.neocore.api.player.PlayerIdentity;
 
+/**
+ * A ban issuer that returns the last-known username for the given UUID.
+ * 
+ * @author treyzania
+ */
 public class PlayerBanIssuer extends BanIssuer {
 	
 	private UUID uuid;

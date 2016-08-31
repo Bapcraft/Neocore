@@ -46,6 +46,9 @@ public interface DatabasePlayer extends PlayerIdentity {
 	 */
 	public void unload();
 	
+	/**
+	 * @return The list of bans for the player.
+	 */
 	public default BanList getBans() {
 		return NeocoreAPI.getAgent().getServiceManager().getService(BanService.class).getBans(this.getUniqueId());
 	}

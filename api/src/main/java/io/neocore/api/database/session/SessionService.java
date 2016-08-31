@@ -6,6 +6,12 @@ import io.neocore.api.player.IdentityProvider;
 
 public interface SessionService extends IdentityProvider<Session> {
 	
+	/**
+	 * Gets the session for the player specified.  They do not have to be online.
+	 * 
+	 * @param uuid The UUID of the player.
+	 * @return The session of the player.
+	 */
 	public Session getSession(UUID uuid);
 	
 	/**
