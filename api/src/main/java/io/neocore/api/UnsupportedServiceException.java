@@ -1,7 +1,10 @@
-package io.neocore.api.player;
+package io.neocore.api;
 
-import io.neocore.api.ServiceType;
-
+/**
+ * Thrown when a service is not supported by Neocore, but is attempted to be used.
+ * 
+ * @author treyzania
+ */
 public class UnsupportedServiceException extends RuntimeException {
 
 	/**

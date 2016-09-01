@@ -2,6 +2,14 @@ package io.neocore.api.player;
 
 import java.util.UUID;
 
+/**
+ * Provides an object representing some kind of property about the player, to
+ * be stored in an object of type T.
+ * 
+ * @author treyzania
+ *
+ * @param <T> The type of object storing the player's information.
+ */
 public interface IdentityProvider<T extends PlayerIdentity> {
 	
 	/**

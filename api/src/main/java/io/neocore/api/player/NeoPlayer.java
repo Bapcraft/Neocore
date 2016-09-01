@@ -3,6 +3,7 @@ package io.neocore.api.player;
 import java.util.UUID;
 
 import io.neocore.api.ServiceType;
+import io.neocore.api.UnsupportedServiceException;
 import io.neocore.api.database.DatabaseService;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.Session;
@@ -14,6 +15,13 @@ import io.neocore.api.host.proxy.NetworkPlayer;
 import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
+/**
+ * Object intended to encompass all of the data that a player can have tied
+ * into the different capabilities of the server and any data provided by the
+ * database.
+ * 
+ * @author treyzania
+ */
 public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	
 	private UUID uuid;
@@ -110,10 +118,16 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 		
 	}
 	
+	/**
+	 * Verifies that the player identity is not <code>null</code>, and if it is then  throws the relevant exception.
+	 * 
+	 * @param pi The object to verify.
+	 * @param serv The service type to use in the exception.
+	 */
 	private static void verify(PlayerIdentity pi, ServiceType serv) {
 		if (pi == null) throw new UnsupportedServiceException(serv);
 	}
-
+	
 	@Override
 	public int compareTo(NeoPlayer o) {
 		return this.uuid.compareTo(o.uuid);
