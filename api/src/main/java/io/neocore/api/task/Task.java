@@ -1,5 +1,10 @@
 package io.neocore.api.task;
 
+/**
+ * Represents a low-priority job to be run asynchronously.
+ * 
+ * @author treyzania
+ */
 public abstract class Task {
 	
 	private final TaskDelegator delegator;
@@ -8,14 +13,23 @@ public abstract class Task {
 		this.delegator = tg;
 	}
 	
+	/**
+	 * @return This task's delegator.
+	 */
 	public TaskDelegator getDelegator() {
 		return this.delegator;
 	}
 	
+	/**
+	 * @return The name of this task, defaults to the class's simple name/
+	 */
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}
 	
+	/**
+	 * Actually runs the task.
+	 */
 	public abstract void run();
 	
 }

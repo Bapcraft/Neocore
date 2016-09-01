@@ -1,7 +1,16 @@
 package io.neocore.api.task;
 
+/**
+ * Represents something that issues tasks and can attempt some kind of special
+ * recovery handling when something goes wrong executing them.
+ * 
+ * @author treyzania
+ */
 public interface TaskDelegator {
 	
+	/**
+	 * @return The name of this delegator.
+	 */
 	public String getName();
 	
 	/**

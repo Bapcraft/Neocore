@@ -1,5 +1,10 @@
 package io.neocore.api.task;
 
+/**
+ * A task delegator that only has a name, without any handing for errors.
+ * 
+ * @author treyzania
+ */
 public class DumbTaskDelegator implements TaskDelegator {
 	
 	private String name;
