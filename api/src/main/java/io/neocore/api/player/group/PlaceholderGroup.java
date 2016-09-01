@@ -1,6 +1,6 @@
 package io.neocore.api.player.group;
 
-import io.neocore.api.player.permission.Permission;
+import io.neocore.api.player.permission.DynPerm;
 
 /**
  * A placeholder group used when an actual Group reference cannot be provided.
@@ -31,7 +31,7 @@ public class PlaceholderGroup implements Group {
 	}
 
 	@Override
-	public Permission getStatedPermission(String permission) {
+	public DynPerm getStatedPermission(String permission) {
 		return null;
 	}
 

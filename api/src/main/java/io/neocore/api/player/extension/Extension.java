@@ -8,6 +8,11 @@ package io.neocore.api.player.extension;
  */
 public abstract class Extension {
 	
+	/**
+	 * Gets the name of the extension based on the <code>@ExtensionType</code> annotation.
+	 * 
+	 * @return The extension name.
+	 */
 	public String getName() {
 		
 		// Very simple check to pull it from this class's own annotation.

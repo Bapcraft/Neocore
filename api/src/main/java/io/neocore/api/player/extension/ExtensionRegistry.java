@@ -6,6 +6,8 @@ import java.util.Set;
 /**
  * Where all extensions must be registered before any player data is loaded.
  * 
+ * FIXME Too much of this is all static.
+ * 
  * @author treyzania
  */
 public class ExtensionRegistry {

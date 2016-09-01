@@ -4,21 +4,42 @@ import net.md_5.bungee.api.ChatColor;
 
 public abstract class AbstractFlair {
 	
+	/**
+	 * Gets the name of the flair.
+	 * 
+	 * @return The name.
+	 */
 	public abstract String getName();
 	
+	/**
+	 * @return The primary color of the flair.
+	 */
 	public abstract ChatColor getPrimaryColor();
+	
+	/**
+	 * @return The secondary color of the flair.
+	 */
 	public ChatColor getSecondaryColor() {
 		return this.getPrimaryColor();
 	}
 	
+	/**
+	 * @return The color used to display the user's name.
+	 */
 	public ChatColor getUserColor() {
 		return ChatColor.RESET;
 	}
 	
+	/**
+	 * @return The text put before the player's name, always.
+	 */
 	public String getPrefix() {
 		return "";
 	}
 	
+	/**
+	 * @return The text put after the player's name, always.
+	 */
 	public String getSuffix() {
 		return "";
 	}

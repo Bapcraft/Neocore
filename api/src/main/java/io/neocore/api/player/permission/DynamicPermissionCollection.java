@@ -4,15 +4,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * A collection of permissions whose state is defined by that of other permissions.
+ * 
+ * @author treyzania
+ */
 public class DynamicPermissionCollection {
 	
-	private List<Permission> permissions;
+	private List<DynPerm> permissions;
 	
 	public DynamicPermissionCollection() {
 		this.permissions = new ArrayList<>();
 	}
 	
-	public void addDynamicPermission(Permission perm) {
+	/**
+	 * Adds a permission into the collection.
+	 * 
+	 * @param perm The permission.
+	 */
+	public void addDynamicPermission(DynPerm perm) {
 		
 		if (!this.isSet(perm.getName())) {
 			this.permissions.add(perm);
@@ -22,11 +32,17 @@ public class DynamicPermissionCollection {
 		
 	}
 	
+	/**
+	 * Removed a permission from the collection.
+	 * 
+	 * @param name The permission node.
+	 * @return How many it ended up removing.
+	 */
 	public int removeDynamicPermissionForName(String name) {
 		
 		int count = 0;
 		
-		Iterator<Permission> perms = this.permissions.iterator();
+		Iterator<DynPerm> perms = this.permissions.iterator();
 		while (perms.hasNext()) {
 			
 			if (perms.next().getName().equalsIgnoreCase(name)) {
@@ -42,9 +58,15 @@ public class DynamicPermissionCollection {
 		
 	}
 	
+	/**
+	 * Checks to see if the permission has a definition in the collection.
+	 * 
+	 * @param name The name of the permission.
+	 * @return If it is set or not.
+	 */
 	public boolean isSet(String name) {
 		
-		for (Permission perm : this.permissions) {
+		for (DynPerm perm : this.permissions) {
 			if (perm.getName().equalsIgnoreCase(name)) return true;
 		}
 		
@@ -52,9 +74,15 @@ public class DynamicPermissionCollection {
 		
 	}
 	
-	public Permission getPerm(String name) {
+	/**
+	 * Gets the permisison by name, exactly.
+	 * 
+	 * @param name The permission node.
+	 * @return The permission itself.
+	 */
+	public DynPerm getPerm(String name) {
 		
-		for (Permission perm : this.permissions) {
+		for (DynPerm perm : this.permissions) {
 			if (perm.getName().equalsIgnoreCase(name)) return perm;
 		}
 		

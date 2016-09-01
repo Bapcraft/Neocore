@@ -2,6 +2,11 @@ package io.neocore.api.player.group;
 
 import net.md_5.bungee.api.ChatColor;
 
+/**
+ * A basic flair with a name, one color, prefix, and suffix.
+ * 
+ * @author treyzania
+ */
 public class SimpleFlair extends AbstractFlair {
 	
 	private String name;

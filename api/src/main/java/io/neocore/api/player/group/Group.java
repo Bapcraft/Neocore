@@ -1,6 +1,6 @@
 package io.neocore.api.player.group;
 
-import io.neocore.api.player.permission.Permission;
+import io.neocore.api.player.permission.DynPerm;
 
 public interface Group {
 	
@@ -25,6 +25,6 @@ public interface Group {
 	 * @param permission The permission to be checked.
 	 * @return The permission defined in the database, <code>null</code> if undefined.
 	 */
-	public Permission getStatedPermission(String permission);
+	public DynPerm getStatedPermission(String permission);
 	
 }

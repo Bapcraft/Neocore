@@ -2,7 +2,13 @@ package io.neocore.api.player.permission;
 
 import io.neocore.api.player.NeoPlayer;
 
-public class ExplicitPermission extends Permission {
+/**
+ * A dynamic permission with explicit values, behaving much like the classic
+ * static permissions.
+ * 
+ * @author treyzania
+ */
+public class ExplicitPermission extends DynPerm {
 
 	private final boolean value;
 	
