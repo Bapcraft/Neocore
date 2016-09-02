@@ -72,11 +72,11 @@ public class DynamicPermissibleBase extends PermissibleBase {
 		
 	}
 	
-	public io.neocore.api.player.permission.Permission getDynamicPerm(String name) {
+	public io.neocore.api.player.permission.DynPerm getDynamicPerm(String name) {
 		
 		for (DynamicPermissionCollection dyn : this.dynamicAttachments) {
 			
-			io.neocore.api.player.permission.Permission perm = dyn.getPerm(name);
+			io.neocore.api.player.permission.DynPerm perm = dyn.getPerm(name);
 			if (perm != null) return perm;
 			
 		}
@@ -90,7 +90,7 @@ public class DynamicPermissibleBase extends PermissibleBase {
 		
 		if (this.isSetDynamically(inName)) {
 			
-			io.neocore.api.player.permission.Permission perm = this.getDynamicPerm(inName);
+			io.neocore.api.player.permission.DynPerm perm = this.getDynamicPerm(inName);
 			return perm.getState(this.player);
 			
 		}		
