@@ -3,48 +3,80 @@ package io.neocore.api.gameplay;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import io.neocore.api.player.NeoPlayer;
 
 public class ScoreboardDisplay {
 	
-	private List<ScoreboardEntry> scoreboardEntries = new ArrayList<ScoreboardEntry>();
+	private String title;
+	private List<ScoreboardEntry> entries;
 	
-	private String title = "";
-	
-	private HashMap<UUID, List<String>> cache = new HashMap<>();
+	private Map<UUID, List<String>> cache; // Index by UUID to make memory leaks minimal.
 	
 	public ScoreboardDisplay(String title) {
+		
 		this.title = title;
-	}
-	
-	public String getTitle(){
-		return title;
-	}
-	
-	public void addScoreboardEntry(ScoreboardEntry sEntry){
-		scoreboardEntries.add(sEntry);
-	}
-	
-	public void removeScoreboardEntry(ScoreboardEntry sEntry){
-		if(scoreboardEntries.contains(sEntry)){
-			scoreboardEntries.remove(sEntry);
-		}
-	}
-	
-	public List<ScoreboardEntry> getScoreboardEntries(){
-		return scoreboardEntries;
-	}
-	
-	public boolean update(){
-		if(scoreboardEntries.size() == 0){ return false; }
 		
-		for(ScoreboardEntry sEntry : scoreboardEntries){
-			if(sEntry.needsUpdate()){
-				sEntry.update();
+		this.entries = new ArrayList<>();
+		this.cache = new HashMap<>();
+		
+	}
+	
+	public String getTitle() {
+		return this.title;
+	}
+	
+	public void addEntry(ScoreboardEntry entry) {
+		this.entries.add(entry);
+	}
+	
+	public void insertEntry(int index, ScoreboardEntry entry) {
+		this.entries.add(index, entry);
+	}
+	
+	public void removeEntry(ScoreboardEntry entry) {
+		this.entries.remove(entry);
+	}
+	
+	public List<ScoreboardEntry> getScoreboardEntries() {
+		return this.entries;
+	}
+	
+	public List<String> getLines(NeoPlayer player) {
+		
+		UUID id = player.getUniqueId();
+		List<String> lines = null;
+		
+		// Check all of the entries to see if we need to update anything.
+		for (ScoreboardEntry entry : this.entries) {
+			
+			if (entry.needsUpdate()) {
+				
+				// Instantiate and fill it.
+				lines = new ArrayList<>();
+				for (ScoreboardEntry e2 : this.entries) {
+					lines.addAll(e2.getValue(player));
+				}
+				
+				// Update the cache and break out of the loop.
+				this.cache.put(id, lines);
+				break;
+				
 			}
+			
 		}
 		
-		return true;
+		// At this point we know that we don't have to update anything, so pull from the cache.
+		if (lines == null) lines = this.cache.get(id);
+		
+		return lines;
+		
+	}
+	
+	public void purge(UUID uuid) {
+		this.cache.remove(uuid);
 	}
 	
 }

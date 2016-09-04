@@ -1,12 +1,12 @@
 package io.neocore.api.gameplay;
 
+import java.util.List;
+
 import io.neocore.api.player.NeoPlayer;
 
 public interface ScoreboardEntry {
-
-	public void getValue(NeoPlayer player);
 	
 	public boolean needsUpdate();
+	public List<String> getValue(NeoPlayer player);
 	
-	public void update();
 }
