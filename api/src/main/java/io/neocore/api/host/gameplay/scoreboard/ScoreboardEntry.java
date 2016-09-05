@@ -1,4 +1,4 @@
-package io.neocore.api.gameplay;
+package io.neocore.api.host.gameplay.scoreboard;
 
 import java.util.List;
 
