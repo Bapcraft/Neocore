@@ -61,12 +61,13 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		
 		inst = this;
 		
-		// Initialize and install Neocore.
-		NeocoreInstaller.applyLogger(Bukkit.getLogger());
-		Neocore neo = new NeocoreImpl(this);
-		
+		// Initialize config
 		BukkitNeocoreConfig.verifyConfig(this.getConfigFile(), this);
 		this.config = new BukkitNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
+		
+		// Initialize and install Neocore
+		NeocoreInstaller.applyLogger(Bukkit.getLogger());
+		Neocore neo = new NeocoreImpl(this);
 		
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
