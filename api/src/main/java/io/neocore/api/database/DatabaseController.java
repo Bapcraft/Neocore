@@ -23,11 +23,13 @@ public interface DatabaseController {
 	public void shutdown();
 	
 	/**
-	 * Gets a <code>DatabaseServiceProvider</code> for the specified service type.
+	 * Returns an array of service providers who map index-to-index with the
+	 * service definition supplied in the given array.  Should only be called
+	 * once.
 	 * 
-	 * @param type The type of database service to find the provider for.
-	 * @return The database's service provider, or null if unsupported.
+	 * @param services An array of services to provide for.
+	 * @return The array of matching service providers to the first array.
 	 */
-	public DatabaseServiceProvider getService(DatabaseService type);
+	public DatabaseServiceProvider[] provide(DatabaseService[] services);
 	
 }
