@@ -7,7 +7,7 @@ package io.neocore.api.database.ban;
  */
 public class NameLiteralIssuer extends BanIssuer {
 	
-	private String name;
+	protected String name;
 	
 	public NameLiteralIssuer(String name) {
 		this.name = name;

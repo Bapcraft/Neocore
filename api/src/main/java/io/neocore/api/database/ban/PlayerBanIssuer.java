@@ -13,7 +13,7 @@ import io.neocore.api.player.PlayerIdentity;
  */
 public class PlayerBanIssuer extends BanIssuer {
 	
-	private UUID uuid;
+	protected UUID uuid;
 	
 	public PlayerBanIssuer(UUID uuid) {
 		this.uuid = uuid;
