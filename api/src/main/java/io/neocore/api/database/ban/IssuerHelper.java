@@ -9,7 +9,7 @@ import java.util.UUID;
  */
 public class IssuerHelper {
 	
-	public String serialize(BanIssuer issuer) {
+	public static String serialize(BanIssuer issuer) {
 		
 		Class<? extends BanIssuer> clazz = issuer.getClass();
 		
@@ -23,7 +23,7 @@ public class IssuerHelper {
 		
 	}
 	
-	public BanIssuer deserialize(String str) {
+	public static BanIssuer deserialize(String str) {
 		
 		String[] parts = str.split(":", 2);
 		String type = parts[0];
