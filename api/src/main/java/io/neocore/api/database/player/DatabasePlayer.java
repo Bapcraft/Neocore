@@ -3,6 +3,7 @@ package io.neocore.api.database.player;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.ban.BanList;
 import io.neocore.api.database.ban.BanService;
+import io.neocore.api.eco.Account;
 import io.neocore.api.player.PlayerIdentity;
 import io.neocore.api.player.extension.Extension;
 import io.neocore.api.player.group.Group;
@@ -52,5 +53,13 @@ public interface DatabasePlayer extends PlayerIdentity {
 	public default BanList getBans() {
 		return NeocoreAPI.getAgent().getServiceManager().getService(BanService.class).getBans(this.getUniqueId());
 	}
+	
+	/**
+	 * Gets the player's global account for the given currency.
+	 * 
+	 * @param currency The name of the currency.
+	 * @return The account object representing their store of the currency.
+	 */
+	public Account getAccount(String currency);
 	
 }
