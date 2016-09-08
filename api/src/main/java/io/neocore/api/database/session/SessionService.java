@@ -2,9 +2,10 @@ package io.neocore.api.database.session;
 
 import java.util.UUID;
 
+import io.neocore.api.database.DatabaseServiceProvider;
 import io.neocore.api.player.IdentityProvider;
 
-public interface SessionService extends IdentityProvider<Session> {
+public interface SessionService extends DatabaseServiceProvider, IdentityProvider<Session> {
 	
 	/**
 	 * Gets the session for the player specified.  They do not have to be online.
