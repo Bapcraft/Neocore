@@ -2,10 +2,13 @@ package io.neocore.common.database;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+
 import com.typesafe.config.Config;
 
 import io.neocore.api.NeocoreAPI;
@@ -74,6 +77,8 @@ public class DatabaseManagerImpl implements DatabaseManager {
 		if (this.configured) throw new IllegalStateException("Database manager already configured.");
 		this.configured = true;
 		
+		Logger log = NeocoreAPI.getLogger();
+		
 		// Initialize the mappings.
 		Map<Class<? extends DatabaseController>, List<DatabaseService>> controllers = new HashMap<>();
 		Map<Class<? extends DatabaseController>, Config> ctrlConfigs = new HashMap<>();
@@ -97,15 +102,41 @@ public class DatabaseManagerImpl implements DatabaseManager {
 			
 			if (services.size() > 0) {
 				
-				// Create and initialize the database.
-				DatabaseController dbc = this.makeNewController(clazz, ctrlConfigs.get(clazz));
-				dbc.initialize();
-				DatabaseServiceProvider[] provs = dbc.provide(services.toArray(new DatabaseService[services.size()]));
+				log.info("Initializing database controller: " + clazz.getSimpleName() + "...");
+				
+				// Get ready to initialize these.
+				DatabaseController dbc = null;
+				DatabaseServiceProvider[] provs = null;
+				
+				try {
+					
+					// Create and initialize the database.
+					dbc = this.makeNewController(clazz, ctrlConfigs.get(clazz));
+					dbc.initialize();
+					
+					DatabaseService[] servs = services.toArray(new DatabaseService[services.size()]);
+					log.info("Using " + clazz.getSimpleName() + " to provide " + Arrays.toString(servs) + "...");
+					provs = dbc.provide(servs);
+					
+				} catch (Exception e) {
+					throw new RuntimeException("Error during provider acquisition!", e);
+				}
 				
 				for (int i = 0; i < provs.length; i++) {
 					
-					this.databases.put(services.get(i), dbc);
-					this.serviceManager.registerServiceProvider(NeocoreAPI.getAgent().getHost(), services.get(i), provs[i]);
+					DatabaseService serv = services.get(i);
+					DatabaseServiceProvider prov = provs[i];
+					
+					log.info("Service " + serv.getName() + " is provided by " + (prov != null ? prov.getClass().getSimpleName() : "null"));
+					
+					if (prov != null) {
+
+						this.databases.put(serv, dbc);
+						
+						// FIXME Do something to use the right module.
+						this.serviceManager.registerServiceProvider(NeocoreAPI.getAgent().getHost(), serv, prov);
+						
+					}
 					
 				}
 				
