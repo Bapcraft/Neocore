@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import io.neocore.api.NeocoreConfig;
+import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleType;
 
@@ -43,5 +44,12 @@ public interface HostPlugin extends Module {
 	 * @return The total list of contexts present on this server.
 	 */
 	public List<Context> getContexts();
+	
+	/**
+	 * Registers the specified command to be used on the server.
+	 * 
+	 * @param cmd The command.
+	 */
+	public void registerCommand(AbstractCommand cmd);
 	
 }
