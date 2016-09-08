@@ -4,7 +4,6 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.UUID;
 
-import io.neocore.api.host.HostContext;
 import io.neocore.api.player.PlayerIdentity;
 
 /**
@@ -14,7 +13,7 @@ import io.neocore.api.player.PlayerIdentity;
  * 
  * @author treyzania
  */
-public abstract class Session implements PlayerIdentity {
+public class Session implements PlayerIdentity {
 	
 	/** The UUID of the player whose session this is. */
 	public final UUID uuid;
@@ -25,19 +24,19 @@ public abstract class Session implements PlayerIdentity {
 	/** The address that the player conneced from */
 	public final InetAddress address;
 	
-	/** The context that the player was connecting to when they connected.  Not that of their first server */
-	public final HostContext inboundContext;
+	/** The server's name that the player was "connecting" to when they connected.  Not that of their first game server */
+	public final String inboundServer;
 	
 	protected SessionState state;
 	protected Date start, end;
 	
-	public Session(UUID uuid, String name, InetAddress src, HostContext context) {
+	public Session(UUID uuid, String name, InetAddress src, String inbound) {
 		
 		this.uuid = uuid;
 		this.username = name;
 		this.address = src;
 		
-		this.inboundContext = context;
+		this.inboundServer = inbound;
 		
 	}
 	
@@ -72,6 +71,13 @@ public abstract class Session implements PlayerIdentity {
 	 */
 	public SessionState getState() {
 		return this.state;
+	}
+	
+	/**
+	 * @return <code>true</code> if this session is throughout a network and has transfers, <code>false<code> otherwise.
+	 */
+	public boolean isNetwork() {
+		return false;
 	}
 	
 }

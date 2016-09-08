@@ -26,9 +26,28 @@ public interface SessionService extends IdentityProvider<Session> {
 	 */
 	public void unload(Session session);
 	
+	/**
+	 * Flushes session data to the database.  If it is not present in the DB
+	 * yet then a record is created.
+	 * 
+	 * @param session The session to store.
+	 */
+	public void flush(Session session);
+	
 	@Override
 	public default Session getPlayer(UUID uuid) {
 		return this.getSession(uuid);
 	}
+	
+	/**
+	 * Appends the specified movement of a player to the current session
+	 * record for the player.  Does nothing if the player is not online.
+	 * Should also update and cached ProxiedSession objects.
+	 * 
+	 * @param uuid The UUID of the player.
+	 * @param move The movement record to append.
+	 * @return <code>true</code> if the player is online, <code>false</code> otherwise.
+	 */
+	public boolean appendTransition(UUID uuid, EndpointMove move);
 	
 }

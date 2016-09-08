@@ -9,7 +9,7 @@ import io.neocore.api.player.IdentityProvider;
  * 
  * @author treyzania
  */
-interface NetworkParticipatoryProvider extends HostServiceProvider, IdentityProvider<NetworkPlayer> {
+public interface NetMemberProvider extends HostServiceProvider, IdentityProvider<NetworkPlayer> {
 	
 	/**
 	 * @return An array of all downstream servers this host knows about.
@@ -23,5 +23,15 @@ interface NetworkParticipatoryProvider extends HostServiceProvider, IdentityProv
 	 * @param server The server.
 	 */
 	public void move(NetworkPlayer player, NetworkEndpoint server);
+	
+	public default NetworkEndpoint findEndpoint(String name) {
+		
+		for (NetworkEndpoint end : this.getNetworkEndpoints()) {
+			if (end.getName().equals(name)) return end;
+		}
+		
+		return null;
+		
+	}
 	
 }

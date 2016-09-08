@@ -1,6 +1,6 @@
 package io.neocore.api.host.proxy;
 
-public interface ProxyProvider extends NetworkParticipatoryProvider {
+public interface ProxyProvider extends NetMemberProvider {
 	
 	/**
 	 * Sets the acceptor for proxy events.

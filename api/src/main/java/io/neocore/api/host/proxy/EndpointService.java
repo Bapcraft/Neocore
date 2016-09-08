@@ -1,6 +1,6 @@
 package io.neocore.api.host.proxy;
 
-public interface EndpointService extends NetworkParticipatoryProvider {
+public interface EndpointService extends NetMemberProvider {
 	
 	/**
 	 * @return A network endpoint representing <i>this</i> server.
