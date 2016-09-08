@@ -1,33 +1,41 @@
 package io.neocore.common.database;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.typesafe.config.Config;
 
+import io.neocore.api.NeocoreAPI;
+import io.neocore.api.ServiceManager;
 import io.neocore.api.database.DatabaseConfig;
 import io.neocore.api.database.DatabaseController;
 import io.neocore.api.database.DatabaseManager;
 import io.neocore.api.database.DatabaseService;
+import io.neocore.api.database.DatabaseServiceProvider;
 
 public class DatabaseManagerImpl implements DatabaseManager {
+	
+	private ServiceManager serviceManager;
 	
 	private Map<String, Class<? extends DatabaseController>> dbTypes;
 	private Map<DatabaseService, DatabaseController> databases;
 	
 	private boolean configured = false;
 	
-	public DatabaseManagerImpl() {
+	public DatabaseManagerImpl(ServiceManager man) {
+		
+		this.serviceManager = man;
 		
 		this.dbTypes = new HashMap<>();
 		this.databases = new HashMap<>();
 		
 	}
 	
-	private DatabaseController makeNewController(String name, Config cfg) {
+	private DatabaseController makeNewController(Class<? extends DatabaseController> clazz, Config cfg) {
 		
-		Class<? extends DatabaseController> clazz = this.dbTypes.get(name);
 		NullPointerException noConstNpe = new NullPointerException(
 			"No constructor for class " +
 			clazz.getName() +
@@ -64,24 +72,46 @@ public class DatabaseManagerImpl implements DatabaseManager {
 	public void configure(DatabaseConfig config) {
 		
 		if (this.configured) throw new IllegalStateException("Database manager already configured.");
+		this.configured = true;
 		
+		// Initialize the mappings.
+		Map<Class<? extends DatabaseController>, List<DatabaseService>> controllers = new HashMap<>();
+		Map<Class<? extends DatabaseController>, Config> ctrlConfigs = new HashMap<>();
+		for (Class<? extends DatabaseController> ctrl : this.dbTypes.values()) {
+			controllers.put(ctrl, new ArrayList<>());
+		}
+		
+		// Tabulate the expected services.
 		for (DatabaseService serv : DatabaseService.values()) {
 			
-			// Pull out definitions.
-			String name = config.getControllerName(serv);
-			Config conf = config.getControllerConfig(serv);
-			
-			// Actually instantiate
-			this.databases.put(serv, this.makeNewController(name, conf));
+			Class<? extends DatabaseController> ctrl = this.dbTypes.get(config.getControllerName(serv));
+			controllers.get(ctrl).add(serv);
+			ctrlConfigs.put(ctrl, config.getControllerConfig(serv)); // Not the cleanest.
 			
 		}
 		
-		// Initialize everything in one go so we don't have things half initialized if instantiation of something goes awry.
-		for (DatabaseController ctrl : this.databases.values()) {
-			ctrl.initialize();
+		for (Map.Entry<Class<? extends DatabaseController>, List<DatabaseService>> entry : controllers.entrySet()) {
+			
+			Class<? extends DatabaseController> clazz = entry.getKey();
+			List<DatabaseService> services = entry.getValue();
+			
+			if (services.size() > 0) {
+				
+				// Create and initialize the database.
+				DatabaseController dbc = this.makeNewController(clazz, ctrlConfigs.get(clazz));
+				dbc.initialize();
+				DatabaseServiceProvider[] provs = dbc.provide(services.toArray(new DatabaseService[services.size()]));
+				
+				for (int i = 0; i < provs.length; i++) {
+					
+					this.databases.put(services.get(i), dbc);
+					this.serviceManager.registerServiceProvider(NeocoreAPI.getAgent().getHost(), services.get(i), provs[i]);
+					
+				}
+				
+			}
+			
 		}
-		
-		this.configured = true;
 		
 	}
 	

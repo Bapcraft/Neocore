@@ -105,5 +105,10 @@ public class DatabaseConfImpl implements DatabaseConfig {
 	public int getNumDiscreteConfigs() {
 		return this.databaseConfigs.values().size();
 	}
+
+	@Override
+	public Config getConfigForController(String controller) {
+		return this.databaseConfigs.get(controller);
+	}
 	
 }
