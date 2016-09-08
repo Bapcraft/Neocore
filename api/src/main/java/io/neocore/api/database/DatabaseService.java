@@ -5,6 +5,7 @@ import io.neocore.api.ServiceType;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.group.GroupService;
 import io.neocore.api.database.player.PlayerService;
+import io.neocore.api.database.session.SessionService;
 
 /**
  * Enumerates which kinds of services that database controllers can provide.
@@ -14,8 +15,7 @@ import io.neocore.api.database.player.PlayerService;
 public enum DatabaseService implements ServiceType {
 
 	BAN(BanService.class), // Exactly what you think it is.
-	LOGIN(null), // Player UUID, username, connecting address.
-	SESSION(null), // Everything that LOGIN has, but also includes player transfers as they move between proxied servers.
+	SESSION(SessionService.class), // Information about who is connecting, as well as when, from where, and to do what they are.
 	PLAYER(PlayerService.class), // Core player data, extensions, etc.
 	GROUP(GroupService.class), // Group definitions, flair, inheritance, tracks, etc.
 	ARTIFACT(null), // Warnings, evidence, etc.

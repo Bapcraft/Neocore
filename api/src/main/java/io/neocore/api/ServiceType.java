@@ -17,4 +17,14 @@ public interface ServiceType {
 	 */
 	public Class<? extends ServiceProvider> getServiceClass();
 	
+	/**
+	 * Checks to see if the given service provider is compatible with this service type.
+	 * 
+	 * @param prov The provider.
+	 * @return <code>true</code> if it is compatible, <code>false</code> otherwise.
+	 */
+	public default boolean isCompatible(ServiceProvider prov) {
+		return this.getServiceClass() != null && prov != null && this.getServiceClass().isAssignableFrom(prov.getClass());
+	}
+	
 }
