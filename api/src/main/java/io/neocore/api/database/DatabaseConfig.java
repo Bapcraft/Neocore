@@ -34,4 +34,12 @@ public interface DatabaseConfig {
 	 */
 	public int getNumDiscreteConfigs();
 	
+	/**
+	 * Gets the config object used in the given controller definition.
+	 * 
+	 * @param controller The name of the controller.
+	 * @return The configuration.
+	 */
+	public Config getConfigForController(String controller);
+	
 }
