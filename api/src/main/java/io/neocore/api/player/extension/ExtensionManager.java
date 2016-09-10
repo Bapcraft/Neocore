@@ -63,7 +63,10 @@ public class ExtensionManager {
 	 * @return The deserialized extension.
 	 */
 	public Extension deserialize(String name, String data) {
-		return this.getType(name).deserialize(data);
+		
+		RegisteredExtension reg = this.getType(name);
+		return reg != null ? reg.deserialize(data) : new UnknownExtension(name, data);
+		
 	}
 	
 	public List<RegisteredExtension> getTypes() {
