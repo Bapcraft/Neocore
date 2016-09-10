@@ -9,6 +9,7 @@ import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
+import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
@@ -125,6 +126,16 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		// TODO Make the player injector work.
 		return null;
 		
+	}
+
+	@Override
+	public void registerCommand(AbstractCommand cmd) {
+		// TODO
+	}
+
+	@Override
+	public boolean isFrontServer() {
+		return true;
 	}
 	
 }
