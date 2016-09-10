@@ -133,7 +133,22 @@ public class CommonPlayerManager {
 	}
 	
 	public void unloadPlayer(UUID uuid) {
+		
+		NeoPlayer np = this.getPlayer(uuid);
+		NeocoreAPI.getLogger().info(uuid + " -> " + np);
+		
+		// Flush the session data.
+		SessionService sessServ = this.serviceManager.getService(SessionService.class);
+		sessServ.unload(np.getSession());
+		
+		// Flush player data.
+		//PlayerService playerServ = this.serviceManager.getService(PlayerService.class);
+		// TODO
+		
+		// Flush the player data.
+		
 		this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid));
+		
 	}
 	
 	public void unloadPlayer(PlayerIdentity pi) {
