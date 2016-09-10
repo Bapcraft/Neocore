@@ -15,6 +15,7 @@ import io.neocore.api.host.login.LoginService;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.player.extension.ExtensionManager;
 import io.neocore.api.task.TaskQueue;
 import io.neocore.common.database.DatabaseManagerImpl;
 import io.neocore.common.event.CommonEventManager;
@@ -36,6 +37,7 @@ public class NeocoreImpl implements Neocore {
 	private ModuleManagerImpl moduleManager;
 	private ServiceManagerImpl serviceManager;
 	private CommonEventManager eventManager;
+	private ExtensionManager extManager;
 	
 	private LoginAcceptor loginAcceptor;
 	
@@ -54,6 +56,7 @@ public class NeocoreImpl implements Neocore {
 		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
 		this.playerManager = new CommonPlayerManager(this.serviceManager, host.getPlayerInjector());
 		this.eventManager = new CommonEventManager();
+		this.extManager = new ExtensionManager();
 		
 		// Set up acceptors
 		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, host.getContexts());
@@ -116,6 +119,11 @@ public class NeocoreImpl implements Neocore {
 	@Override
 	public EventManager getEventManager() {
 		return this.eventManager;
+	}
+	
+	@Override
+	public ExtensionManager getExtensionManager() {
+		return this.extManager;
 	}
 	
 	@Override
