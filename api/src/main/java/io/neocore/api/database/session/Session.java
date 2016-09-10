@@ -48,24 +48,10 @@ public class Session implements PlayerIdentity {
 	}
 	
 	/**
-	 * @return The time that the session started.
-	 */
-	public Date getStart() {
-		return this.start;
-	}
-	
-	/**
-	 * @return The time that the session ended, be it due to kick, timeout, or manual disconnect.
-	 */
-	public Date getEnd() {
-		return this.start;
-	}
-	
-	/**
 	 * @return <code>true</code> if the session is still ongoing, <code>false</code> otherwise.
 	 */
 	public boolean isOver() {
-		return this.getEnd() != null;
+		return this.getEndDate() != null && this.getEndDate() != new Date(-1L);
 	}
 	
 	/**
