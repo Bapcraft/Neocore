@@ -15,6 +15,7 @@ import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
+import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
@@ -183,6 +184,13 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	@Override
 	public List<Context> getContexts() {
 		return this.config.getContexts();
+	}
+
+	@Override
+	public void registerCommand(AbstractCommand cmd) {
+		
+		
+		
 	}
 	
 }
