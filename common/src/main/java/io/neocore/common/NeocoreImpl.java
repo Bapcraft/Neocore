@@ -74,6 +74,10 @@ public class NeocoreImpl implements Neocore {
 		
 	}
 	
+	public CommonPlayerManager getPlayerManager() {
+		return this.playerManager;
+	}
+	
 	@Override
 	public HostPlugin getHost() {
 		return this.host;
@@ -117,6 +121,11 @@ public class NeocoreImpl implements Neocore {
 	@Override
 	public TaskQueue getTaskQueue() {
 		return this.tasks;
+	}
+
+	@Override
+	public boolean isInited() {
+		return true; // FIXME
 	}
 	
 }

@@ -10,7 +10,6 @@ import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.host.login.InitialLoginEvent;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.PostLoginEvent;
-import io.neocore.api.player.NeoPlayer;
 import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.service.ServiceManagerImpl;
 
@@ -37,9 +36,6 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		
 		UUID uuid = event.getPlayerUniqueId();
 		
-		// Load the player data.
-		NeoPlayer np = this.players.assemblePlayer(uuid);
-		
 		// Verify bans
 		// TODO Flesh this out a lot to actually report the reasons and make the messages more configurable.
 		BanList playerBans = this.services.getService(BanService.class).getBans(uuid);
@@ -56,9 +52,6 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		
 		// Broadcast the event.
 		this.events.broadcast(InitialLoginEvent.class, event);
-		
-		// Unload the player if necessary.
-		if (!event.isPermitted()) this.players.unloadPlayer(np);
 		
 	}
 	

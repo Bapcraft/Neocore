@@ -14,7 +14,10 @@ import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseService;
+import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SessionService;
 import io.neocore.api.host.HostService;
+import io.neocore.api.host.login.LoginService;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
@@ -46,11 +49,24 @@ public class CommonPlayerManager {
 		
 	}
 	
-	protected NeoPlayer assemblePlayer(UUID uuid) {
+	public NeoPlayer assemblePlayer(UUID uuid) {
 		
 		NeoPlayer np = new NeoPlayer(uuid);
 		
-		// Tabluate the services we need player data from.
+		// TODO Do something with the supplier this generate
+		this.hostPlayerInjector.injectPermissions(np);
+		
+		injectFields(np);
+		
+		// Done.
+		this.playerCache.add(np);
+		return np;
+		
+	}
+	
+	private void injectFields(NeoPlayer player) {
+		
+		// Tabulate the services we need player data from.
 		List<ServiceType> idents = new ArrayList<>();
 		idents.add(HostService.LOGIN);
 		idents.add(HostService.PERMISSIONS);
@@ -66,32 +82,42 @@ public class CommonPlayerManager {
 		for (ServiceType type : idents) {
 			
 			RegisteredService reg = this.serviceManager.getService(type);
-			if (reg == null) {
-				
-				NeocoreAPI.getLogger().warning("Ignoring null for " + type.getName() + " in NeoPlayer for " + uuid.toString() + "!");
-				continue;
-				
-			}
+			if (reg == null) continue;
 			
 			ServiceProvider prov = reg.getServiceProvider();
 			
-			if (prov instanceof IdentityProvider) injections.add(((IdentityProvider<?>) prov).getPlayer(np));
+			if (prov instanceof IdentityProvider) injections.add(((IdentityProvider<?>) prov).getPlayer(player));
 			
 		}
 		
+		// Now figure out the session bullshit.
+		SessionService serv = this.serviceManager.getService(SessionService.class);
+		if (NeocoreAPI.getAgent().getHost().isFrontServer()) {
+			
+			// We have to initialize the session.
+			LoginService login = this.serviceManager.getService(LoginService.class);
+			Session sess = login.initSession(player.getUniqueId());
+			serv.flush(sess);
+			injections.add(sess);
+			
+		} else {
+			injections.add(serv.getSession(player.getUniqueId()));
+		}
+		
+		// Actually inject the things.
 		for (Object o : injections) {
 			
 			if (o == null) continue;
 			
 			try {
 				
-				for (Field f : np.getClass().getDeclaredFields()) {
+				for (Field f : player.getClass().getDeclaredFields()) {
 					
 					if (f.getType().isAssignableFrom(o.getClass())) {
 						
 						boolean acc = f.isAccessible();
 						f.setAccessible(true);
-						f.set(np, o);
+						f.set(player, o);
 						f.setAccessible(acc);
 						
 					}
@@ -103,12 +129,6 @@ public class CommonPlayerManager {
 			}
 			
 		}
-		
-		// TODO Do something with the supplier this generate
-		this.hostPlayerInjector.injectPermissions(np);
-		
-		this.playerCache.add(np);
-		return np;
 		
 	}
 	
