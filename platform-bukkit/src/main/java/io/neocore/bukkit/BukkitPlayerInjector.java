@@ -65,7 +65,7 @@ public class BukkitPlayerInjector implements HostPlayerInjector {
 		// TODO This whole `try` block is terrible.  Replace this system that doesn't risk being broken in a future update.
 		try {
 			
-			Class<?> craftHumanEntity = NMSHelper.formatNmsClass("org.bukkit.craftbukkit.entity", "CraftHumanEntity");
+			Class<?> craftHumanEntity = NMSHelper.formatNmsClass("entity.CraftHumanEntity");
 			Field[] fields = craftHumanEntity.getDeclaredFields();
 			
 			for (Field f : fields) {

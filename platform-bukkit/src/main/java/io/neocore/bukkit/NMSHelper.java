@@ -12,9 +12,9 @@ public class NMSHelper {
 		
 	}
 	
-	public static Class<?> formatNmsClass(String sourcePackage, String simpleName) throws ClassNotFoundException {
+	public static Class<?> formatNmsClass(String simpleName) throws ClassNotFoundException {
 		
-		String fullName = String.format("%s.%s.%s", sourcePackage, getNmsPackageName(), simpleName);
+		String fullName = String.format("org.bukkit.craftbukkit.%s.%s", getNmsPackageName(), simpleName);
 		
 		try {
 			return Class.forName(fullName);

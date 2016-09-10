@@ -11,7 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.justisr.BungeeCom;
 import com.typesafe.config.ConfigFactory;
 
-import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
@@ -68,12 +67,12 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		
 		// Initialize and install Neocore
 		NeocoreInstaller.applyLogger(Bukkit.getLogger());
-		Neocore neo = new NeocoreImpl(this);
+		NeocoreImpl neo = new NeocoreImpl(this);
 		
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
 		this.forwarders.add(this.chatForwarder);
-		this.connectionForwarder = new PlayerConnectionForwarder();
+		this.connectionForwarder = new PlayerConnectionForwarder(neo.getPlayerManager());
 		this.forwarders.add(this.connectionForwarder);
 		
 		// Services
@@ -191,6 +190,11 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		
 		
 		
+	}
+
+	@Override
+	public boolean isFrontServer() {
+		return !this.getNeocoreConfig().isNetworked();
 	}
 	
 }
