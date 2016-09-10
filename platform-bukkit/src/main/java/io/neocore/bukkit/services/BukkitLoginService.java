@@ -57,6 +57,7 @@ public class BukkitLoginService implements LoginService {
 			Session sess = new Session(p.getUniqueId(), p.getName(), p.getAddress().getAddress(), host.getNeocoreConfig().getServerName());
 			sess.setState(SessionState.ACTIVE);
 			sess.setStartDate(Date.from(Instant.now()));
+			sess.setEndDate(new Date(-1L));
 			
 			return sess;
 			

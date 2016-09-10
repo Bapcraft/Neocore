@@ -72,8 +72,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		BukkitQuitEvent neoEvent = new BukkitQuitEvent(event, np);
 		this.acceptor.onDisconnectEvent(neoEvent);
 		
-		// Unload the player if necessary.
-		this.manager.unloadPlayer(np);
+		// The acceptor handles the destruction of the object.
 		
 	}
 	
