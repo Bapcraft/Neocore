@@ -66,6 +66,13 @@ public class CommonPlayerManager {
 		for (ServiceType type : idents) {
 			
 			RegisteredService reg = this.serviceManager.getService(type);
+			if (reg == null) {
+				
+				NeocoreAPI.getLogger().warning("Ignoring null for " + type.getName() + " in NeoPlayer for " + uuid.toString() + "!");
+				continue;
+				
+			}
+			
 			ServiceProvider prov = reg.getServiceProvider();
 			
 			if (prov instanceof IdentityProvider) injections.add(((IdentityProvider<?>) prov).getPlayer(np));

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.RegisteredService;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
@@ -85,9 +86,10 @@ public class ServiceManagerImpl implements ServiceManager {
 	public RegisteredService getService(ServiceType type) {
 		
 		for (RegisteredServiceImpl rs : this.services) {
-			if (rs.getType() == type) return rs;
+			if (rs.getType().equals(type)) return rs;
 		}
 		
+		NeocoreAPI.getLogger().warning("Returning null for service query " + type.getName() + "!");
 		return null;
 		
 	}
