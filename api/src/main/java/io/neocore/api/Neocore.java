@@ -72,4 +72,9 @@ public interface Neocore {
 	 */
 	public TaskQueue getTaskQueue();
 	
+	/**
+	 * @return <code>true</code> if everything has been set up properly.
+	 */
+	public boolean isInited();
+	
 }

@@ -27,8 +27,10 @@ public class Session implements PlayerIdentity {
 	/** The server's name that the player was "connecting" to when they connected.  Not that of their first game server */
 	public final String inboundServer;
 	
-	protected SessionState state;
-	protected Date start, end;
+	private SessionState state;
+	private Date start, end;
+	
+	private transient boolean dirty;
 	
 	public Session(UUID uuid, String name, InetAddress src, String inbound) {
 		
@@ -67,6 +69,18 @@ public class Session implements PlayerIdentity {
 	}
 	
 	/**
+	 * Sets the state and dirties the session.
+	 * 
+	 * @param s
+	 */
+	public void setState(SessionState s) {
+		
+		this.state = s;
+		this.dirty = true;
+		
+	}
+	
+	/**
 	 * @return The current state of the session.
 	 */
 	public SessionState getState() {
@@ -78,6 +92,58 @@ public class Session implements PlayerIdentity {
 	 */
 	public boolean isNetwork() {
 		return false;
+	}
+	
+	/**
+	 * Sets the start date and dirties the session.
+	 * 
+	 * @param d The start date.
+	 */
+	public void setStartDate(Date d) {
+		
+		this.start = d;
+		this.dirty = true;
+		
+	}
+	
+	/**
+	 * @return The start date.
+	 */
+	public Date getStartDate() {
+		return this.start;
+	}
+	
+	/**
+	 * Sets the end date and dirties the session.
+	 * 
+	 * @param d The end date.
+	 */
+	public void setEndDate(Date d) {
+		
+		this.end = d;
+		this.dirty = true;
+		
+	}
+	
+	/**
+	 * @return The end date.
+	 */
+	public Date getEndDate() {
+		return this.end;
+	}
+	
+	/**
+	 * Cleans this filty whore.
+	 */
+	public void clean() {
+		this.dirty = false;
+	}
+	
+	/**
+	 * @return The dirtiness of this Session object.
+	 */
+	public boolean isDirty() {
+		return this.dirty;
 	}
 	
 }

@@ -52,4 +52,9 @@ public interface HostPlugin extends Module {
 	 */
 	public void registerCommand(AbstractCommand cmd);
 	
+	/**
+	 * @return <code>true</code> if this server is something that players connect directly to, <code>false</code> if its behind a proxy.
+	 */
+	public boolean isFrontServer();
+	
 }
