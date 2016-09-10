@@ -19,8 +19,15 @@ public abstract class Extension {
 		Class<? extends Extension> clazz = this.getClass();
 		ExtensionType ext = clazz.getAnnotation(ExtensionType.class);
 		
-		return ext != null ? ext.value() : null;
+		return ext != null ? ext.name() : null;
 		
 	}
+	
+	/**
+	 * Serialized this extension object into a String that can be usedd by the database.
+	 * 
+	 * @return The serialized extension.
+	 */
+	public abstract String serialize();
 	
 }

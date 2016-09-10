@@ -8,6 +8,7 @@ import io.neocore.api.database.DatabaseController;
 import io.neocore.api.database.DatabaseManager;
 import io.neocore.api.host.Context;
 import io.neocore.api.module.Module;
+import io.neocore.api.player.extension.RegisteredExtension;
 
 /**
  * Main class for the Neocore API.
@@ -43,6 +44,7 @@ public class NeocoreAPI {
 		// Display host info
 		logger.info("Host Class: " + agent.getHost().getClass().getName());
 		logger.info("Host Version: " + agent.getHost().getVersion());
+		logger.info("Host Server Name: " + agent.getHost().getNeocoreConfig().getServerName());
 		
 		// Display contexts listed
 		logger.info("Host Contexts:");
@@ -58,6 +60,13 @@ public class NeocoreAPI {
 			logger.info(String.format(" - %s v%s (%s)", m.getName(), m.getVersion(), m.getModuleType().name()));
 		}
 		
+		// List extensions registered
+		logger.info("Registered Extensions:");
+		List<RegisteredExtension> exts = agent.getExtensionManager().getTypes();
+		for (RegisteredExtension reg : exts) {
+			logger.info(String.format(" - %s (%s)", reg.getName(), reg.getExtensionClass().getSimpleName()));
+		}
+		
 		// Display database engines
 		logger.info("Database Controllers:");
 		DatabaseManager dbm = agent.getDatabaseManager();
@@ -66,7 +75,7 @@ public class NeocoreAPI {
 		}
 		
 		// Display service info
-		logger.info("Registerd Services:");
+		logger.info("Registered Services:");
 		List<RegisteredService> servs = agent.getServiceManager().getServices();
 		for (RegisteredService rs : servs) {
 			ServiceType st = rs.getType();

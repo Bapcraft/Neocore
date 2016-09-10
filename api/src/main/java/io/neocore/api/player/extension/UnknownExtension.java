@@ -8,15 +8,23 @@ package io.neocore.api.player.extension;
  */
 public class UnknownExtension extends Extension {
 
-	private final String name;
+	private final String name, data;
 	
-	public UnknownExtension(String name) {
+	public UnknownExtension(String name, String data) {
+		
 		this.name = name;
+		this.data = data;
+		
 	}
 
 	@Override
 	public String getName() {
 		return this.name;
+	}
+
+	@Override
+	public String serialize() {
+		return this.data;
 	}
 	
 }

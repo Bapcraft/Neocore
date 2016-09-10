@@ -17,6 +17,7 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 public @interface ExtensionType {
 
-	String value();
+	String name();
+	Class<? extends ExtensionBuilder> builder();
 
 }

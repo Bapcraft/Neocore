@@ -8,6 +8,7 @@ import io.neocore.api.host.HostPlugin;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.player.extension.ExtensionManager;
 import io.neocore.api.task.TaskQueue;
 
 /**
@@ -66,6 +67,11 @@ public interface Neocore {
 	 * @return The event manager used by Neocore.
 	 */
 	public EventManager getEventManager();
+	
+	/**
+	 * @return The extension manager used by Neocore.
+	 */
+	public ExtensionManager getExtensionManager();
 	
 	/**
 	 * @return The async task queue used by the Neocore async worker.
