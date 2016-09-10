@@ -1,5 +1,6 @@
 package io.neocore.api.player.extension;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,11 +14,11 @@ public class ExtensionManager {
 	private List<RegisteredExtension> extensions;
 	
 	public ExtensionManager() {
-		
+		this.extensions = new ArrayList<>();
 	}
 	
 	/**
-	 * Registeres the extension class as a type of player extension.
+	 * Registers the extension class as a type of player extension.
 	 * 
 	 * @param clazz The class to register.
 	 * @return The registration entry.
