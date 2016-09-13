@@ -21,6 +21,8 @@ import io.neocore.api.host.HostService;
 import io.neocore.api.host.ServerInitializedEvent;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
+import io.neocore.bukkit.cmd.CommandInjector;
+import io.neocore.bukkit.cmd.CommandInjector_19r2;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
 import io.neocore.bukkit.events.NeocoreRevalidator;
@@ -54,6 +56,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	private PlayerConnectionForwarder connectionForwarder;
 	
 	private BungeeCom bungee;
+	private CommandInjector cmdInjector;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -68,6 +71,9 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		// Initialize and install Neocore
 		NeocoreInstaller.applyLogger(Bukkit.getLogger());
 		NeocoreImpl neo = new NeocoreImpl(this);
+		
+		// Set up command injector.
+		this.cmdInjector = new CommandInjector_19r2(); // FIXME Make this figure out the details automatically.
 		
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
@@ -187,9 +193,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 
 	@Override
 	public void registerCommand(AbstractCommand cmd) {
-		
-		
-		
+		this.cmdInjector.inject(cmd);
 	}
 
 	@Override

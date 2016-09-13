@@ -1,26 +1,30 @@
 package io.neocore.bukkit.cmd;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.cmd.ErrorSignal;
 import io.neocore.api.cmd.InsufficientPermissionsSignal;
 import io.neocore.api.cmd.InvalidUsageSignal;
 import io.neocore.api.cmd.SuccessSignal;
 
-public class CommandWrapper implements CommandExecutor {
+public class CommandWrapper extends Command {
 	
 	private AbstractCommand command;
 	
 	public CommandWrapper(AbstractCommand cmd) {
+		
+		super(cmd.getName(), cmd.getDescription(), cmd.getUsage(), cmd.getAliases());
+		
 		this.command = cmd;
+		
 	}
 	
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		
+	public boolean execute(CommandSender sender, String label, String[] args) {
+
 		CommandSenderWrapper wrapper = new CommandSenderWrapper(sender);
 		
 		try {
@@ -38,8 +42,9 @@ public class CommandWrapper implements CommandExecutor {
 			return false;
 		}
 		
-		throw new IllegalStateException("Command finished execution but no resolution was announced!");
+		NeocoreAPI.getLogger().warning("Command " + this.getName() + " finished execution but no explicit resolution was announced!");
+		return true;
 		
 	}
-
+	
 }
