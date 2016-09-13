@@ -1,5 +1,8 @@
 package io.neocore.api.cmd;
 
+import java.util.Collections;
+import java.util.List;
+
 public abstract class AbstractCommand {
 	
 	private String name;
@@ -12,6 +15,22 @@ public abstract class AbstractCommand {
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public String getUsage() {
+		return "";
+	}
+	
+	public String getDescription() {
+		return "";
+	}
+	
+	public String getPrefix() {
+		return "neocore";
+	}
+	
+	public List<String> getAliases() {
+		return Collections.emptyList();
 	}
 	
 	protected void success() {
