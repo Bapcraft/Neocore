@@ -1,13 +1,13 @@
 package io.neocore.common.player;
 
-import java.sql.Date;
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.ban.BanList;
 import io.neocore.api.database.ban.BanService;
+import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.Context;
@@ -59,11 +59,23 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		// Broadcast the event.
 		this.events.broadcast(InitialLoginEvent.class, event);
 		
+		/**
+		 * We can't do any player initialization things here because Bukkit is dumb.
+		 */
+		
 	}
 	
 	@Override
 	public void onPostLoginEvent(PostLoginEvent event) {
+		
+		NeoPlayer np = event.getPlayer();
+		
+		// Initialize the player username stuff.
+		DatabasePlayer dbp = np.getIdentity(DatabasePlayer.class);
+		dbp.setLastUsername(np.getUsername());
+		
 		this.events.broadcast(PostLoginEvent.class, event);
+		
 	}
 	
 	@Override
@@ -76,7 +88,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 			
 			Session sess = np.getSession();
 			sess.setState(SessionState.DISCONNECTED);
-			sess.setEndDate(Date.from(Instant.now()));
+			sess.setEndDate(new Date());
 			
 		}
 		
