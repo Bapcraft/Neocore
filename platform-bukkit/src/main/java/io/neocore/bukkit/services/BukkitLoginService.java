@@ -1,7 +1,10 @@
 package io.neocore.bukkit.services;
 
+import java.net.InetAddress;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -14,6 +17,7 @@ import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.LoginService;
 import io.neocore.api.host.login.ServerPlayer;
+import io.neocore.bukkit.BukkitPlayer;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
 
 public class BukkitLoginService implements LoginService {
@@ -21,8 +25,13 @@ public class BukkitLoginService implements LoginService {
 	private LoginAcceptor acceptor;
 	private PlayerConnectionForwarder forwarder;
 	
+	private List<BukkitPlayer> players;
+	
 	public BukkitLoginService(PlayerConnectionForwarder fwdr) {
+		
 		this.forwarder = fwdr;
+		this.players = new ArrayList<>();
+		
 	}
 	
 	@Override
@@ -40,8 +49,34 @@ public class BukkitLoginService implements LoginService {
 	
 	@Override
 	public ServerPlayer getPlayer(UUID uuid) {
-		// TODO Auto-generated method stub
+		
+		// Initialize one way or another.
+		BukkitPlayer bp = this.findPlayer(uuid);
+		if (bp == null) bp = this.initPlayer(uuid);
+		
+		return bp;
+		
+	}
+	
+	private BukkitPlayer findPlayer(UUID uuid) {
+		
+		// If we can't find it then just return null.
+		for (BukkitPlayer p : this.players) {
+			if (p.getUniqueId().equals(uuid)) return p;
+		}
+		
 		return null;
+		
+	}
+	
+	private BukkitPlayer initPlayer(UUID uuid) {
+		
+		Player p = Bukkit.getPlayer(uuid);
+		BukkitPlayer bp = new BukkitPlayer(p);
+		
+		this.players.add(bp);
+		return bp;
+		
 	}
 	
 	@Override
@@ -54,7 +89,13 @@ public class BukkitLoginService implements LoginService {
 			
 			// Initialize the state.
 			Player p = Bukkit.getPlayer(uuid);
-			Session sess = new Session(p.getUniqueId(), p.getName(), p.getAddress().getAddress(), host.getNeocoreConfig().getServerName());
+			String name = p.getName();
+			InetAddress addr = p
+								.getAddress()
+								.getAddress();
+			String serverName = host.getNeocoreConfig().getServerName();
+			
+			Session sess = new Session(uuid, name, addr, serverName);
 			sess.setState(SessionState.ACTIVE);
 			sess.setStartDate(Date.from(Instant.now()));
 			sess.setEndDate(new Date(-1L));
