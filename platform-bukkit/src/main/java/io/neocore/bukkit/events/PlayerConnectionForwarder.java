@@ -1,5 +1,7 @@
 package io.neocore.bukkit.events;
 
+import java.util.Date;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -7,6 +9,8 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.ServerListPingEvent;
 import io.neocore.api.player.NeoPlayer;
@@ -55,8 +59,18 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		
 		if (this.acceptor == null) return;
 		
-		// Load the player data.
+		// We need to make the player ourselves because Bukkit doesn't let us do it until now. !!!
 		NeoPlayer np = this.manager.assemblePlayer(event.getPlayer().getUniqueId());
+		
+		// Session init stuff.
+		if (NeocoreAPI.isFrontend()) {
+			
+			// And do some session init stuff.
+			Session sess = np.getIdentity(Session.class);
+			sess.setState(SessionState.ACTIVE);
+			sess.setStartDate(new Date());
+			
+		}
 		
 		BukkitPostJoinEvent neoEvent = new BukkitPostJoinEvent(event, np);
 		this.acceptor.onPostLoginEvent(neoEvent);
