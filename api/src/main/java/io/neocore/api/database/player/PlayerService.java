@@ -19,4 +19,19 @@ public interface PlayerService extends DatabaseServiceProvider, IdentityProvider
 	 */
 	public String getLastUsername(UUID id);
 	
+	/**
+	 * Updates the player data in the cache with the current version of the
+	 * data in the database.
+	 * 
+	 * @param player The player to reload.
+	 */
+	public void reload(DatabasePlayer player);
+	
+	/**
+	 * Flushes the player data to the database, does not unload the player.
+	 * 
+	 * @param player The player to flush.
+	 */
+	public void flush(DatabasePlayer player);
+	
 }

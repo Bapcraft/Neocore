@@ -1,7 +1,7 @@
 package io.neocore.api.player.extension;
 
 /**
- * A generic data class that can be attached onto player data to be seamlessly
+ * A generic data class that can be attached onto player data to be cleanly
  * stored in the database for later access.
  * 
  * @author treyzania
@@ -24,10 +24,23 @@ public abstract class Extension {
 	}
 	
 	/**
-	 * Serialized this extension object into a String that can be usedd by the database.
+	 * Serializes this extension object into a String that can be usedd by the database.
 	 * 
 	 * @return The serialized extension.
 	 */
 	public abstract String serialize();
+	
+	/**
+	 * Checks to see if this object needs to be updated into the database.
+	 * 
+	 * @return <code>true</code> if the object is pending a flush, <code>false</code> otherwise.
+	 */
+	public abstract boolean isDirty();
+	
+	/**
+	 * Sets the object as having been flushed to the database, therefore no
+	 * longer to be considered "dirty".
+	 */
+	public abstract void clean();
 	
 }

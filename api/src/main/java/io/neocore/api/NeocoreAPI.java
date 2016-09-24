@@ -39,7 +39,7 @@ public class NeocoreAPI {
 	 */
 	public static void announceCompletion() {
 		
-		logger.info("=== Neocore Initialization Complete ===");
+		logger.info("=== Neocore Status Dump ===");
 		
 		// Display host info
 		logger.info("Host Class: " + agent.getHost().getClass().getName());
@@ -89,7 +89,7 @@ public class NeocoreAPI {
 			logger.info(String.format(" - %s (%s)", st.getName(), st.getClass().getSimpleName()));
 		}
 		
-		logger.info("=======================================");
+		logger.info("===========================");
 		
 	}
 	

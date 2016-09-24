@@ -30,4 +30,22 @@ public interface IdentityProvider<T extends PlayerIdentity> {
 		return this.getPlayer(player.getUniqueId());
 	}
 	
+	/**
+	 * Unloads the player data from the record.
+	 * 
+	 * @param uuid The player UUID.
+	 */
+	public default void unload(UUID uuid) {
+		
+	}
+	
+	/**
+	 * Unloads the player data from the record.
+	 * 
+	 * @param player The player UUID.
+	 */
+	public default void unload(PlayerIdentity player) {
+		this.unload(player.getUniqueId());
+	}
+	
 }

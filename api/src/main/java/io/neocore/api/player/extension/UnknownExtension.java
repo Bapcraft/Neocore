@@ -26,5 +26,15 @@ public class UnknownExtension extends Extension {
 	public String serialize() {
 		return this.data;
 	}
+
+	@Override
+	public boolean isDirty() {
+		return false;
+	}
+
+	@Override
+	public void clean() {
+		// lol wat
+	}
 	
 }

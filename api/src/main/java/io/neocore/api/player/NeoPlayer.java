@@ -1,5 +1,6 @@
 package io.neocore.api.player;
 
+import java.lang.reflect.Field;
 import java.util.UUID;
 
 import io.neocore.api.ServiceType;
@@ -115,6 +116,42 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 		
 		verify(this.playerPermissions, HostService.PERMISSIONS);
 		return this.playerPermissions.hasPermission(node);
+		
+	}
+	
+	/**
+	 * Gets the player identity thingamajig for manipulation.  This can
+	 * potentially be dangerous as it bypasses wrapper methods, so use with
+	 * care!
+	 * 
+	 * @param clazz The type to find.
+	 * @return The player identity aspect thing.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends PlayerIdentity> T getIdentity(Class<T> clazz) {
+		
+		for (Field f : this.getClass().getDeclaredFields()) {
+			
+			if (PlayerIdentity.class.isAssignableFrom(f.getType()) && f.getType() == clazz) {
+				
+				try {
+
+					boolean acc = f.isAccessible();
+					f.setAccessible(true);
+					Object o = f.get(this);
+					f.setAccessible(acc);
+					
+					if (o != null) return (T) o;
+					
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					throw new RuntimeException("You did something wrong!", e);
+				}
+				
+			}
+			
+		}
+		
+		throw new IllegalArgumentException("This wasn't populated on the player! (" + clazz.getName() + ")");
 		
 	}
 	

@@ -8,29 +8,25 @@ import java.util.Date;
  * 
  * @author treyzania
  */
-public class GroupMembership {
+public abstract class GroupMembership {
 	
-	private Group group;
 	private Date start, expires;
 	
-	public GroupMembership(Group g, Date start, Date expires) {
+	public GroupMembership(Date start, Date expires) {
 		
-		this.group = g;
 		this.start = start;
 		this.expires = expires;
 		
 	}
 	
-	public GroupMembership(Group g) {
-		this(g, Date.from(Instant.MIN), Date.from(Instant.MAX));
+	public GroupMembership() {
+		this(Date.from(Instant.MIN), Date.from(Instant.MAX));
 	}
 	
 	/**
 	 * @return The group that the membership deals with.
 	 */
-	public Group getGroup() {
-		return this.group;
-	}
+	public abstract Group getGroup();
 	
 	/**
 	 * @return Gets the date that the membership period begins.
