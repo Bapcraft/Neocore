@@ -7,19 +7,19 @@ public class PermHelper {
 	private static final String PERM_SEP_REGEX = "\\.";
 	private static final String WILDCARD = "*";
 	
-	public static boolean matches(String base, String query) {
+	public static int matchDepth(String base, String query) {
 		
 		base = base.toLowerCase(Locale.ENGLISH);
 		query = query.toLowerCase(Locale.ENGLISH);
 		
-		// Check if it matches exactly.
-		if (base.equals(query)) return true;
-		
 		String[] baseParts = base.split(PERM_SEP_REGEX);
 		String[] queryParts = query.split(PERM_SEP_REGEX);
 		
+		// Check if it matches exactly.
+		if (base.equals(query)) return baseParts.length - 1;
+		
 		// We can't match if the match is higher up than the base.
-		if (queryParts.length < baseParts.length) return false;
+		if (queryParts.length < baseParts.length) return -1;
 		
 		int baseMax = baseParts.length - 1;
 		
@@ -29,15 +29,19 @@ public class PermHelper {
 			String qp = queryParts[i];
 
 			// `some.perm.node` against `some.perm.*`
-			if (bp.equals(WILDCARD)) return true;
+			if (bp.equals(WILDCARD)) return i;
 			
 			// `some.[perm].node` against `some.[perm].node`
-			if (!bp.equals(qp)) return false;
+			if (!bp.equals(qp)) return -1;
 			
 		}
 		
-		return false;
+		return -1;
 		
+	}
+	
+	public static boolean matches(String base, String query) {
+		return matchDepth(base, query) > -1;
 	}
 	
 }
