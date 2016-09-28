@@ -33,7 +33,10 @@ public interface Module {
 	 * @param service The service itself.
 	 */
 	public default void registerService(ServiceType type, ServiceProvider service) {
+		
+		// FIXME Breaks encapsulation?
 		NeocoreAPI.getAgent().getServiceManager().registerServiceProvider(this, type, service);
+		
 	}
 	
 }

@@ -25,7 +25,10 @@ public class PlayerBanIssuer extends BanIssuer {
 	
 	@Override
 	public String getDisplayName() {
+		
+		// FIXME Breaks encapsulation?
 		return NeocoreAPI.getAgent().getServiceManager().getService(PlayerService.class).getLastUsername(this.uuid);
+		
 	}
 
 }

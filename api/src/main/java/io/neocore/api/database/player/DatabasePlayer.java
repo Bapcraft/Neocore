@@ -35,7 +35,10 @@ public interface DatabasePlayer extends PlayerIdentity {
 	 * @return The list of bans for the player.
 	 */
 	public default BanList getBans() {
+		
+		// FIXME Breaks encapsulation.
 		return NeocoreAPI.getAgent().getServiceManager().getService(BanService.class).getBans(this.getUniqueId());
+		
 	}
 	
 	/**
