@@ -13,6 +13,7 @@ import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
+import io.neocore.api.host.Scheduler;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bungee.broadcast.BungeeBroadcastService;
@@ -20,7 +21,6 @@ import io.neocore.bungee.events.EventForwarder;
 import io.neocore.bungee.events.ProxyForwarder;
 import io.neocore.bungee.network.BungeeProxyService;
 import io.neocore.common.FullHostPlugin;
-import io.neocore.common.HostPlayerInjector;
 import io.neocore.common.NeocoreImpl;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -119,15 +119,7 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	public String getVersion() {
 		return "0.0-DEVELOPMENT";
 	}
-
-	@Override
-	public HostPlayerInjector getPlayerInjector() {
-		
-		// TODO Make the player injector work.
-		return null;
-		
-	}
-
+	
 	@Override
 	public void registerCommand(AbstractCommand cmd) {
 		// TODO
@@ -136,6 +128,12 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	@Override
 	public boolean isFrontServer() {
 		return true;
+	}
+
+	@Override
+	public Scheduler getScheduler() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
