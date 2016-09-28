@@ -57,4 +57,11 @@ public interface HostPlugin extends Module {
 	 */
 	public boolean isFrontServer();
 	
+	/**
+	 * Gets the server's main scheduling service.
+	 * 
+	 * @return The scheduler.
+	 */
+	public Scheduler getScheduler();
+	
 }
