@@ -34,7 +34,6 @@ import io.neocore.bukkit.services.BukkitLoginService;
 import io.neocore.bukkit.services.network.BukkitEndpointService;
 import io.neocore.bukkit.services.network.SelfEndpoint;
 import io.neocore.common.FullHostPlugin;
-import io.neocore.common.HostPlayerInjector;
 import io.neocore.common.NeocoreImpl;
 import io.neocore.common.tasks.Worker;
 
@@ -44,16 +43,16 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	
 	private BukkitNeocoreConfig config;
 	
+	private BukkitLoginService loginService;
 	private BukkitBroadcastService broadcastService;
 	private BukkitChatService chatService;
-	private BukkitLoginService loginService;
 	
 	private SelfEndpoint selfEndpoint;
 	private BukkitEndpointService endpointService;
 	
 	private List<EventForwarder> forwarders = new ArrayList<>();
-	private ChatEventForwarder chatForwarder;
 	private PlayerConnectionForwarder connectionForwarder;
+	private ChatEventForwarder chatForwarder;
 	
 	private BungeeCom bungee;
 	private CommandInjector cmdInjector;
@@ -90,7 +89,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		// Register services properly with Neocore.
 		neo.registerServiceProvider(HostService.LOGIN, this.loginService, this);
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
-		// TODO Permissions
+		neo.registerServiceProvider(HostService.PERMISSIONS, null, this);
 		neo.registerServiceProvider(HostService.CHAT, this.chatService, this);
 		// TODO Gameplay (needs API interface definitions first)
 		
@@ -176,11 +175,6 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		return new File(this.getDataFolder(), "databases.conf");
 	}
 	
-	@Override
-	public HostPlayerInjector getPlayerInjector() {
-		return new BukkitPlayerInjector();
-	}
-
 	@Override
 	public HostContext getPrimaryContext() {
 		return this.config.getPrimaryContext();
