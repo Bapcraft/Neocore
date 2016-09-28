@@ -18,6 +18,7 @@ import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
+import io.neocore.api.host.Scheduler;
 import io.neocore.api.host.ServerInitializedEvent;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
@@ -33,6 +34,7 @@ import io.neocore.bukkit.services.BukkitChatService;
 import io.neocore.bukkit.services.BukkitLoginService;
 import io.neocore.bukkit.services.network.BukkitEndpointService;
 import io.neocore.bukkit.services.network.SelfEndpoint;
+import io.neocore.bukkit.shced.NeoBukkitScheduler;
 import io.neocore.common.FullHostPlugin;
 import io.neocore.common.NeocoreImpl;
 import io.neocore.common.tasks.Worker;
@@ -56,6 +58,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	
 	private BungeeCom bungee;
 	private CommandInjector cmdInjector;
+	private NeoBukkitScheduler scheduler;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -73,6 +76,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		
 		// Set up command injector.
 		this.cmdInjector = new CommandInjector_19r2(); // FIXME Make this figure out the details automatically.
+		this.scheduler = new NeoBukkitScheduler(this, Bukkit.getScheduler());
 		
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
@@ -83,7 +87,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		// Services
 		this.broadcastService = new BukkitBroadcastService();
 		this.chatService = new BukkitChatService(this.chatForwarder);
-		this.loginService = new BukkitLoginService(this.connectionForwarder);
+		this.loginService = new BukkitLoginService(neo.getServiceManager(), this.connectionForwarder);
 		
 		// FIXME Make these register *before* we load the micromodules, somehow.
 		// Register services properly with Neocore.
@@ -193,6 +197,11 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	@Override
 	public boolean isFrontServer() {
 		return !this.getNeocoreConfig().isNetworked();
+	}
+
+	@Override
+	public Scheduler getScheduler() {
+		return this.scheduler;
 	}
 	
 }

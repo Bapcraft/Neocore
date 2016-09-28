@@ -11,7 +11,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.ServiceManager;
 import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SessionService;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.login.LoginAcceptor;
@@ -22,12 +24,15 @@ import io.neocore.bukkit.events.PlayerConnectionForwarder;
 
 public class BukkitLoginService implements LoginService {
 	
+	private ServiceManager serviceManager;
 	private LoginAcceptor acceptor;
 	private PlayerConnectionForwarder forwarder;
 	
 	private List<BukkitPlayer> players;
 	
-	public BukkitLoginService(PlayerConnectionForwarder fwdr) {
+	public BukkitLoginService(ServiceManager serviceManager, PlayerConnectionForwarder fwdr) {
+		
+		this.serviceManager = serviceManager;
 		
 		this.forwarder = fwdr;
 		this.players = new ArrayList<>();
@@ -82,6 +87,7 @@ public class BukkitLoginService implements LoginService {
 	@Override
 	public Session initSession(UUID uuid) {
 		
+		// FIXME Breaks encapsulation.
 		HostPlugin host = NeocoreAPI.getAgent().getHost();;
 		if (host.isFrontServer()) {
 			
@@ -95,7 +101,8 @@ public class BukkitLoginService implements LoginService {
 								.getAddress();
 			String serverName = host.getNeocoreConfig().getServerName();
 			
-			Session sess = new Session(uuid, name, addr, serverName);
+			SessionService serv = this.serviceManager.getService(SessionService.class);
+			Session sess = new Session(serv, uuid, name, addr, serverName);
 			sess.setState(SessionState.ACTIVE);
 			sess.setStartDate(Date.from(Instant.now()));
 			sess.setEndDate(new Date(-1L));
