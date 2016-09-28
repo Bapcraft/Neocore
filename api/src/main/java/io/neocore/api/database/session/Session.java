@@ -45,6 +45,8 @@ public class Session implements PlayerIdentity, RemoveInvalidatable {
 		
 		this.inboundServer = inbound;
 		
+		this.valid = true;
+		
 	}
 	
 	@Override
