@@ -1,6 +1,7 @@
 package io.neocore.api.player;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Provides an object representing some kind of property about the player, to
@@ -21,6 +22,16 @@ public interface IdentityProvider<T extends PlayerIdentity> {
 	public T getPlayer(UUID uuid);
 	
 	/**
+	 * Asynchronously gets the player data for the player.
+	 * 
+	 * @param uuid The UUID of the player.
+	 * @param callback The callback to stuff the player data.
+	 */
+	public default void getPlayer(UUID uuid, Consumer<T> callback) {
+		callback.accept(this.getPlayer(uuid));
+	}
+	
+	/**
 	 * Gets the player identity object from another identity object.
 	 * 
 	 * @param player The player identity we're using as the reference.
@@ -36,6 +47,19 @@ public interface IdentityProvider<T extends PlayerIdentity> {
 	 * @param uuid The player UUID.
 	 */
 	public default void unload(UUID uuid) {
+		
+	}
+	
+	/**
+	 * Asynchronously unloads the player data.
+	 * 
+	 * @param uuid The player's UUID.
+	 * @param callback The callback to run once completed.
+	 */
+	public default void unload(UUID uuid, Runnable callback) {
+		
+		this.unload(uuid);
+		callback.run();
 		
 	}
 	
