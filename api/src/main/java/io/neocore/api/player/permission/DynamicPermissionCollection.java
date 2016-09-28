@@ -67,7 +67,7 @@ public class DynamicPermissionCollection {
 	public boolean isSet(String name) {
 		
 		for (DynPerm perm : this.permissions) {
-			if (perm.getName().equalsIgnoreCase(name)) return true;
+			if (PermHelper.matches(perm.getName(), name)) return true;
 		}
 		
 		return false;
@@ -75,7 +75,7 @@ public class DynamicPermissionCollection {
 	}
 	
 	/**
-	 * Gets the permisison by name, exactly.
+	 * Gets the permission by name, exactly.
 	 * 
 	 * @param name The permission node.
 	 * @return The permission itself.
@@ -83,10 +83,37 @@ public class DynamicPermissionCollection {
 	public DynPerm getPerm(String name) {
 		
 		for (DynPerm perm : this.permissions) {
-			if (perm.getName().equalsIgnoreCase(name)) return perm;
+			if (perm.getName().equals(name)) return perm;
 		}
 		
 		return null;
+		
+	}
+	
+	/**
+	 * Gets the permission following the tree's logic.
+	 * 
+	 * @param name The permission node.
+	 * @return The permission itself.
+	 */
+	public DynPerm getMatching(String name) {
+		
+		DynPerm last = null;
+		int lastDepth = -1;
+		
+		for (DynPerm perm : this.permissions) {
+			
+			int matchDepth = PermHelper.matchDepth(perm.getName(), name);
+			if (matchDepth > lastDepth) {
+				
+				last = perm;
+				lastDepth = matchDepth;
+				
+			}
+			
+		}
+		
+		return last;
 		
 	}
 	

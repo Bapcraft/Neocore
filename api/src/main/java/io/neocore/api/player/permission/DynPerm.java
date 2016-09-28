@@ -28,4 +28,13 @@ public abstract class DynPerm {
 	 */
 	public abstract boolean getState(NeoPlayer player);
 	
+	/**
+	 * Gets the number of nodes from the root that this permission node is.
+	 * 
+	 * @return The node's depth.
+	 */
+	public int getDepth() {
+		return this.name.split("\\.").length;
+	}
+	
 }
