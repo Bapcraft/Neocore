@@ -16,9 +16,9 @@ public class ProxiedSession extends Session {
 	
 	protected List<EndpointMove> moves;
 	
-	public ProxiedSession(UUID uuid, String name, InetAddress src, String inbound, List<EndpointMove> moves) {
+	public ProxiedSession(SessionService serv, UUID uuid, String name, InetAddress src, String inbound, List<EndpointMove> moves) {
 		
-		super(uuid, name, src, inbound);
+		super(serv, uuid, name, src, inbound);
 		
 		this.moves = moves;
 		

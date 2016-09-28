@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.UUID;
 
+import io.neocore.api.database.RemoveInvalidatable;
 import io.neocore.api.player.PlayerIdentity;
 
 /**
@@ -13,7 +14,9 @@ import io.neocore.api.player.PlayerIdentity;
  * 
  * @author treyzania
  */
-public class Session implements PlayerIdentity {
+public class Session implements PlayerIdentity, RemoveInvalidatable {
+	
+	private SessionService service;
 	
 	/** The UUID of the player whose session this is. */
 	public final UUID uuid;
@@ -30,9 +33,11 @@ public class Session implements PlayerIdentity {
 	private SessionState state;
 	private Date start, end;
 	
-	private transient boolean dirty;
+	private transient boolean dirty, valid;
 	
-	public Session(UUID uuid, String name, InetAddress src, String inbound) {
+	public Session(SessionService serv, UUID uuid, String name, InetAddress src, String inbound) {
+		
+		this.service = serv;
 		
 		this.uuid = uuid;
 		this.username = name;
@@ -62,7 +67,7 @@ public class Session implements PlayerIdentity {
 	public void setState(SessionState s) {
 		
 		this.state = s;
-		this.dirty = true;
+		this.dirty();
 		
 	}
 	
@@ -88,7 +93,7 @@ public class Session implements PlayerIdentity {
 	public void setStartDate(Date d) {
 		
 		this.start = d;
-		this.dirty = true;
+		this.dirty();
 		
 	}
 	
@@ -107,7 +112,7 @@ public class Session implements PlayerIdentity {
 	public void setEndDate(Date d) {
 		
 		this.end = d;
-		this.dirty = true;
+		this.dirty();
 		
 	}
 	
@@ -118,18 +123,37 @@ public class Session implements PlayerIdentity {
 		return this.end;
 	}
 	
-	/**
-	 * Cleans this filty whore.
-	 */
-	public void clean() {
-		this.dirty = false;
+	@Override
+	public void setDirty(boolean val) {
+		this.dirty = val;
 	}
-	
-	/**
-	 * @return The dirtiness of this Session object.
-	 */
+
+	@Override
 	public boolean isDirty() {
 		return this.dirty;
+	}
+	
+	@Override
+	public void dirty() {
+		
+		if (!this.isGloballyValid()) throw new IllegalStateException("Cannot mark an invalid object as dirty!");
+		
+		this.setDirty(true);
+		this.service.flush(this, () -> {}); // The service should mark it as clean.
+		
+	}
+
+	@Override
+	public boolean isGloballyValid() {
+		return this.valid;
+	}
+
+	@Override
+	public void invalidate() {
+		
+		this.valid = false;
+		// TODO Automatically queue up the reload.
+		
 	}
 	
 }

@@ -3,6 +3,7 @@ package io.neocore.api.database.player;
 import java.util.List;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.database.RemoveInvalidatable;
 import io.neocore.api.database.ban.BanList;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.eco.Account;
@@ -10,7 +11,7 @@ import io.neocore.api.player.PlayerIdentity;
 import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
-public interface DatabasePlayer extends PlayerIdentity {
+public interface DatabasePlayer extends PlayerIdentity, RemoveInvalidatable {
 	
 	/**
 	 * @return A list of all the groups this player has.
