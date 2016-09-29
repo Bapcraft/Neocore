@@ -25,7 +25,7 @@ public abstract class EventManager {
 	public abstract <T extends Event> RegisteredListener<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority);
 	
 	/**
-	 * Rrgisters a type of event.
+	 * Registers a type of event.
 	 *  
 	 * @param event The event interface class.
 	 * @return The event bus that these events will come from.
@@ -39,6 +39,33 @@ public abstract class EventManager {
 	 * @param event The event object itself.
 	 */
 	public abstract <T extends Event> void broadcast(Class<? extends Event> type, T event);
+	
+	/**
+	 * Broadcasts the event to all applicable event busses, dynamically
+	 * determining the types.
+	 * 
+	 * @param event The event object.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends Event> void broadcast(T event) {
+		
+		Class<? extends Event> c = event.getClass();
+		
+		if (!isRaisableEvent(c)) {
+			
+			for (Class<?> inter : c.getInterfaces()) {
+				if (isRaisableEvent(inter) && Event.class.isAssignableFrom(inter)) c = (Class<? extends Event>) inter;
+			}
+			
+		}
+		
+		this.broadcast(c, event);
+		
+	}
+	
+	private static boolean isRaisableEvent(Class<?> c) {
+		return c.isAnnotationPresent(Raisable.class);
+	}
 	
 	/**
 	 * Registers the internally-defined Neocore events in the specified EventManager.
