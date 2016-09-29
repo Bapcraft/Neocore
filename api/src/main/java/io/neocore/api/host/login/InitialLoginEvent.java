@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.UUID;
 
 import io.neocore.api.event.Event;
+import io.neocore.api.event.Raisable;
 
 /**
  * Very tiny, lightweight class for events when players first connect.  Do not
@@ -12,6 +13,7 @@ import io.neocore.api.event.Event;
  * 
  * @author treyzania
  */
+@Raisable
 public interface InitialLoginEvent extends Event {
 	
 	/**

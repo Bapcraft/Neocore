@@ -1,6 +1,7 @@
 package io.neocore.api.host.login;
 
 import io.neocore.api.event.PlayerEvent;
+import io.neocore.api.event.Raisable;
 
 /**
  * Event for when the player has finished connecting and their data has been
@@ -9,6 +10,7 @@ import io.neocore.api.event.PlayerEvent;
  * @author treyzania
  *
  */
+@Raisable
 public interface PostLoginEvent extends PlayerEvent {
 	
 	/**

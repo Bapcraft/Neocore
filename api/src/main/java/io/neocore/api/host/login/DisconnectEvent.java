@@ -1,12 +1,14 @@
 package io.neocore.api.host.login;
 
 import io.neocore.api.event.PlayerEvent;
+import io.neocore.api.event.Raisable;
 
 /**
  * Event fired when a player disconnects from the server for whichever reason.
  * 
  * @author treyzania
  */
+@Raisable
 public interface DisconnectEvent extends PlayerEvent {
 	
 	/**

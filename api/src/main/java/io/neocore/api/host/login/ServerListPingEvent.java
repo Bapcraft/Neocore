@@ -3,6 +3,7 @@ package io.neocore.api.host.login;
 import java.net.InetAddress;
 
 import io.neocore.api.event.Event;
+import io.neocore.api.event.Raisable;
 
 /**
  * Event fired whenever a client has requested the server's MOTD from the
@@ -10,6 +11,7 @@ import io.neocore.api.event.Event;
  * 
  * @author treyzania
  */
+@Raisable
 public interface ServerListPingEvent extends Event {
 	
 	/**

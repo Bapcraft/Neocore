@@ -1,6 +1,7 @@
 package io.neocore.api.host.proxy;
 
 import io.neocore.api.event.PlayerEvent;
+import io.neocore.api.event.Raisable;
 
 /**
  * An event fired when a player has fully registered with the proxy host and is
@@ -8,6 +9,7 @@ import io.neocore.api.event.PlayerEvent;
  * 
  * @author treyzania
  */
+@Raisable
 public interface DownstreamTransferEvent extends PlayerEvent {
 	
 	/**
