@@ -15,17 +15,15 @@ public class CommonEventManager extends EventManager {
 	private Map<Class<? extends Event>, EventBus<?>> busses;
 	
 	public CommonEventManager() {
-		
 		this.busses = new HashMap<>();
-		
-		// Set up the internal events.
-		EventManager.setupNeocoreEvents(this);
-		
 	}
 	
 	@SuppressWarnings("unchecked") // I hope this doesn't come to bite me in the ass.
 	@Override
 	public <T extends Event> RegisteredListener<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority) {
+		
+		// Make sure we have a bus for it already set up.
+		registerEventType(clazz);
 		
 		// Find and register the listener in the bus.
 		EventBus<T> bus = (EventBus<T>) this.busses.get(clazz);
@@ -54,7 +52,13 @@ public class CommonEventManager extends EventManager {
 	
 	@Override
 	public <T extends Event> void broadcast(Class<? extends Event> type, T event) {
+		
+		// Make sure we have a bus for it already set up.
+		registerEventType(type);
+		
+		// Actually broadcast it.
 		this.busses.get(type).broadcast(event);
+		
 	}
 	
 }

@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import io.neocore.api.NeocoreAPI;
@@ -15,27 +18,35 @@ import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseService;
+import io.neocore.api.database.LoadAsync;
 import io.neocore.api.database.player.DatabasePlayer;
+import io.neocore.api.database.player.PlayerService;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionService;
+import io.neocore.api.event.database.FlushReason;
+import io.neocore.api.event.database.LoadReason;
 import io.neocore.api.host.HostService;
+import io.neocore.api.host.Scheduler;
 import io.neocore.api.host.login.LoginService;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
-import io.neocore.common.HostPlayerInjector;
 
 public class CommonPlayerManager {
 	
 	private Set<NeoPlayer> playerCache = new TreeSet<>();
 	
 	private ServiceManager serviceManager;
-	private HostPlayerInjector hostPlayerInjector;
+	private Scheduler scheduler;
 	
-	public CommonPlayerManager(ServiceManager sm, HostPlayerInjector injector) {
+	private DataServiceWrapper<DatabasePlayer, PlayerService> playerWrapper;
+	private DataServiceWrapper<Session, SessionService> sessionWrapper;
+	private boolean wrappedOk = false;
+	
+	public CommonPlayerManager(ServiceManager sm, Scheduler sched) {
 		
 		this.serviceManager = sm;
-		this.hostPlayerInjector = injector;
+		this.scheduler = sched;
 		
 	}
 	
@@ -51,92 +62,130 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public NeoPlayer assemblePlayer(UUID uuid) {
+	public synchronized NeoPlayer assemblePlayer(UUID uuid, Consumer<NeoPlayer> callback) {
 		
 		NeoPlayer np = new NeoPlayer(uuid);
 		
-		// TODO Do something with the supplier this generate
-		this.hostPlayerInjector.injectPermissions(np);
+		// TODO Load the simple subsystems.
 		
-		injectFields(np);
+		// Make sure these are all good to go.
+		this.initWrappers();
+		
+		// Set up the data load.
+		this.playerWrapper.load(uuid, LoadReason.JOIN, dbp -> {
+			
+			try {
+				copyIntoField(np, dbp);
+			} catch (Throwable t) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting player data for player " + uuid + "!", t);
+			}
+			
+			// TODO Configure permissions based on the group records.
+			
+		});
+		
+		// Load the session, either by creating it or loading it from the database.
+		if (NeocoreAPI.isFrontend()) {
+			
+			// We have to initialize it directly because they are *probably* connecting directly.
+			LoginService login = this.serviceManager.getService(LoginService.class);
+			Session inited = login.initSession(uuid);
+			
+			try {
+				copyIntoField(np, inited);
+			} catch (Throwable t) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting new session data for player " + uuid + "!", t);
+			}
+			
+			// Now we wait to finish flushing before we continue.
+			CountDownLatch flushReturn = new CountDownLatch(1);
+			this.sessionWrapper.flush(inited, FlushReason.EXPLICIT, () -> flushReturn.countDown()); // TODO Events should know that it's because it's a new object.
+			try {
+				flushReturn.await(5L, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				NeocoreAPI.getLogger().severe("Took too long to flush newly-created session data for player " + uuid + "!");
+			}
+			
+		} else {
+			
+			// In this case we just have to load it from the DB because we know someone else made it.
+			this.sessionWrapper.load(uuid, LoadReason.JOIN, sess -> {
+				
+				try {
+					copyIntoField(np, sess);
+				} catch (Throwable t) {
+					NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting session data for player " + uuid + "!", t);
+				}
+				
+			});
+			
+		}
 		
 		// Done.
 		this.playerCache.add(np);
+		if (callback != null) callback.accept(np);
 		return np;
 		
 	}
 	
-	private void injectFields(NeoPlayer player) {
+	public NeoPlayer assemblePlayer(UUID uuid) {
+		return this.assemblePlayer(uuid, null);
+	}
+	
+	@SuppressWarnings({ "unchecked", "unused" })
+	private void getAndInject(ServiceType type, NeoPlayer player) {
 		
-		// Tabulate the services we need player data from.
-		List<ServiceType> idents = getInjectedServices();
+		RegisteredService reg = this.serviceManager.getService(type);
+		if (reg == null) return;
 		
-		// Get the actual objects we need to inject.
-		List<Object> injections = new ArrayList<>();
-		for (ServiceType type : idents) {
-			
-			RegisteredService reg = this.serviceManager.getService(type);
-			if (reg == null) continue;
-			
-			ServiceProvider prov = reg.getServiceProvider();
-			
-			NeocoreAPI.getLogger().info("Pooling " + prov.getClass().getName() + " for injection...");
-			
-			// We need some speical handling for sessions.
-			if (prov instanceof IdentityProvider) injections.add(((IdentityProvider<?>) prov).getPlayer(player));
-			
-		}
+		ServiceProvider prov = reg.getServiceProvider();
+		if (!(prov instanceof IdentityProvider)) return;
 		
-		// Now figure out the session bullshit.
-		SessionService serv = this.serviceManager.getService(SessionService.class);
-		if (NeocoreAPI.getAgent().getHost().isFrontServer()) {
-			
-			// We have to initialize the session.
-			LoginService login = this.serviceManager.getService(LoginService.class);
-			Session sess = login.initSession(player.getUniqueId());
-			serv.flush(sess);
-			injections.add(sess);
-			
-		} else {
-			injections.add(serv.getSession(player.getUniqueId()));
-		}
+		IdentityProvider<? extends PlayerIdentity> ip = (IdentityProvider<? extends PlayerIdentity>) prov;
 		
-		// Actually inject the things.
-		for (Object o : injections) {
+		Runnable injector = () -> {
 			
-			if (o == null) continue;
+			PlayerIdentity pi = ip.getPlayer(player.getUniqueId());
 			
 			try {
-				
-				for (Field f : player.getClass().getDeclaredFields()) {
-					
-					if (f.getType().isAssignableFrom(o.getClass())) {
-						
-						boolean acc = f.isAccessible();
-						f.setAccessible(true);
-						f.set(player, o);
-						f.setAccessible(acc);
-						
-					}
-					
-				}
-				
+				copyIntoField(player, pi);
 			} catch (Exception e) {
-				NeocoreAPI.getLogger().log(Level.WARNING, "Error injecting player aspect " + o.getClass().getSimpleName() + "!", e);
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Error injecting player aspect " + reg.getType().getName() + "!", e);
 			}
 			
-		}
+		};
 		
-		// Now update the username.
-		LoginService login = this.serviceManager.getService(LoginService.class);
-		DatabasePlayer dbp = player.getIdentity(DatabasePlayer.class);
-		String lastUsername = dbp.getLastUsername();
-		String currentUsername = login.getPlayer(player).getName();
-		if (!lastUsername.equals(currentUsername)) dbp.setLastUsername(currentUsername);
+		// Run it in a separate thread if we need to, otherwise run it here.
+		if (prov.getClass().isAnnotationPresent(LoadAsync.class)) {
+			this.scheduler.invokeAsync(injector);
+		} else {
+			injector.run();
+		}
 		
 	}
 	
-	public void unloadPlayer(UUID uuid) {
+	private static Field findField(Class<?> clazz, Class<?> type) {
+		
+		for (Field f : clazz.getDeclaredFields()) {
+			if (f.getType().isAssignableFrom(type)) return f;
+		}
+		
+		return null;
+		
+	}
+	
+	private static void copyIntoField(Object container, Object into) throws IllegalArgumentException, IllegalAccessException {
+		
+		Field f = findField(container.getClass(), into.getClass());
+		
+		boolean acc = f.isAccessible();
+		f.setAccessible(true);
+		f.set(container, into);
+		f.setAccessible(acc);
+		
+	}
+	
+	public synchronized void unloadPlayer(UUID uuid) {
 		
 		NeoPlayer np = this.getPlayer(uuid);
 		NeocoreAPI.getLogger().info(uuid + " -> " + np);
@@ -157,7 +206,7 @@ public class CommonPlayerManager {
 				IdentityProvider<?> ip = (IdentityProvider<?>) prov;
 				
 				// Quick and easy, should flush things if necessary.
-				ip.unload(np);
+				ip.unload(np.getUniqueId());
 				
 			}
 			
@@ -171,6 +220,16 @@ public class CommonPlayerManager {
 		this.unloadPlayer(pi.getUniqueId());
 	}
 	
+	private synchronized void initWrappers() {
+
+		if (this.wrappedOk) return;
+		
+		this.playerWrapper = new DataServiceWrapper<>(this.scheduler, null, this.serviceManager.getService(PlayerService.class));
+		this.sessionWrapper = new DataServiceWrapper<>(this.scheduler, null, this.serviceManager.getService(SessionService.class));
+		this.wrappedOk = true;
+		
+	}
+	
 	private static List<ServiceType> getInjectedServices() {
 		
 		List<ServiceType> types = new ArrayList<>();
@@ -178,7 +237,6 @@ public class CommonPlayerManager {
 			HostService.LOGIN,
 			HostService.PERMISSIONS,
 			HostService.CHAT,
-			DatabaseService.PLAYER,
 			HostService.PROXY,
 			HostService.ENDPOINT));
 		
