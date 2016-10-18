@@ -69,6 +69,11 @@ public class EventBus<T extends Event> {
 		
 		for (RegisteredListener<T> rl : this.listeners.descendingSet()) {
 			
+			/*
+			 * Really wish I could use ExoContainers here, but I don't want to
+			 * bother including Jzania in this project.
+			 */
+			
 			try {
 				
 				// Verification
