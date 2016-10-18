@@ -3,6 +3,9 @@ package io.neocore.common.player;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import com.treyzania.jzania.ExoContainer;
+
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.IdentityLinkage;
 import io.neocore.api.database.PersistentPlayerIdentity;
 import io.neocore.api.event.database.FlushReason;
@@ -12,6 +15,8 @@ import io.neocore.api.event.database.UnloadReason;
 import io.neocore.api.host.Scheduler;
 
 public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends IdentityLinkage<T>> {
+	
+	private ExoContainer container;
 	
 	private Scheduler scheduler;
 	private LifecycleEventPublisher<T> publisher;
@@ -23,6 +28,8 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 		this.publisher = pusher;
 		this.provider = provider;
 		
+		this.container = new ExoContainer(NeocoreAPI.getLogger());
+		
 	}
 	
 	public void load(UUID uuid, LoadReason reason, Consumer<T> callback) {
@@ -33,8 +40,7 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 			T ident = this.provider.getPlayer(uuid);
 			this.publisher.broadcastPostLoad(reason, ident);
 			
-			// Callback.  Does it really matter at this point, though?  The thread is already exiting.
-			this.scheduler.invokeAsync(() -> callback.accept(ident));
+			this.container.invoke("LoadCallback", () -> callback.accept(ident));
 			
 		});
 		
@@ -52,8 +58,7 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 			T reloaded = this.provider.reload(uuid);
 			this.publisher.broadcastPostReload(reason, reloaded);
 			
-			// Callback.  Does it really matter at this point, though?  The thread is already exiting.
-			this.scheduler.invokeAsync(() -> callback.accept(reloaded));
+			this.container.invoke("ReloadCallback", () -> callback.accept(reloaded));
 			
 		});
 		
@@ -67,8 +72,7 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 			this.provider.flush(ident);
 			this.publisher.broadcastPostFlush(reason, ident);
 			
-			// Callback.  Does it really matter at this point, though?  The thread is already exiting.
-			this.scheduler.invokeAsync(callback);
+			this.container.invoke("FlushCallback", callback);
 			
 		});
 		
@@ -84,8 +88,7 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 			T ident = this.provider.reload(uuid);
 			this.publisher.broadcastPostReload(ReloadReason.INVALIDATION, ident);
 			
-			// Callback.  Does it really matter at this point, though?  The thread it already exiting.
-			this.scheduler.invokeAsync(() -> callback.accept(ident));
+			this.container.invoke("RevalidateCallback", () -> callback.accept(ident));
 			
 		});
 		
@@ -105,8 +108,7 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 			this.provider.unload(ident.getUniqueId());
 			this.publisher.broadcastPostUnload(reason, ident.getUniqueId());
 			
-			// Callback.  Does it really matter at this point, though?  The thread is already exiting.
-			this.scheduler.invokeAsync(callback);
+			this.container.invoke("UnloadCallback", callback);
 			
 		});
 		
