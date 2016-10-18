@@ -5,56 +5,47 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissibleBase;
 
-import io.neocore.api.NeocoreAPI;
-import io.neocore.api.player.NeoPlayer;
-import io.neocore.api.player.permission.DynamicPermissionCollection;
-import io.neocore.bukkit.permissions.DynamicPermissibleBase;
-import io.neocore.common.HostPlayerInjector;
+import com.treyzania.jzania.reflect.ReflectionHelper;
 
-public class BukkitPlayerInjector implements HostPlayerInjector {
+import io.neocore.api.NeocoreAPI;
+import io.neocore.bukkit.permissions.DynamicPermissibleBase;
+
+public class PermissionInjector {
 	
 	private static boolean inited = false;
 	
 	private static Field craftHumanEntityDotPerm;
 	private static List<Field> permissibleBaseFields = new ArrayList<>();
 	
-	@Override
-	public Supplier<DynamicPermissionCollection> injectPermissions(NeoPlayer player) {
+	public DynamicPermissibleBase injectPermissions(UUID uuid) {
 		
 		init();
 		
-		Player p = Bukkit.getPlayer(player.getUniqueId());
-		
-		Supplier<DynamicPermissionCollection> supplier = null;
+		Player p = Bukkit.getPlayer(uuid);
 		
 		// Bukkit internals bullshit
 		try {
 			
 			PermissibleBase oldPb = (PermissibleBase) craftHumanEntityDotPerm.get(p);
-			DynamicPermissibleBase newPb = new DynamicPermissibleBase(p, player);
+			DynamicPermissibleBase newPb = new DynamicPermissibleBase(p); // FIXME null
 			
-			for (Field f : permissibleBaseFields) {
-				
-				// Really quick and dirty copy of the values in the old PermissibleBase.
-				f.set(newPb, f.get(oldPb));
-				
-			}
+			ReflectionHelper.copyFields(PermissibleBase.class, oldPb, newPb);
 			
 			craftHumanEntityDotPerm.set(p, newPb);
-			supplier = () -> newPb.getNewDynamicPermissionCollection();
+			return newPb;
 			
 		} catch (Exception e) {
 			NeocoreAPI.getLogger().log(Level.SEVERE, "Error injecting dynamic permissions!", e);
 		}
 		
-		return supplier;
+		return null;
 		
 	}
 	
