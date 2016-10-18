@@ -5,7 +5,6 @@ import java.util.UUID;
 import io.neocore.api.database.DatabaseServiceProvider;
 import io.neocore.api.database.IdentityLinkage;
 import io.neocore.api.database.LoadAsync;
-import io.neocore.api.player.IdentityProvider;
 
 @LoadAsync
 public interface PlayerService extends DatabaseServiceProvider, IdentityLinkage<DatabasePlayer> {

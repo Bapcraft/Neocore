@@ -5,7 +5,7 @@ package io.neocore.api.task;
  * 
  * @author treyzania
  */
-public abstract class Task {
+public abstract class Task implements Runnable {
 	
 	private final TaskDelegator delegator;
 	
@@ -26,10 +26,5 @@ public abstract class Task {
 	public String getName() {
 		return this.getClass().getSimpleName();
 	}
-	
-	/**
-	 * Actually runs the task.
-	 */
-	public abstract void run();
 	
 }
