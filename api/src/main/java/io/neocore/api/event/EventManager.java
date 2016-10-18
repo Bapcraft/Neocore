@@ -2,13 +2,6 @@ package io.neocore.api.event;
 
 import java.util.function.Consumer;
 
-import io.neocore.api.host.ServerInitializedEvent;
-import io.neocore.api.host.chat.ChatEvent;
-import io.neocore.api.host.login.DisconnectEvent;
-import io.neocore.api.host.login.InitialLoginEvent;
-import io.neocore.api.host.login.PostLoginEvent;
-import io.neocore.api.host.login.ServerListPingEvent;
-import io.neocore.api.host.proxy.DownstreamTransferEvent;
 import io.neocore.api.module.Module;
 
 public abstract class EventManager {
@@ -65,30 +58,6 @@ public abstract class EventManager {
 	
 	private static boolean isRaisableEvent(Class<?> c) {
 		return c.isAnnotationPresent(Raisable.class);
-	}
-	
-	/**
-	 * Registers the internally-defined Neocore events in the specified EventManager.
-	 * 
-	 * @param man The EventManager to set up events for.
-	 */
-	public static void setupNeocoreEvents(EventManager man) {
-		
-		// Neocore-specific
-		man.registerEventType(ServerInitializedEvent.class);
-		man.registerEventType(ServerListPingEvent.class);
-		
-		// Connection mediation stuff
-		man.registerEventType(InitialLoginEvent.class);
-		man.registerEventType(PostLoginEvent.class);
-		man.registerEventType(DisconnectEvent.class);
-		
-		// Proxy
-		man.registerEventType(DownstreamTransferEvent.class);
-		
-		// Chat
-		man.registerEventType(ChatEvent.class);
-		
 	}
 	
 }

@@ -1,6 +1,8 @@
 package io.neocore.api.database;
 
-public interface RemoveInvalidatable {
+import io.neocore.api.player.PlayerIdentity;
+
+public interface PersistentPlayerIdentity extends PlayerIdentity {
 	
 	/**
 	 * Sets the dirtiness state of the object.

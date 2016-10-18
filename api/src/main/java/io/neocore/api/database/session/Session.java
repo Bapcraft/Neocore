@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.UUID;
 
-import io.neocore.api.database.RemoveInvalidatable;
+import io.neocore.api.database.PersistentPlayerIdentity;
 import io.neocore.api.player.PlayerIdentity;
 
 /**
@@ -14,9 +14,7 @@ import io.neocore.api.player.PlayerIdentity;
  * 
  * @author treyzania
  */
-public class Session implements PlayerIdentity, RemoveInvalidatable {
-	
-	private SessionService service;
+public class Session implements PlayerIdentity, PersistentPlayerIdentity {
 	
 	/** The UUID of the player whose session this is. */
 	public final UUID uuid;
@@ -35,9 +33,7 @@ public class Session implements PlayerIdentity, RemoveInvalidatable {
 	
 	private transient boolean dirty, valid;
 	
-	public Session(SessionService serv, UUID uuid, String name, InetAddress src, String inbound) {
-		
-		this.service = serv;
+	public Session(UUID uuid, String name, InetAddress src, String inbound) {
 		
 		this.uuid = uuid;
 		this.username = name;
@@ -141,7 +137,6 @@ public class Session implements PlayerIdentity, RemoveInvalidatable {
 		if (!this.isGloballyValid()) throw new IllegalStateException("Cannot mark an invalid object as dirty!");
 		
 		this.setDirty(true);
-		this.service.flush(this, () -> {}); // The service should mark it as clean.
 		
 	}
 
