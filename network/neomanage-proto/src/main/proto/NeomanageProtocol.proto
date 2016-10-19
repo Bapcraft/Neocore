@@ -1,11 +1,63 @@
 package io.neocore.manage.proto;
 
-message Register {
+message RegisterClient {
 	
-	required string servername = 1;
-	required string networkname = 2;
+	required string name = 1;
+	
+	enum ClientType {
+		
+		UNDEFINED = 0;
+		
+		SERVER = 1;
+		UTILITY = 2;
+		
+	}
+	
+	required ClientType clientType = 2;
+	
+	optional ServerClient clientServer = 3;
 	
 }
 
-message Unregister {
+message ServerClient {
+	
+	enum ServerType {
+		
+		UNDEFINED = 0;
+		
+		GAME = 1;
+		PROXY = 2;
+		
+	}
+	
+	enum ServerRole {
+		
+		FRONTEND = 1;
+		HIDDEN_GAME = 2;
+		
+	}
+	
+	required ServerType serverType = 1;
+	required ServerRole serverRole = 2;
+	
+	optional string networkName = 3;
+	optional string proxyName = 4;
+	
 }
+
+message UnregisterServer {
+	
+	enum UnregisterReason {
+		
+		SHUTDOWN = 0;
+		CRASH = 1;
+		
+		OTHER = 2;
+		
+	}
+	
+	required UnregisterReason reason = 1;
+	optional string reasonStr = 2;
+	
+}
+
