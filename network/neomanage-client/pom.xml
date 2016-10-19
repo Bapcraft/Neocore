@@ -2,7 +2,7 @@
 	
 	<modelVersion>4.0.0</modelVersion>
 	
-	<artifactId>neomanage-proto</artifactId>
+	<artifactId>neomanage-client</artifactId>
 	
 	<parent>
 		<groupId>io.neocore</groupId>
@@ -13,18 +13,25 @@
 	<dependencies>
 		
 		<dependency>
-			<groupId>com.google.protobuf</groupId>
-			<artifactId>protobuf-java</artifactId>
-			<version>3.1.0</version>
+			<groupId>io.neocore</groupId>
+			<artifactId>neomanage-proto</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.neocore</groupId>
+			<artifactId>neocore-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<!-- Let's use undocumented code because we're 2edgy. -->
+		<dependency>
+			<groupId>io.neocore</groupId>
+			<artifactId>neocore-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
 	</dependencies>
-	
-	<build>
-		
-		<sourceDirectory>src/main/java</sourceDirectory>
-		
-	</build>
 	
 </project>
 
