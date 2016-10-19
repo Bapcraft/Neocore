@@ -1,0 +1,11 @@
+package io.neocore.manage.proto;
+
+message Register {
+	
+	required string servername = 1;
+	required string networkname = 2;
+	
+}
+
+message Unregister {
+}
