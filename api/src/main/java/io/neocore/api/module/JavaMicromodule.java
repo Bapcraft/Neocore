@@ -8,7 +8,7 @@ package io.neocore.api.module;
 public abstract class JavaMicromodule implements Micromodule {
 	
 	private String name, version;
-
+	
 	@Override
 	public String getName() {
 		return this.name;

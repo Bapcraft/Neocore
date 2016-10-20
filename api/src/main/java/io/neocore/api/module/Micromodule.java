@@ -1,5 +1,7 @@
 package io.neocore.api.module;
 
+import com.typesafe.config.Config;
+
 /**
  * A mini plugin that can operate on a wider range of server types/designs.
  * 
@@ -16,6 +18,15 @@ public interface Micromodule extends Module {
 	 * Called immediately after the micrmodule is instantiated.
 	 */
 	public default void onLoad() {
+		
+	}
+	
+	/**
+	 * Called before being enabled to set up the configuration of the micromodule.
+	 * 
+	 * @param config The HOCON configuration object.
+	 */
+	public default void configure(Config config) {
 		
 	}
 	
