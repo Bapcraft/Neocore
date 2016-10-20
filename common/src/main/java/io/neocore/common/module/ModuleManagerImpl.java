@@ -1,10 +1,14 @@
 package io.neocore.common.module;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.treyzania.jzania.ExoContainer;
 import com.treyzania.jzania.data.MemberReferenceSet;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.module.Micromodule;
@@ -13,6 +17,8 @@ import io.neocore.api.module.ModuleManager;
 import io.neocore.common.module.micro.MicromoduleLoader;
 
 public class ModuleManagerImpl implements ModuleManager {
+	
+	private ExoContainer container;
 	
 	private Set<Module> modules;
 	private boolean open = true;
@@ -28,6 +34,8 @@ public class ModuleManagerImpl implements ModuleManager {
 		if (!micromoduleDir.exists()) micromoduleDir.mkdirs();
 		
 		this.micromoduleLoader = new MicromoduleLoader(this, micromoduleDir);
+		
+		this.container = new ExoContainer(NeocoreAPI.getLogger());
 		
 	}
 	
@@ -51,16 +59,34 @@ public class ModuleManagerImpl implements ModuleManager {
 		
 		final Logger log = NeocoreAPI.getLogger();
 		
-		log.info("Enabling micromodules...");
+		log.info("Configuring micromodules...");
+		Set<Micromodule> ok = new HashSet<>();
 		this.modules.forEach(m -> {
 			
 			if (m instanceof Micromodule) {
 				
-				log.info("Enabling " + m.getName() + " v" + m.getVersion() + "...");
-				((Micromodule) m).onEnable();
-				log.info("Micromodule " + m.getName() + " enabled!");
+				this.container.invoke(String.format("MicromoduleConfigure(%s)", m.getName()), () -> {
+					
+					Config config = ConfigFactory.parseFile(new File(m.getName() + ".conf"));
+					((Micromodule) m).configure(config);
+					ok.add((Micromodule) m);
+					
+				});
 				
 			}
+			
+		});
+		
+		log.info("Enabling micromodules...");
+		ok.forEach(m -> {
+			
+			log.info("Enabling " + m.getName() + " v" + m.getVersion() + "...");
+			
+			this.container.invoke(String.format("MicromoduleEnable(%s)", m.getName()), () -> {
+				((Micromodule) m).onEnable();
+			});
+			
+			log.info("Micromodule " + m.getName() + " enabled!");
 			
 		});
 		

@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import com.treyzania.jzania.ExoContainer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -25,6 +26,8 @@ import io.neocore.api.module.Module;
 import io.neocore.common.module.ModuleManagerImpl;
 
 public class MicromoduleLoader {
+	
+	private ExoContainer container;
 	
 	private final ModuleManagerImpl moduleManager;
 	private final File micromoduleDirectory;
@@ -38,6 +41,8 @@ public class MicromoduleLoader {
 		this.micromoduleDirectory = dir;
 		
 		this.loaders = new HashMap<>();
+		
+		this.container = new ExoContainer(NeocoreAPI.getLogger());
 		
 		if (!dir.isDirectory()) throw new IllegalArgumentException("Micromodule path is not a directory!");
 		File[] micromodules = dir.listFiles();
@@ -111,7 +116,7 @@ public class MicromoduleLoader {
 		}
 		
 		// Now that it's all loaded, we can invoke this.
-		jm.onLoad();
+		this.container.invoke(String.format("MicromoduleLoad(%s)", jm.getName()), () -> jm.onLoad());
 		
 		return jm;
 		
