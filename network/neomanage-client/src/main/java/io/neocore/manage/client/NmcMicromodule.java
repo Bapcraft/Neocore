@@ -1,5 +1,6 @@
 package io.neocore.manage.client;
 
+import java.net.InetSocketAddress;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -7,9 +8,12 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigValueType;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.module.JavaMicromodule;
@@ -23,17 +27,19 @@ public class NmcMicromodule extends JavaMicromodule {
 	private Bootstrap nettyBootstrap;
 	
 	private EncryptionConfig cryptoConf;
+	private List<InetSocketAddress> remotes = new ArrayList<>();
 	
 	@Override
 	public void configure(Config config) {
 		
+		// Check for traffic incryption settings.
 		if (config.getBoolean("useCrypto")) {
 			
 			String pub = config.getString("serverPrivateKey");
 			String priv = config.getString("localPublicKey");
 			
 			try {
-
+				
 				KeyFactory fac = KeyFactory.getInstance("RSA");
 				X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(pub.getBytes());
 				PublicKey pubKey = fac.generatePublic(pubKeySpec);
@@ -48,6 +54,21 @@ public class NmcMicromodule extends JavaMicromodule {
 			}
 			
 		}
+		
+		// Set up the list of daemons.
+		config.getList("daemons").forEach(cv -> {
+			
+			if (cv.valueType() == ConfigValueType.STRING) {
+				
+				String[] parts = ((String) cv.unwrapped()).split(":", 2);
+				InetSocketAddress addr = new InetSocketAddress(parts[0], Integer.parseInt(parts[1]));
+				
+				NeocoreAPI.getLogger().info("Using daemon at " + addr + "...");
+				this.remotes.add(addr);
+				
+			}
+			
+		});
 		
 	}
 	
