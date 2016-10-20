@@ -45,6 +45,22 @@ message ServerClient {
 	
 }
 
+message SetLockState {
+	
+	enum LockType {
+		
+		PLAYER = 1;
+		SESSION = 2;
+		
+	}
+	
+	required string uuid = 1;
+	required LockType type = 2;
+	
+	required bool state = 3;
+	
+}
+
 message UnregisterServer {
 	
 	enum UnregisterReason {
