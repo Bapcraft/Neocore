@@ -16,11 +16,15 @@ import io.neocore.api.host.Scheduler;
 
 public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends IdentityLinkage<T>> {
 	
+	private static final long LOCK_TIMEOUT = 5000L;
+	
 	private ExoContainer container;
 	
 	private Scheduler scheduler;
 	private LifecycleEventPublisher<T> publisher;
 	private P provider;
+	
+	private volatile LockCoordinator<T> locker;
 	
 	public DataServiceWrapper(Scheduler sched, LifecycleEventPublisher<T> pusher, P provider) {
 			
@@ -28,13 +32,21 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 		this.publisher = pusher;
 		this.provider = provider;
 		
+		this.locker = new NullLockCoordinator<>(); // If anything needs to override this, deal with it.
+		
 		this.container = new ExoContainer(NeocoreAPI.getLogger());
 		
+	}
+	
+	public void overrideLockCoordinator(LockCoordinator<T> lock) {
+		this.locker = lock;
 	}
 	
 	public void load(UUID uuid, LoadReason reason, Consumer<T> callback) {
 		
 		this.scheduler.invokeAsync(() -> {
+			
+			this.locker.blockUntilUnlocked(uuid, LOCK_TIMEOUT);
 			
 			this.publisher.broadcastPreLoad(reason, uuid);
 			T ident = this.provider.getPlayer(uuid);
@@ -54,6 +66,8 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 		
 		this.scheduler.invokeAsync(() -> {
 			
+			this.locker.blockUntilUnlocked(uuid, LOCK_TIMEOUT);
+			
 			this.publisher.broadcastPreReload(reason, uuid);
 			T reloaded = this.provider.reload(uuid);
 			this.publisher.broadcastPostReload(reason, reloaded);
@@ -68,10 +82,13 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 		
 		this.scheduler.invokeAsync(() -> {
 			
+			this.locker.lock(ident.getUniqueId());
+			
 			this.publisher.broadcastPreFlush(reason, ident);
 			this.provider.flush(ident);
 			this.publisher.broadcastPostFlush(reason, ident);
 			
+			this.locker.unlock(ident.getUniqueId());
 			this.container.invoke("FlushCallback", callback);
 			
 		});

@@ -4,6 +4,4 @@ import io.neocore.api.host.HostPlugin;
 
 public interface FullHostPlugin extends HostPlugin {
 	
-	public HostPlayerInjector getPlayerInjector();
-	
 }
