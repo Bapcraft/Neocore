@@ -1,7 +1,6 @@
 package io.neocore.bukkit.services;
 
 import java.net.InetAddress;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.database.session.Session;
-import io.neocore.api.database.session.SessionService;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.login.LoginAcceptor;
@@ -96,15 +94,12 @@ public class BukkitLoginService implements LoginService {
 			// Initialize the state.
 			Player p = Bukkit.getPlayer(uuid);
 			String name = p.getName();
-			InetAddress addr = p
-								.getAddress()
-								.getAddress();
+			InetAddress addr = p.getAddress().getAddress(); // Eww yucky.
 			String serverName = host.getNeocoreConfig().getServerName();
 			
-			SessionService serv = this.serviceManager.getService(SessionService.class);
-			Session sess = new Session(serv, uuid, name, addr, serverName);
+			Session sess = new Session(uuid, name, addr, serverName);
 			sess.setState(SessionState.ACTIVE);
-			sess.setStartDate(Date.from(Instant.now()));
+			sess.setStartDate(new Date());
 			sess.setEndDate(new Date(-1L));
 			
 			return sess;

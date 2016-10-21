@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
@@ -12,21 +13,49 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.permissions.ServerOperator;
 
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.player.permission.DynPerm;
 import io.neocore.api.player.permission.DynamicPermissionCollection;
 
-// TODO FIXME Dynamic permission don't follow proper rules regarding permission trees.  It's entirely hit-or-miss.
 public class DynamicPermissibleBase extends PermissibleBase {
 	
 	private List<DynamicPermissionCollection> dynamicAttachments;
-	private NeoPlayer player;
+	private Supplier<NeoPlayer> playerSup;
 	
-	public DynamicPermissibleBase(ServerOperator opable, NeoPlayer player) {
+	public DynamicPermissibleBase(ServerOperator opable) {
 		
 		super(opable);
 		
 		this.dynamicAttachments = new ArrayList<>();
-		this.player = player;
+		this.playerSup = () -> { return null; }; // yucky looking lambda
 		
+	}
+	
+	/**
+	 * Sets this player object to always be this NeoPlayer.
+	 * 
+	 * @param p The player.
+	 */
+	@Deprecated
+	public void setPlayer(NeoPlayer p) {
+		this.setPlayer(() -> { return p; });
+	}
+	
+	/**
+	 * Sets the player supplier to an object that will supply this player object.
+	 * 
+	 * @param p The player supplier.
+	 */
+	public void setPlayer(Supplier<NeoPlayer> p) {
+		this.playerSup = p;
+	}
+	
+	/**
+	 * Gets the player as we currently know it.
+	 * 
+	 * @return The player, apparently.
+	 */
+	public NeoPlayer getPlayer() {
+		return this.playerSup.get();
 	}
 	
 	public void addDynamicCollection(DynamicPermissionCollection collection) {
@@ -72,16 +101,20 @@ public class DynamicPermissibleBase extends PermissibleBase {
 		
 	}
 	
-	public io.neocore.api.player.permission.DynPerm getDynamicPerm(String name) {
+	public DynPerm getDynamicPerm(String name) {
+		
+		DynPerm last = null;
 		
 		for (DynamicPermissionCollection dyn : this.dynamicAttachments) {
 			
-			io.neocore.api.player.permission.DynPerm perm = dyn.getPerm(name);
-			if (perm != null) return perm;
+			DynPerm perm = dyn.getMatching(name);
+			
+			// If we found a matching permission node then we check to see if the depth is okay and overwrite what we've found.
+			if (perm != null && (last == null || last.getDepth() < perm.getDepth())) last = perm;
 			
 		}
 		
-		return null;
+		return last;
 		
 	}
 	
@@ -90,8 +123,8 @@ public class DynamicPermissibleBase extends PermissibleBase {
 		
 		if (this.isSetDynamically(inName)) {
 			
-			io.neocore.api.player.permission.DynPerm perm = this.getDynamicPerm(inName);
-			return perm.getState(this.player);
+			DynPerm perm = this.getDynamicPerm(inName);
+			return perm.getState(this.getPlayer());
 			
 		}		
 		
@@ -109,7 +142,6 @@ public class DynamicPermissibleBase extends PermissibleBase {
 	
 	@Override
 	public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-		// TODO Auto-generated method stub
 		return super.getEffectivePermissions();
 	}
 	

@@ -35,6 +35,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		BukkitServerPingEvent neoEvent = new BukkitServerPingEvent(event);
 		
 		// We don't need to do anything special for this so a standard broadcast event.
+		// FIXME Breaks encapsulation?
 		NeocoreAPI.getAgent().getEventManager().broadcast(ServerListPingEvent.class, neoEvent); 
 		
 	}
