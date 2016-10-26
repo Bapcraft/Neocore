@@ -1,6 +1,5 @@
 package io.neocore.common.player;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +17,6 @@ import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseService;
-import io.neocore.api.database.LoadAsync;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.player.PlayerService;
 import io.neocore.api.database.session.Session;
@@ -75,7 +73,7 @@ public class CommonPlayerManager {
 		this.playerWrapper.load(uuid, LoadReason.JOIN, dbp -> {
 			
 			try {
-				copyIntoField(np, dbp);
+				np.addIdentity(dbp);
 			} catch (Throwable t) {
 				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting player data for player " + uuid + "!", t);
 			}
@@ -92,7 +90,7 @@ public class CommonPlayerManager {
 			Session inited = login.initSession(uuid);
 			
 			try {
-				copyIntoField(np, inited);
+				np.addIdentity(inited);
 			} catch (Throwable t) {
 				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting new session data for player " + uuid + "!", t);
 			}
@@ -112,7 +110,7 @@ public class CommonPlayerManager {
 			this.sessionWrapper.load(uuid, LoadReason.JOIN, sess -> {
 				
 				try {
-					copyIntoField(np, sess);
+					np.addIdentity(sess);
 				} catch (Throwable t) {
 					NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting session data for player " + uuid + "!", t);
 				}
@@ -130,59 +128,6 @@ public class CommonPlayerManager {
 	
 	public NeoPlayer assemblePlayer(UUID uuid) {
 		return this.assemblePlayer(uuid, null);
-	}
-	
-	@SuppressWarnings({ "unchecked", "unused" })
-	private void getAndInject(ServiceType type, NeoPlayer player) {
-		
-		RegisteredService reg = this.serviceManager.getService(type);
-		if (reg == null) return;
-		
-		ServiceProvider prov = reg.getServiceProvider();
-		if (!(prov instanceof IdentityProvider)) return;
-		
-		IdentityProvider<? extends PlayerIdentity> ip = (IdentityProvider<? extends PlayerIdentity>) prov;
-		
-		Runnable injector = () -> {
-			
-			PlayerIdentity pi = ip.getPlayer(player.getUniqueId());
-			
-			try {
-				copyIntoField(player, pi);
-			} catch (Exception e) {
-				NeocoreAPI.getLogger().log(Level.SEVERE, "Error injecting player aspect " + reg.getType().getName() + "!", e);
-			}
-			
-		};
-		
-		// Run it in a separate thread if we need to, otherwise run it here.
-		if (prov.getClass().isAnnotationPresent(LoadAsync.class)) {
-			this.scheduler.invokeAsync(injector);
-		} else {
-			injector.run();
-		}
-		
-	}
-	
-	private static Field findField(Class<?> clazz, Class<?> type) {
-		
-		for (Field f : clazz.getDeclaredFields()) {
-			if (f.getType().isAssignableFrom(type)) return f;
-		}
-		
-		return null;
-		
-	}
-	
-	private static void copyIntoField(Object container, Object into) throws IllegalArgumentException, IllegalAccessException {
-		
-		Field f = findField(container.getClass(), into.getClass());
-		
-		boolean acc = f.isAccessible();
-		f.setAccessible(true);
-		f.set(container, into);
-		f.setAccessible(acc);
-		
 	}
 	
 	public synchronized void unloadPlayer(UUID uuid) {
