@@ -1,44 +1,44 @@
 package io.neocore.api.player;
 
-import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import io.neocore.api.ServiceType;
-import io.neocore.api.UnsupportedServiceException;
-import io.neocore.api.database.DatabaseService;
+import com.google.common.base.Preconditions;
+
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.Session;
-import io.neocore.api.host.HostService;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.ServerPlayer;
 import io.neocore.api.host.permissions.PermissedPlayer;
-import io.neocore.api.host.proxy.NetworkPlayer;
 import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
 /**
  * Object intended to encompass all of the data that a player can have tied
  * into the different capabilities of the server and any data provided by the
- * database.
+ * database.  Mostly just a wrapper/container class.
  * 
  * @author treyzania
  */
 public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	
+	/**
+	 * The player's unique ID, according to Mojang.
+	 */
 	private UUID uuid;
-	private Session session;
 	
-	// Host service identities
-	protected ServerPlayer playerPersona;
-	protected NetworkPlayer playerNetworkEntity;
-	protected PermissedPlayer playerPermissions;
-	protected ChattablePlayer playerChat;
-	
-	// Database service identities
-	protected DatabasePlayer playerRecord;
+	/**
+	 * The player's in-game identities that we can use.
+	 */
+	protected List<PlayerIdentity> identities;
 	
 	public NeoPlayer(UUID uuid) {
+		
 		this.uuid = uuid;
+		
+		this.identities = new ArrayList<>();
+		
 	}
 	
 	/**
@@ -53,27 +53,21 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	 * @return The session of this player, or <code>null</code> if the player is not connected.
 	 */
 	public Session getSession() {
-		return this.session;
+		return this.getIdentity(Session.class);
 	}
 	
 	/**
 	 * @return The username of the player.
 	 */
 	public String getUsername() {
-		
-		verify(this.playerPersona, HostService.LOGIN);
-		return this.playerPersona.getName();
-		
+		return this.getIdentity(ServerPlayer.class).getName();
 	}
 	
 	/**
 	 * @return The name of the player that should actually be displayed in chat and such.
 	 */
 	public String getDisplayName() {
-		
-		verify(this.playerChat, HostService.CHAT);
-		return this.playerChat.getDisplayName();
-		
+		return this.getIdentity(ChattablePlayer.class).getDisplayName();
 	}
 	
 	/**
@@ -84,10 +78,14 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	 */
 	public boolean hasGroup(Group group) {
 		
-		verify(this.playerRecord, DatabaseService.PLAYER);
-		
-		for (GroupMembership g : this.playerRecord.getGroupMemberships()) {
-			if (g.getGroup().getName().equals(group.getName())) return true;
+		try {
+			
+			for (GroupMembership g : this.getIdentity(DatabasePlayer.class).getGroupMemberships()) {
+				if (g.getGroup().getName().equals(group.getName())) return true;
+			}
+			
+		} catch (IllegalArgumentException e) {
+			return false;
 		}
 		
 		return false;
@@ -100,10 +98,7 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	 * @param message The message to be sent
 	 */
 	public void sendMessage(String message) {
-		
-		verify(this.playerChat, HostService.CHAT);
-		this.playerChat.sendMessage(message);
-		
+		this.getIdentity(ChattablePlayer.class).sendMessage(message);
 	}
 	
 	/**
@@ -114,8 +109,36 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	 */
 	public boolean hasPermission(String node) {
 		
-		verify(this.playerPermissions, HostService.PERMISSIONS);
-		return this.playerPermissions.hasPermission(node);
+		try {
+			return this.getIdentity(PermissedPlayer.class).hasPermission(node);
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+		
+	}
+	
+	public boolean hasIdentity(Class<? extends PlayerIdentity> clazz) {
+		
+		try {
+			
+			// If it's a null somehow, then it should return false anyways.
+			return this.getIdentity(clazz) != null;
+			
+		} catch (IllegalArgumentException e) {
+			
+			// If it errors, then we definitely don't have it.
+			return false;
+			
+		}
+		
+	}
+	
+	public void addIdentity(PlayerIdentity ident) {
+		
+		Preconditions.checkNotNull(ident);
+		if (this.hasIdentity(ident.getClass())) throw new IllegalArgumentException("Alredy an identity of that type!");
+		
+		this.identities.add(ident);
 		
 	}
 	
@@ -130,39 +153,14 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	@SuppressWarnings("unchecked")
 	public <T extends PlayerIdentity> T getIdentity(Class<T> clazz) {
 		
-		for (Field f : this.getClass().getDeclaredFields()) {
-			
-			if (PlayerIdentity.class.isAssignableFrom(f.getType()) && f.getType() == clazz) {
-				
-				try {
-
-					boolean acc = f.isAccessible();
-					f.setAccessible(true);
-					Object o = f.get(this);
-					f.setAccessible(acc);
-					
-					if (o != null) return (T) o;
-					
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					throw new RuntimeException("You did something wrong!", e);
-				}
-				
-			}
-			
+		if (clazz == null) return null;
+		
+		for (PlayerIdentity ident : this.identities) {
+			if (ident != null && clazz.isAssignableFrom(ident.getClass())) return (T) ident;
 		}
 		
 		throw new IllegalArgumentException("This wasn't populated on the player! (" + clazz.getName() + ")");
 		
-	}
-	
-	/**
-	 * Verifies that the player identity is not <code>null</code>, and if it is then  throws the relevant exception.
-	 * 
-	 * @param pi The object to verify.
-	 * @param serv The service type to use in the exception.
-	 */
-	private static void verify(PlayerIdentity pi, ServiceType serv) {
-		if (pi == null) throw new UnsupportedServiceException(serv);
 	}
 	
 	@Override
