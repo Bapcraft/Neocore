@@ -19,7 +19,7 @@ public interface SessionService extends DatabaseServiceProvider, IdentityLinkage
 	public Session getSession(UUID uuid);
 	
 	@Override
-	public default Session getPlayer(UUID uuid) {
+	public default Session load(UUID uuid) {
 		return this.getSession(uuid);
 	}
 	

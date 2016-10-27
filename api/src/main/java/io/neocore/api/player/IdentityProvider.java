@@ -18,7 +18,7 @@ public interface IdentityProvider<T extends PlayerIdentity> {
 	 * @param uuid The UUID of the player
 	 * @return The corresponding identity
 	 */
-	public T getPlayer(UUID uuid);
+	public T load(UUID uuid);
 	
 	/**
 	 * Unloads the player data from the record and clears any caches, does not
