@@ -147,4 +147,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-
+# Log files
+*.log
+*.log.lck
