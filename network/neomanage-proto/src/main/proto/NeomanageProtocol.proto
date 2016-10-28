@@ -40,7 +40,7 @@ message ServerClient {
 	required ServerType serverType = 1;
 	required ServerRole serverRole = 2;
 	
-	optional string networkName = 3;
+	optional string serverName = 3;
 	optional string proxyName = 4;
 	
 }
