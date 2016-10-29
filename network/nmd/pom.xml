@@ -30,6 +30,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>jline</groupId>
+			<artifactId>jline</artifactId>
+			<version>2.14.2</version>
+		</dependency>
+		
 	</dependencies>
 	
 	<properties>

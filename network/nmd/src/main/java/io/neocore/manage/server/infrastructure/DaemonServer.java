@@ -1,16 +1,18 @@
-package io.neocore.manage.server;
+package io.neocore.manage.server.infrastructure;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import io.neocore.manage.proto.NeomanageProtocol.RegisterClient;
 import io.neocore.manage.proto.NeomanageProtocol.RegisterClient.ClientType;
+import io.neocore.manage.server.ClientAcceptWorker;
+import io.neocore.manage.server.Nmd;
+import io.neocore.manage.server.Scheduler;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient;
-import io.neocore.manage.server.infrastructure.ClientBuilder;
-import io.neocore.manage.server.infrastructure.NmClient;
 
 public class DaemonServer {
 	
@@ -56,7 +58,7 @@ public class DaemonServer {
 			
 			() -> {
 				
-				ClientBuilder builder = new ClientBuilder(socket.getLocalAddress(), socket.getLocalPort());
+				ClientBuilder builder = new ClientBuilder(socket);
 				
 				try {
 					
@@ -77,14 +79,30 @@ public class DaemonServer {
 					}
 					
 				} catch (IOException e) {
-					
-					// TODO Log it.
-					
+					Nmd.logger.log(Level.WARNING, "Problem initializing client!", e);
 				}
 				
 			}
 			
 		);
+		
+	}
+	
+	public List<NmClient> getClients() {
+		return new ArrayList<>(this.clients);
+	}
+	
+	public void unregister(NmClient client) {
+		
+		if (this.clients.contains(client)) {
+			
+			client.forceDisconnect();
+			this.clients.remove(client);
+			Nmd.logger.info("Client " + client.getIdentString() + " from " + client.getAddressString() + " disconnected.");
+			
+		} else {
+			throw new IllegalArgumentException("Could not find client " + client.getIdentString() + ".  Is it already unregistered?");
+		}
 		
 	}
 	

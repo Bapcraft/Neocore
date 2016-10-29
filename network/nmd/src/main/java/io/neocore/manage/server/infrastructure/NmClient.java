@@ -1,38 +1,47 @@
 package io.neocore.manage.server.infrastructure;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+
+import io.neocore.manage.server.Nmd;
 
 public class NmClient {
 	
-	private InetAddress address;
-	private int port;
+	protected Socket socket;
 	
 	protected String network;
 	protected String name;
 	
+	private Thread listenerThread;
 	private Set<UUID> subscriptions;
 	
-	public NmClient(InetAddress address, int port) {
+	public NmClient(Socket socket) {
 		
-		this.address = address;
+		this.socket = socket;
 		
 		this.subscriptions = new HashSet<>();
 		
 	}
 	
 	public InetAddress getAddress() {
-		return this.address;
+		return this.socket.getInetAddress();
 	}
 	
 	public int getPort() {
-		return this.port;
+		return this.socket.getPort();
 	}
 	
 	public String getAddressString() {
 		return String.format("%s:%s", this.getAddress().getHostAddress(), this.getPort());
+	}
+	
+	public String getIdentString() {
+		return (this.network != null ? this.network + "#" : "") + this.name;
 	}
 	
 	public void subscribe(UUID uuid) {
@@ -41,6 +50,31 @@ public class NmClient {
 	
 	public void unsubscribe(UUID uuid) {
 		this.subscriptions.remove(uuid);
+	}
+	
+	public boolean isSubscribed(UUID uuid) {
+		return this.subscriptions.contains(uuid);
+	}
+	
+	public synchronized void startListenerThread() {
+		
+		if (this.listenerThread != null) throw new IllegalStateException("Already listening!");
+		
+		this.listenerThread = new Thread(new ClientListenRunner(this), "ClientListenThread-" + this.getIdentString());
+		
+	}
+	
+	protected void forceDisconnect() {
+		
+		try {
+			
+			Nmd.logger.info("Forcibly closing connection to " + this.getIdentString() + "...");
+			this.socket.close();
+			
+		} catch (IOException e) {
+			Nmd.logger.log(Level.WARNING, "Problem closing connection to " + this.getIdentString() + "!", e);
+		}
+		
 	}
 	
 }

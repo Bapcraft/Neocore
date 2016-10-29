@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.logging.ConsoleHandler;
@@ -13,6 +14,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.typesafe.config.Config;
+
+import io.neocore.manage.server.infrastructure.DaemonServer;
 
 public class Nmd {
 	
@@ -40,7 +43,7 @@ public class Nmd {
 			this.log.setUseParentHandlers(false);
 			Formatter formatter = new NmdLogFormatter();
 			
-			FileHandler fileHandler = new FileHandler(this.getLogFileName(), false);
+			FileHandler fileHandler = new FileHandler("logs/" + this.getLogFileName(), false);
 			fileHandler.setFormatter(formatter);
 			this.log.addHandler(fileHandler);
 			
@@ -126,6 +129,35 @@ public class Nmd {
 		Nmd nmd = new Nmd(logger, conf);
 		
 		nmd.start();
+		
+		Scanner in = new Scanner(System.in);
+		
+		boolean ok = true;
+		while (ok) {
+			
+			String line = in.nextLine();
+			
+			if (line.equals("balls")) {
+				
+				logger.info("to you");
+				continue;
+				
+			}
+			
+			if (line.equals("stop")) {
+				
+				logger.info("Terminating...");
+				ok = false;
+				continue;
+				
+			}
+			
+			logger.warning("Unrecognized command: " + line);
+			
+		}
+		
+		in.close();
+		System.exit(0);
 		
 	}
 	
