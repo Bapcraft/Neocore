@@ -163,6 +163,10 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 		
 	}
 	
+	public List<PlayerIdentity> getIdentities() {
+		return new ArrayList<>(this.identities);
+	}
+	
 	@Override
 	public int compareTo(NeoPlayer o) {
 		return this.uuid.compareTo(o.uuid);

@@ -5,6 +5,7 @@ import java.util.UUID;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.host.HostServiceProvider;
 import io.neocore.api.player.IdentityProvider;
+import io.neocore.api.player.PlayerIdentity;
 
 public interface LoginService extends HostServiceProvider, IdentityProvider<ServerPlayer> {
 	
@@ -31,5 +32,10 @@ public interface LoginService extends HostServiceProvider, IdentityProvider<Serv
 	 * @return The newly-created session.
 	 */
 	public Session initSession(UUID uuid);
+	
+	@Override
+	default Class<? extends PlayerIdentity> getIdentityClass() {
+		return ServerPlayer.class;
+	}
 	
 }

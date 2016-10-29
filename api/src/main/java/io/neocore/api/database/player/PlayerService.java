@@ -5,6 +5,7 @@ import java.util.UUID;
 import io.neocore.api.database.DatabaseServiceProvider;
 import io.neocore.api.database.IdentityLinkage;
 import io.neocore.api.database.LoadAsync;
+import io.neocore.api.player.PlayerIdentity;
 
 @LoadAsync
 public interface PlayerService extends DatabaseServiceProvider, IdentityLinkage<DatabasePlayer> {
@@ -14,5 +15,10 @@ public interface PlayerService extends DatabaseServiceProvider, IdentityLinkage<
 	 * @return The player's last known username, of <code>null</code> if unknown.
 	 */
 	public String getLastUsername(UUID id);
+
+	@Override
+	public default Class<? extends PlayerIdentity> getIdentityClass() {
+		return DatabasePlayer.class;
+	}
 	
 }

@@ -3,6 +3,7 @@ package io.neocore.api.host.proxy;
 import java.util.Set;
 import io.neocore.api.host.HostServiceProvider;
 import io.neocore.api.player.IdentityProvider;
+import io.neocore.api.player.PlayerIdentity;
 
 /**
  * Parent interface for proxy services and endpoint services.  Do not inherit from directly.
@@ -32,6 +33,11 @@ public interface NetMemberProvider extends HostServiceProvider, IdentityProvider
 		
 		return null;
 		
+	}
+	
+	@Override
+	default Class<? extends PlayerIdentity> getIdentityClass() {
+		return NetworkPlayer.class;
 	}
 	
 }

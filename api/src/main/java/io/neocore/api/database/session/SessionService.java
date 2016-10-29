@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import io.neocore.api.database.DatabaseServiceProvider;
 import io.neocore.api.database.IdentityLinkage;
 import io.neocore.api.database.LoadAsync;
+import io.neocore.api.player.PlayerIdentity;
 
 @LoadAsync
 public interface SessionService extends DatabaseServiceProvider, IdentityLinkage<Session> {
@@ -34,5 +35,10 @@ public interface SessionService extends DatabaseServiceProvider, IdentityLinkage
 	 * 			player is online, <code>false</code> otherwise.
 	 */
 	public void appendTransition(UUID uuid, EndpointMove move, Consumer<Boolean> callback);
+
+	@Override
+	default Class<? extends PlayerIdentity> getIdentityClass() {
+		return Session.class;
+	}
 	
 }

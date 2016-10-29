@@ -2,6 +2,7 @@ package io.neocore.api.host.chat;
 
 import io.neocore.api.host.HostServiceProvider;
 import io.neocore.api.player.IdentityProvider;
+import io.neocore.api.player.PlayerIdentity;
 
 public interface ChatService extends HostServiceProvider, IdentityProvider<ChattablePlayer> {
 	
@@ -24,5 +25,10 @@ public interface ChatService extends HostServiceProvider, IdentityProvider<Chatt
 	 * @param message The message to be sent.
 	 */
 	public void sendMessageFrom(ChattablePlayer sender, String message);
+
+	@Override
+	default Class<? extends PlayerIdentity> getIdentityClass() {
+		return ChattablePlayer.class;
+	}
 	
 }

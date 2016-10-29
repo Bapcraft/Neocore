@@ -30,4 +30,6 @@ public interface IdentityProvider<T extends PlayerIdentity> {
 		
 	}
 	
+	public Class<? extends PlayerIdentity> getIdentityClass();
+	
 }
