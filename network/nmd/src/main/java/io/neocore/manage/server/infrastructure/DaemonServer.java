@@ -24,6 +24,8 @@ public class DaemonServer {
 	
 	private List<NmClient> clients;
 	
+	private MessageManager messageManager;
+	
 	public DaemonServer(Scheduler sched, ServerSocket socket, int threadCount) {
 		
 		this.scheduler = sched;
@@ -43,6 +45,8 @@ public class DaemonServer {
 			this.acceptorThreads.add(t);
 			
 		}
+		
+		this.messageManager = new MessageManager();
 		
 	}
 	
@@ -74,7 +78,7 @@ public class DaemonServer {
 						builder.withName(cli.getServerName());
 						builder.withNetwork(cli.getProxyName());
 						
-						this.clients.add(builder.build());
+						this.register(builder.build());
 						
 					}
 					
@@ -92,6 +96,15 @@ public class DaemonServer {
 		return new ArrayList<>(this.clients);
 	}
 	
+	private void register(NmClient client) {
+		
+		if (this.clients.contains(client)) throw new IllegalArgumentException("Already have this client registered!");
+		
+		this.clients.add(client);
+		client.startListenerThread(this);
+		
+	}
+	
 	public void unregister(NmClient client) {
 		
 		if (this.clients.contains(client)) {
@@ -104,6 +117,10 @@ public class DaemonServer {
 			throw new IllegalArgumentException("Could not find client " + client.getIdentString() + ".  Is it already unregistered?");
 		}
 		
+	}
+	
+	public MessageManager getMessageManager() {
+		return this.messageManager;
 	}
 	
 }

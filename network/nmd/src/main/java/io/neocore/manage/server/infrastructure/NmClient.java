@@ -56,11 +56,12 @@ public class NmClient {
 		return this.subscriptions.contains(uuid);
 	}
 	
-	public synchronized void startListenerThread() {
+	public synchronized void startListenerThread(DaemonServer serv) {
 		
 		if (this.listenerThread != null) throw new IllegalStateException("Already listening!");
 		
-		this.listenerThread = new Thread(new ClientListenRunner(this), "ClientListenThread-" + this.getIdentString());
+		this.listenerThread = new Thread(new ClientListenRunner(this, serv), "ClientListenThread-" + this.getIdentString());
+		this.listenerThread.start();
 		
 	}
 	
