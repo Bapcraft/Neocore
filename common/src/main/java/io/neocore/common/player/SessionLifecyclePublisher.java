@@ -19,12 +19,12 @@ import io.neocore.api.event.database.UnloadReason;
 
 public class SessionLifecyclePublisher extends LifecycleEventPublisher<Session> {
 	
-	public SessionLifecyclePublisher(EventManager man) {
-		super(man);
+	public SessionLifecyclePublisher(EventManager man, CommonPlayerManager cpm) {
+		super(man, cpm);
 	}
 	
 	/**
-	 * See note in `./SessionLifecyclePublisher.java`.
+	 * See note in `./PlayerLifecyclePublisher.java`.
 	 */
 	
 	@Override

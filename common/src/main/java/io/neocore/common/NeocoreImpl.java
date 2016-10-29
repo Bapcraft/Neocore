@@ -93,7 +93,7 @@ public class NeocoreImpl implements Neocore {
 	
 	@Override
 	public NeoPlayer getPlayer(UUID uuid) {
-		return this.playerManager.getPlayer(uuid);
+		return this.playerManager.load(uuid);
 	}
 	
 	@Override

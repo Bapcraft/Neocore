@@ -19,8 +19,8 @@ import io.neocore.api.event.database.UnloadReason;
 
 public class PlayerLifecyclePublisher extends LifecycleEventPublisher<DatabasePlayer> {
 	
-	public PlayerLifecyclePublisher(EventManager man) {
-		super(man);
+	public PlayerLifecyclePublisher(EventManager man, CommonPlayerManager cpm) {
+		super(man, cpm);
 	}
 	
 	/**

@@ -27,7 +27,7 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 	private volatile LockCoordinator<T> locker;
 	
 	public DataServiceWrapper(Scheduler sched, LifecycleEventPublisher<T> pusher, P provider) {
-			
+		
 		this.scheduler = sched;
 		this.publisher = pusher;
 		this.provider = provider;
@@ -36,6 +36,10 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 		
 		this.container = new ExoContainer(NeocoreAPI.getLogger());
 		
+	}
+	
+	public P getProvider() {
+		return this.provider;
 	}
 	
 	public void overrideLockCoordinator(LockCoordinator<T> lock) {
@@ -49,7 +53,7 @@ public class DataServiceWrapper<T extends PersistentPlayerIdentity, P extends Id
 			this.locker.blockUntilUnlocked(uuid, LOCK_TIMEOUT);
 			
 			this.publisher.broadcastPreLoad(reason, uuid);
-			T ident = this.provider.getPlayer(uuid);
+			T ident = this.provider.load(uuid);
 			this.publisher.broadcastPostLoad(reason, ident);
 			
 			this.container.invoke("LoadCallback", () -> callback.accept(ident));

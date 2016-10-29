@@ -6,40 +6,29 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 import io.neocore.api.NeocoreAPI;
-import io.neocore.api.RegisteredService;
 import io.neocore.api.ServiceManager;
-import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseService;
-import io.neocore.api.database.player.DatabasePlayer;
-import io.neocore.api.database.player.PlayerService;
-import io.neocore.api.database.session.Session;
-import io.neocore.api.database.session.SessionService;
-import io.neocore.api.event.database.FlushReason;
-import io.neocore.api.event.database.LoadReason;
+import io.neocore.api.database.IdentityLinkage;
+import io.neocore.api.database.LoadAsync;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.Scheduler;
-import io.neocore.api.host.login.LoginService;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
 
-public class CommonPlayerManager {
+public class CommonPlayerManager implements IdentityProvider<NeoPlayer> { // TODO Impl.
 	
 	private Set<NeoPlayer> playerCache = new TreeSet<>();
 	
 	private ServiceManager serviceManager;
 	private Scheduler scheduler;
 	
-	private DataServiceWrapper<DatabasePlayer, PlayerService> playerWrapper;
-	private DataServiceWrapper<Session, SessionService> sessionWrapper;
-	private boolean wrappedOk = false;
+	private List<ProviderContainer> providerContainers;
+	private boolean containersInited = false;
 	
 	public CommonPlayerManager(ServiceManager sm, Scheduler sched) {
 		
@@ -48,74 +37,45 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public NeoPlayer getPlayer(UUID uuid) {
+	@Override
+	public NeoPlayer load(UUID uuid) {
 		
-		// Try to find the player if it's there already...
+		// FIXME Make this work.
+		return null;
+		
+	}
+	
+	private NeoPlayer findPlayer(UUID uuid) {
+		
 		for (NeoPlayer np : this.playerCache) {
 			if (np.getUniqueId().equals(uuid)) return np;
 		}
 		
-		// Don't assemble a new one.  That shouldn't be allowed except after post logins.
 		return null;
 		
 	}
 	
 	public synchronized NeoPlayer assemblePlayer(UUID uuid, Consumer<NeoPlayer> callback) {
 		
+		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
+		
 		NeoPlayer np = new NeoPlayer(uuid);
 		
-		// TODO Load the simple subsystems.
-		
 		// Make sure these are all good to go.
-		this.initWrappers();
+		this.initProviderContainers();
 		
-		// Set up the data load.
-		this.playerWrapper.load(uuid, LoadReason.JOIN, dbp -> {
+		// Now actually load the things.
+		for (ProviderContainer container : this.providerContainers) {
 			
-			try {
-				np.addIdentity(dbp);
-			} catch (Throwable t) {
-				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting player data for player " + uuid + "!", t);
-			}
-			
-			// TODO Configure permissions based on the group records.
-			
-		});
-		
-		// Load the session, either by creating it or loading it from the database.
-		if (NeocoreAPI.isFrontend()) {
-			
-			// We have to initialize it directly because they are *probably* connecting directly.
-			LoginService login = this.serviceManager.getService(LoginService.class);
-			Session inited = login.initSession(uuid);
-			
-			try {
-				np.addIdentity(inited);
-			} catch (Throwable t) {
-				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting new session data for player " + uuid + "!", t);
-			}
-			
-			// Now we wait to finish flushing before we continue.
-			CountDownLatch flushReturn = new CountDownLatch(1);
-			this.sessionWrapper.flush(inited, FlushReason.EXPLICIT, () -> flushReturn.countDown()); // TODO Events should know that it's because it's a new object.
-			try {
-				flushReturn.await(5L, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
-				NeocoreAPI.getLogger().severe("Took too long to flush newly-created session data for player " + uuid + "!");
-			}
-			
-		} else {
-			
-			// In this case we just have to load it from the DB because we know someone else made it.
-			this.sessionWrapper.load(uuid, LoadReason.JOIN, sess -> {
-				
-				try {
-					np.addIdentity(sess);
-				} catch (Throwable t) {
-					NeocoreAPI.getLogger().log(Level.SEVERE, "Problem injecting session data for player " + uuid + "!", t);
-				}
-				
-			});
+			ProvisionResult result = container.provide(np);
+			NeocoreAPI.getLogger().finer(
+				String.format(
+					"Provision result for %s on %s was %s.",
+					np.getUniqueId(),
+					container.getProvider().getClass().getSimpleName(),
+					result.name()
+				)
+			);
 			
 		}
 		
@@ -132,31 +92,22 @@ public class CommonPlayerManager {
 	
 	public synchronized void unloadPlayer(UUID uuid) {
 		
-		NeoPlayer np = this.getPlayer(uuid);
-		NeocoreAPI.getLogger().info(uuid + " -> " + np);
+		NeocoreAPI.getLogger().fine("Unloading player " + uuid + "...");
+		NeoPlayer np = this.findPlayer(uuid);
 		
-		// Flush the session data.
-		List<ServiceType> servs = getInjectedServices();
-		servs.add(DatabaseService.SESSION);
+		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
 		
-		for (ServiceType type : servs) {
+		for (ProviderContainer container : this.providerContainers) {
 			
-			RegisteredService reg = this.serviceManager.getService(type);
-			if (reg == null) continue;
+			PlayerIdentity ident = np.getIdentity(container.getProvisionedClass());
 			
-			ServiceProvider prov = reg.getServiceProvider();
-			
-			if (prov instanceof IdentityProvider<?>) {
-				
-				IdentityProvider<?> ip = (IdentityProvider<?>) prov;
-				
-				// Quick and easy, should flush things if necessary.
-				ip.unload(np.getUniqueId());
-				
+			if (ident != null) {
+				container.unload(np);
 			}
 			
 		}
 		
+		// Actually purge from the cache.
 		this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid));
 		
 	}
@@ -165,13 +116,45 @@ public class CommonPlayerManager {
 		this.unloadPlayer(pi.getUniqueId());
 	}
 	
-	private synchronized void initWrappers() {
-
-		if (this.wrappedOk) return;
+	@SuppressWarnings("unchecked")
+	private synchronized void initProviderContainers() {
 		
-		this.playerWrapper = new DataServiceWrapper<>(this.scheduler, null, this.serviceManager.getService(PlayerService.class));
-		this.sessionWrapper = new DataServiceWrapper<>(this.scheduler, null, this.serviceManager.getService(SessionService.class));
-		this.wrappedOk = true;
+		if (this.containersInited) return;
+		
+		NeocoreAPI.getLogger().info("Initializing provider containers for the first time...");
+		
+		for (ServiceType type : getInjectedServices()) {
+			
+			NeocoreAPI.getLogger().finer("Making container for provider: " + type.getName());
+			
+			IdentityProvider<?> identProvider = (IdentityProvider<?>) this.serviceManager.getService(type).getServiceProvider();
+			if (identProvider == null) {
+				
+				NeocoreAPI.getLogger().warning("No identity provider found for type " + type.getName() + "!  Ignoring...");
+				continue;
+				
+			}
+			
+			// Now we actually can initialize it.
+			Class<? extends IdentityProvider<?>> servClazz = (Class<? extends IdentityProvider<?>>) type.getServiceClass();
+			ProviderContainer container = null;
+			if (type.getServiceClass().isAnnotationPresent(LoadAsync.class) && IdentityLinkage.class.isAssignableFrom(servClazz)) {
+				
+				// Ughh so much type destruction!
+				DataServiceWrapper<?, ?> wrapper = new DataServiceWrapper<>(this.scheduler, new DummyLifecyclePublisher<>(), (IdentityLinkage<?>) identProvider);
+				container = new AsyncProviderContainer(servClazz, wrapper, this.scheduler);
+				
+			} else {
+				container = new DirectProviderContainer(servClazz, identProvider);
+			}
+			
+			this.providerContainers.add(container);
+			
+		}
+		
+		NeocoreAPI.getLogger().fine("Done!");
+		
+		this.containersInited = true;
 		
 	}
 	
@@ -183,10 +166,17 @@ public class CommonPlayerManager {
 			HostService.PERMISSIONS,
 			HostService.CHAT,
 			HostService.PROXY,
-			HostService.ENDPOINT));
+			HostService.ENDPOINT,
+			DatabaseService.PLAYER,
+			DatabaseService.SESSION));
 		
 		return types;
 		
+	}
+	
+	@Override
+	public Class<? extends PlayerIdentity> getIdentityClass() {
+		return NeoPlayer.class;
 	}
 	
 }

@@ -12,9 +12,14 @@ import io.neocore.api.event.database.UnloadReason;
 public abstract class LifecycleEventPublisher<T extends PersistentPlayerIdentity> {
 	
 	protected EventManager events;
+	protected CommonPlayerManager players;
 	
-	public LifecycleEventPublisher(EventManager man) {
+	public LifecycleEventPublisher(EventManager man, CommonPlayerManager players) {
+		
 		this.events = man;
+		
+		this.players = players;
+		
 	}
 	
 	public abstract void broadcastPreLoad(LoadReason reason, UUID uuid);
