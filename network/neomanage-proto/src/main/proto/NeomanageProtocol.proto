@@ -45,6 +45,17 @@ message ServerClient {
 	
 }
 
+message ClientMessage {
+	
+	oneof message {
+		
+		SetLockState lockStateMessage = 1;
+		UnregisterServer unregMessage = 2;
+		
+	}
+	
+}
+
 message SetLockState {
 	
 	enum LockType {
