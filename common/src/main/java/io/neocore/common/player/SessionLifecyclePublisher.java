@@ -2,7 +2,7 @@ package io.neocore.common.player;
 
 import java.util.UUID;
 
-import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.event.database.FlushReason;
 import io.neocore.api.event.database.LoadReason;
@@ -17,7 +17,7 @@ import io.neocore.api.event.database.PreUnloadDbSessionEvent;
 import io.neocore.api.event.database.ReloadReason;
 import io.neocore.api.event.database.UnloadReason;
 
-public class SessionLifecyclePublisher extends LifecycleEventPublisher<Session> {
+public class SessionLifecyclePublisher extends LifecycleEventPublisher<SimpleSessionImpl> {
 	
 	public SessionLifecyclePublisher(EventManager man, CommonPlayerManager cpm) {
 		super(man, cpm);
@@ -33,7 +33,7 @@ public class SessionLifecyclePublisher extends LifecycleEventPublisher<Session> 
 	}
 	
 	@Override
-	public void broadcastPostLoad(LoadReason reason, Session ident) {
+	public void broadcastPostLoad(LoadReason reason, SimpleSessionImpl ident) {
 		this.events.broadcast(new PostLoadDbSessionEvent(reason, ident));
 	}
 	
@@ -43,22 +43,22 @@ public class SessionLifecyclePublisher extends LifecycleEventPublisher<Session> 
 	}
 	
 	@Override
-	public void broadcastPostReload(ReloadReason reason, Session ident) {
+	public void broadcastPostReload(ReloadReason reason, SimpleSessionImpl ident) {
 		this.events.broadcast(new PostReloadDbSessionEvent(reason, ident));
 	}
 	
 	@Override
-	public void broadcastPreFlush(FlushReason reason, Session ident) {
+	public void broadcastPreFlush(FlushReason reason, SimpleSessionImpl ident) {
 		this.events.broadcast(new PreFlushDbSessionEvent(reason, ident));
 	}
 	
 	@Override
-	public void broadcastPostFlush(FlushReason reason, Session ident) {
+	public void broadcastPostFlush(FlushReason reason, SimpleSessionImpl ident) {
 		this.events.broadcast(new PostFlushDbSessionEvent(reason, ident));
 	}
 	
 	@Override
-	public void broadcastPreUnload(UnloadReason reason, Session ident) {
+	public void broadcastPreUnload(UnloadReason reason, SimpleSessionImpl ident) {
 		this.events.broadcast(new PreUnloadDbSessionEvent(reason, ident));
 	}
 	

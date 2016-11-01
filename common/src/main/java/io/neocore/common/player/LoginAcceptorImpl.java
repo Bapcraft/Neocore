@@ -8,7 +8,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.ban.BanList;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
-import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.login.DisconnectEvent;
@@ -86,7 +86,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		// Clear session data.
 		if (NeocoreAPI.isFrontend()) {
 			
-			Session sess = np.getSession();
+			SimpleSessionImpl sess = np.getSession();
 			sess.setState(SessionState.DISCONNECTED);
 			sess.setEndDate(new Date());
 			
