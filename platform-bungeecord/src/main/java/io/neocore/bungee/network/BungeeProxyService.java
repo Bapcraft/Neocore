@@ -42,7 +42,7 @@ public class BungeeProxyService implements ProxyProvider {
 	}
 	
 	@Override
-	public NetworkPlayer getPlayer(UUID uuid) {
+	public NetworkPlayer load(UUID uuid) {
 		return null; // TODO Caching system to avoid memory leaks and shit.
 	}
 	
