@@ -18,7 +18,7 @@ public class MysqlPlayerAccount implements Account {
 	private float balance;
 	
 	@DatabaseField
-	private float multiplier;
+	private float multiplier = 1F;
 	
 	public MysqlPlayerAccount() {
 		// ORMLite.

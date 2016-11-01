@@ -1,6 +1,7 @@
 package io.neocore.mysql.player;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +35,15 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 	
 	@ForeignCollectionField
 	private ForeignCollection<MysqlExtensionRecord> extensions;
+	
+	@DatabaseField(canBeNull = false)
+	private Date firstLogin;
+	
+	@DatabaseField(canBeNull = false)
+	private Date lastLogin;
+	
+	@DatabaseField
+	private long loginCount;
 	
 	public MysqlDbPlayer() {
 		// ORMLite.
