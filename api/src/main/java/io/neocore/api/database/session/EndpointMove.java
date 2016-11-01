@@ -4,21 +4,12 @@ import java.util.Date;
 
 import io.neocore.api.host.proxy.NetworkEndpoint;
 
-/**
- * A record of a player's transition to a destination server at a given time.
- *  
- * @author treyzania
- */
-public class EndpointMove {
+public interface EndpointMove {
 	
-	public final Date initiation;
-	public final NetworkEndpoint destination;
+	public void setTime(Date time);
+	public Date getTime();
 	
-	public EndpointMove(Date init, NetworkEndpoint dest) {
-		
-		this.initiation = init;
-		this.destination = dest;
-		
-	}
+	public void setDestination(NetworkEndpoint ep);
+	public NetworkEndpoint getDestination();
 	
 }

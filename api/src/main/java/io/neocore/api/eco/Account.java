@@ -53,4 +53,18 @@ public interface Account {
 		
 	}
 	
+	/**
+	 * Sets the multiplier that this account could optionally use.
+	 * 
+	 * @param mul The multiplier.
+	 */
+	public void setMultiplier(float mul);
+	
+	/**
+	 * Gets the multiplier that this account could optionally use.
+	 * 
+	 * @return The account's multiplier.
+	 */
+	public float getMultiplier();
+	
 }

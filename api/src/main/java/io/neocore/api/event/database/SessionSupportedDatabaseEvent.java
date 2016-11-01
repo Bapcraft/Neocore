@@ -2,13 +2,13 @@ package io.neocore.api.event.database;
 
 import java.util.UUID;
 
-import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SimpleSessionImpl;
 
 public class SessionSupportedDatabaseEvent<R extends DatabaseInteractionReason> extends DatabaseIdentityEvent<R> {
 	
-	private Session session;
+	private SimpleSessionImpl session;
 	
-	public SessionSupportedDatabaseEvent(R reason, Session sess) {
+	public SessionSupportedDatabaseEvent(R reason, SimpleSessionImpl sess) {
 		
 		super(reason);
 		
@@ -21,7 +21,7 @@ public class SessionSupportedDatabaseEvent<R extends DatabaseInteractionReason> 
 		return this.getSession().getUniqueId();
 	}
 	
-	public Session getSession() {
+	public SimpleSessionImpl getSession() {
 		return this.session;
 	}
 	

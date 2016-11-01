@@ -9,7 +9,7 @@ import io.neocore.api.database.LoadAsync;
 import io.neocore.api.player.PlayerIdentity;
 
 @LoadAsync
-public interface SessionService extends DatabaseServiceProvider, IdentityLinkage<Session> {
+public interface SessionService extends DatabaseServiceProvider, IdentityLinkage<SimpleSessionImpl> {
 	
 	/**
 	 * Gets the session for the player specified.  They do not have to be online.
@@ -17,10 +17,10 @@ public interface SessionService extends DatabaseServiceProvider, IdentityLinkage
 	 * @param uuid The UUID of the player.
 	 * @return The session of the player.
 	 */
-	public Session getSession(UUID uuid);
+	public SimpleSessionImpl getSession(UUID uuid);
 	
 	@Override
-	public default Session load(UUID uuid) {
+	public default SimpleSessionImpl load(UUID uuid) {
 		return this.getSession(uuid);
 	}
 	
@@ -34,11 +34,11 @@ public interface SessionService extends DatabaseServiceProvider, IdentityLinkage
 	 * @param callback What to call once completed.  <code>true</code> if the
 	 * 			player is online, <code>false</code> otherwise.
 	 */
-	public void appendTransition(UUID uuid, EndpointMove move, Consumer<Boolean> callback);
+	public void appendTransition(UUID uuid, EndpointMoveImpl move, Consumer<Boolean> callback);
 
 	@Override
 	default Class<? extends PlayerIdentity> getIdentityClass() {
-		return Session.class;
+		return SimpleSessionImpl.class;
 	}
 	
 }

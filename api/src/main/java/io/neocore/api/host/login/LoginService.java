@@ -2,7 +2,7 @@ package io.neocore.api.host.login;
 
 import java.util.UUID;
 
-import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.host.HostServiceProvider;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.PlayerIdentity;
@@ -31,7 +31,7 @@ public interface LoginService extends HostServiceProvider, IdentityProvider<Serv
 	 * @param uuid The player's UUID.
 	 * @return The newly-created session.
 	 */
-	public Session initSession(UUID uuid);
+	public SimpleSessionImpl initSession(UUID uuid);
 	
 	@Override
 	default Class<? extends PlayerIdentity> getIdentityClass() {
