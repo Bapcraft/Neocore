@@ -21,7 +21,7 @@ public class MembershipWrapper extends GroupMembership {
 	public Group getGroup() {
 		return null; // TODO
 	}
-
+	
 	@Override
 	public void setGroup(Group group) {
 		
@@ -38,7 +38,7 @@ public class MembershipWrapper extends GroupMembership {
 		this.dirty();
 		
 	}
-
+	
 	@Override
 	public void setExpiration(Date expiration) {
 		
@@ -47,21 +47,20 @@ public class MembershipWrapper extends GroupMembership {
 		this.dirty();
 		
 	}
-
+	
 	@Override
 	public void setDirty(boolean val) {
 		this.wrapper.setDirty(val);
 	}
-
+	
 	@Override
 	public boolean isDirty() {
 		return this.wrapper.isDirty();
 	}
-
+	
 	@Override
 	public boolean isGloballyValid() {
 		return this.wrapper.isGloballyValid();
 	}
-
 	
 }

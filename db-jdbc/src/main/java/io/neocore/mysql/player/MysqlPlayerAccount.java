@@ -35,12 +35,12 @@ public class MysqlPlayerAccount implements Account {
 		this.owner.dirty();
 		
 	}
-
+	
 	@Override
 	public float getBalance() {
 		return this.balance;
 	}
-
+	
 	@Override
 	public void setMultiplier(float mul) {
 		

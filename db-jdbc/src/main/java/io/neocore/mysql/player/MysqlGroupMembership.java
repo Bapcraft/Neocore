@@ -40,20 +40,20 @@ public class MysqlGroupMembership extends AbstractPersistentRecord {
 	public GroupMembership wrap() {
 		return new MembershipWrapper(this);
 	}
-
+	
 	@Override
 	public void setDirty(boolean val) {
 		this.owner.setDirty(val);
 	}
-
+	
 	@Override
 	public boolean isDirty() {
 		return this.owner.isDirty();
 	}
-
+	
 	@Override
 	public boolean isGloballyValid() {
 		return this.owner.isGloballyValid();
 	}
-
+	
 }

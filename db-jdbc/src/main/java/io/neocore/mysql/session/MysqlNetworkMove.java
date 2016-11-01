@@ -20,7 +20,7 @@ public class MysqlNetworkMove extends AbstractPersistentRecord implements Endpoi
 	
 	@DatabaseField(canBeNull = false)
 	private String destination;
-
+	
 	@Override
 	public void setDirty(boolean val) {
 		
@@ -33,7 +33,7 @@ public class MysqlNetworkMove extends AbstractPersistentRecord implements Endpoi
 	public boolean isDirty() {
 		return super.isDirty() || this.session.isDirty();
 	}
-
+	
 	@Override
 	public boolean isGloballyValid() {
 		return super.isGloballyValid() || this.session.isGloballyValid();
@@ -41,7 +41,7 @@ public class MysqlNetworkMove extends AbstractPersistentRecord implements Endpoi
 	
 	public String getNetwork() {
 		
-		// Should always evaluate to the first one, but I'm leaving it like this incase.
+		// Should always evaluate to the first one, but I'm leaving it like this in case.
 		return this.session.isNetworked() ? this.session.getFrontend() : null;
 		
 	}
@@ -55,7 +55,7 @@ public class MysqlNetworkMove extends AbstractPersistentRecord implements Endpoi
 	public Date getTime() {
 		return this.time;
 	}
-
+	
 	@Override
 	public void setDestination(NetworkEndpoint ep) {
 		this.destination = ep.getName();
