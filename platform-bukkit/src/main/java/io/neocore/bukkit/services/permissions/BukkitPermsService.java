@@ -25,7 +25,7 @@ public class BukkitPermsService implements PermissionsService {
 	}
 	
 	@Override
-	public PermissedPlayer getPlayer(UUID uuid) {
+	public PermissedPlayer load(UUID uuid) {
 		
 		BukkitPermPlayer bpp = this.findPlayer(uuid);
 		

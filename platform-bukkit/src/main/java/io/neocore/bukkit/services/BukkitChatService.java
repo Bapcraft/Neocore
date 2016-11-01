@@ -23,7 +23,7 @@ public class BukkitChatService implements ChatService {
 	}
 	
 	@Override
-	public ChattablePlayer getPlayer(UUID uuid) {
+	public ChattablePlayer load(UUID uuid) {
 		return new BukkitChattablePlayer(Bukkit.getPlayer(uuid));
 	}
 	

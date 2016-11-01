@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import io.neocore.api.NeocoreAPI;
-import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.ServerListPingEvent;
@@ -67,7 +67,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		if (NeocoreAPI.isFrontend()) {
 			
 			// And do some session init stuff.
-			Session sess = np.getIdentity(Session.class);
+			SimpleSessionImpl sess = np.getIdentity(SimpleSessionImpl.class);
 			sess.setState(SessionState.ACTIVE);
 			sess.setStartDate(new Date());
 			

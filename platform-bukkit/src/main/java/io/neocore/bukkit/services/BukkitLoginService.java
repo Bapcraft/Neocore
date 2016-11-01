@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
-import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.login.LoginAcceptor;
@@ -51,7 +51,7 @@ public class BukkitLoginService implements LoginService {
 	}
 	
 	@Override
-	public ServerPlayer getPlayer(UUID uuid) {
+	public ServerPlayer load(UUID uuid) {
 		
 		// Initialize one way or another.
 		BukkitPlayer bp = this.findPlayer(uuid);
@@ -83,7 +83,7 @@ public class BukkitLoginService implements LoginService {
 	}
 	
 	@Override
-	public Session initSession(UUID uuid) {
+	public SimpleSessionImpl initSession(UUID uuid) {
 		
 		// FIXME Breaks encapsulation.
 		HostPlugin host = NeocoreAPI.getAgent().getHost();;
@@ -97,7 +97,7 @@ public class BukkitLoginService implements LoginService {
 			InetAddress addr = p.getAddress().getAddress(); // Eww yucky.
 			String serverName = host.getNeocoreConfig().getServerName();
 			
-			Session sess = new Session(uuid, name, addr, serverName);
+			SimpleSessionImpl sess = new SimpleSessionImpl(uuid, name, addr, serverName);
 			sess.setState(SessionState.ACTIVE);
 			sess.setStartDate(new Date());
 			sess.setEndDate(new Date(-1L));

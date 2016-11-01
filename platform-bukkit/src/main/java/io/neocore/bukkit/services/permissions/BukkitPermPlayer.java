@@ -19,11 +19,11 @@ public class BukkitPermPlayer implements PermissedPlayer {
 		
 		this.player = p;
 		this.perms = injector.injectPermissions(p.getUniqueId());
-		
+		/*
 		this.perms.setPlayer(() -> {
-			return cpm.getPlayer(this.player.getUniqueId());
+			return cpm.load(this.player.getUniqueId());
 		});
-		
+		*/
 	}
 	
 	@Override

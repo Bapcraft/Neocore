@@ -27,7 +27,7 @@ public class BukkitEndpointService implements EndpointService {
 	}
 	
 	@Override
-	public NetworkPlayer getPlayer(UUID uuid) {
+	public NetworkPlayer load(UUID uuid) {
 		// TODO Auto-generated method stub
 		return null;
 	}
