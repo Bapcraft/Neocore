@@ -9,34 +9,30 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import io.neocore.api.NeocoreAPI;
-import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.database.session.SessionState;
+import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.host.login.LoginAcceptor;
-import io.neocore.api.host.login.ServerListPingEvent;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.player.PlayerManager;
 import io.neocore.bukkit.events.wrappers.BukkitInitialLoginEvent;
 import io.neocore.bukkit.events.wrappers.BukkitPostJoinEvent;
 import io.neocore.bukkit.events.wrappers.BukkitQuitEvent;
 import io.neocore.bukkit.events.wrappers.BukkitServerPingEvent;
-import io.neocore.common.player.CommonPlayerManager;
 
 public class PlayerConnectionForwarder extends EventForwarder {
 	
 	public LoginAcceptor acceptor;
-	private CommonPlayerManager manager;
+	private PlayerManager manager;
 	
-	public PlayerConnectionForwarder(CommonPlayerManager man) {
+	public PlayerConnectionForwarder(PlayerManager man) {
 		this.manager = man;
 	}
 	
 	@EventHandler
 	public void onPing(org.bukkit.event.server.ServerListPingEvent event) {
 		
-		BukkitServerPingEvent neoEvent = new BukkitServerPingEvent(event);
-		
 		// We don't need to do anything special for this so a standard broadcast event.
-		// FIXME Breaks encapsulation?
-		NeocoreAPI.getAgent().getEventManager().broadcast(ServerListPingEvent.class, neoEvent); 
+		NeocoreAPI.getAgent().getEventManager().broadcast(new BukkitServerPingEvent(event)); 
 		
 	}
 	
@@ -61,8 +57,9 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		if (this.acceptor == null) return;
 		
 		// We need to make the player ourselves because Bukkit doesn't let us do it until now. !!!
-		NeoPlayer np = this.manager.assemblePlayer(event.getPlayer().getUniqueId());
+		NeoPlayer np = this.manager.startInit(event.getPlayer().getUniqueId());
 		
+		// TODO Move this somewhere WAAAAY better.
 		// Session init stuff.
 		if (NeocoreAPI.isFrontend()) {
 			
