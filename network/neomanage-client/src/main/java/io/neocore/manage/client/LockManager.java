@@ -11,9 +11,8 @@ import java.util.UUID;
 import com.treyzania.jzania.ExoContainer;
 
 import io.neocore.api.NeocoreAPI;
-import io.neocore.api.database.PersistentPlayerIdentity;
 
-public class LockManager<T extends PersistentPlayerIdentity> {
+public class LockManager {
 	
 	private ExoContainer container;
 	

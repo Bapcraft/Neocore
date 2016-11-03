@@ -4,22 +4,21 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.common.player.LockCoordinator;
 
-public class NmdPlayerLockCoordinator extends LockCoordinator<DatabasePlayer> {
+public class NmdLockCoordinator extends LockCoordinator {
 	
 	private NmNetwork network;
-	private LockManager<DatabasePlayer> locker;
+	private LockManager locker;
 	
-	public NmdPlayerLockCoordinator(NmNetwork net) {
+	public NmdLockCoordinator(NmNetwork net) {
 		
 		this.network = net;
-		this.locker = new LockManager<>();
+		this.locker = new LockManager();
 		
 	}
 	
-	public LockManager<DatabasePlayer> getLocker() {
+	public LockManager getLockManager() {
 		return this.locker;
 	}
 	
