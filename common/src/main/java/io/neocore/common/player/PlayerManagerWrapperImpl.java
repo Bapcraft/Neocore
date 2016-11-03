@@ -8,7 +8,7 @@ import com.treyzania.jzania.ExoContainer;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.event.database.LoadReason;
-import io.neocore.api.event.database.PostLoadNeoPlayerEvent;
+import io.neocore.api.event.database.PostLoadPlayerEvent;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerManager;
 
@@ -45,7 +45,7 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 			np.setPopulated();
 			if (callback != null) this.container.invoke("InitPlayerCallback(" + uuid + ")", () -> callback.accept(np));
 			
-			this.eventManager.broadcast(new PostLoadNeoPlayerEvent(LoadReason.JOIN, np));
+			this.eventManager.broadcast(new PostLoadPlayerEvent(LoadReason.JOIN, np));
 			
 		});
 		
