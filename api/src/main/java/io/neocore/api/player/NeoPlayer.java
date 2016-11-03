@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import com.google.common.base.Preconditions;
 
+import io.neocore.api.database.AbstractPersistentRecord;
+import io.neocore.api.database.PersistentPlayerIdentity;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.host.chat.ChattablePlayer;
@@ -21,7 +23,7 @@ import io.neocore.api.player.group.GroupMembership;
  * 
  * @author treyzania
  */
-public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
+public class NeoPlayer extends AbstractPersistentRecord implements PersistentPlayerIdentity, Comparable<NeoPlayer> {
 	
 	/**
 	 * The player's unique ID, according to Mojang.
@@ -32,6 +34,11 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 	 * The player's in-game identities that we can use.
 	 */
 	protected List<PlayerIdentity> identities;
+	
+	/**
+	 * Set if the player has been fully populated with its required identites.
+	 */
+	private boolean isPopulated;
 	
 	public NeoPlayer(UUID uuid) {
 		
@@ -133,6 +140,12 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 		
 	}
 	
+	/**
+	 * Adds the identity of provided onto the player, assuming there isn't
+	 * already one of that type present.
+	 * 
+	 * @param ident The identity.
+	 */
 	public void addIdentity(PlayerIdentity ident) {
 		
 		Preconditions.checkNotNull(ident);
@@ -140,6 +153,21 @@ public class NeoPlayer implements PlayerIdentity, Comparable<NeoPlayer> {
 		
 		this.identities.add(ident);
 		
+	}
+	
+	/**
+	 * Marks this player as fully populated.  Calling this if you're not
+	 * supposed to can cause unexpected behavior.
+	 */
+	public void setPopulated() {
+		this.isPopulated = true;
+	}
+	
+	/**
+	 * @return If the player has been marked as fully populated.
+	 */
+	public boolean isPopulated() {
+		return this.isPopulated;
 	}
 	
 	/**

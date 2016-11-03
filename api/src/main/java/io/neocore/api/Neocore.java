@@ -8,6 +8,7 @@ import io.neocore.api.host.HostPlugin;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.player.PlayerManager;
 import io.neocore.api.player.extension.ExtensionManager;
 import io.neocore.api.task.TaskQueue;
 
@@ -22,6 +23,11 @@ public interface Neocore {
 	 * @return A reference to the host plugin for the server we're running on top of.
 	 */
 	public HostPlugin getHost();
+	
+	/**
+	 * @return The player manager used by Neocore.
+	 */
+	public PlayerManager getPlayerManager();
 	
 	/**
 	 * @param uuid The player's UUID

@@ -7,14 +7,16 @@ import io.neocore.api.player.IdentityProvider;
 public interface IdentityLinkage<T extends PersistentPlayerIdentity> extends IdentityProvider<T> {
 	
 	/**
-	 * Flushes the identity to the database.  Creates records as necessary.
+	 * Flushes the corresponding identity to the database.  Creates records as
+	 * necessary.
 	 * 
-	 * @param ident The identity to flush.
+	 * @param uuid The uuid of the identity to flush.
 	 */
-	public void flush(T ident);
+	public void flush(UUID uuid);
 	
 	/**
-	 * Marks cached identities as invalid and reloads new copies from the database.
+	 * Marks cached identities as invalid and reloads new copies from the
+	 * database.
 	 * 
 	 * @param ident The newly-reloaded identity.
 	 */
