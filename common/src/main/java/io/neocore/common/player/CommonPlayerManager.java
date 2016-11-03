@@ -112,19 +112,39 @@ public class CommonPlayerManager {
 		return this.assemblePlayer(uuid, null);
 	}
 	
-	public synchronized void unloadPlayer(UUID uuid) {
+	public synchronized void unloadPlayer(UUID uuid, Runnable callback) {
 		
 		NeocoreAPI.getLogger().fine("Unloading player " + uuid + "...");
 		NeoPlayer np = this.findPlayer(uuid);
 		
 		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
 		
+		List<ProviderContainer> ok = new ArrayList<>();
 		for (ProviderContainer container : this.providerContainers) {
 			
 			PlayerIdentity ident = np.getIdentity(container.getProvisionedClass());
-			if (ident != null) container.unload(np);
+			if (ident != null) ok.add(container);
 			
 		}
+		
+		// Set up the waiter for the callback and start actually unloading the identites.
+		CountDownLatch latch = new CountDownLatch(ok.size());
+		ok.forEach(c -> c.unload(np, () -> {
+			latch.countDown();
+		}));
+		
+		// Spawn the thread that invokes the callback once everything's unloaded.
+		this.scheduler.invokeAsync(() -> {
+			
+			try {
+				latch.await();
+			} catch (InterruptedException e) {
+				NeocoreAPI.getLogger().warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
+			}
+			
+			if (callback != null) callback.run();
+			
+		});
 		
 		// Actually purge from the cache.
 		this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid));
@@ -132,7 +152,7 @@ public class CommonPlayerManager {
 	}
 	
 	public void unloadPlayer(PlayerIdentity pi) {
-		this.unloadPlayer(pi.getUniqueId());
+		this.unloadPlayer(pi.getUniqueId(), null);
 	}
 	
 	@SuppressWarnings("unchecked")

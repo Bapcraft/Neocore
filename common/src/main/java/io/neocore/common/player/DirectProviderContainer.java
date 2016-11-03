@@ -30,9 +30,15 @@ public class DirectProviderContainer extends ProviderContainer {
 		return ProvisionResult.IMMEDIATELY_INJECTED;
 		
 	}
+
+	@Override
+	public void flush(NeoPlayer player, Runnable callback) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	@Override
-	public void unload(NeoPlayer player) {
+	public void unload(NeoPlayer player, Runnable callback) {
 		
 		this.exo.invoke("Unload(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
 			

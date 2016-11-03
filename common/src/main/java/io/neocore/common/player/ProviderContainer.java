@@ -29,6 +29,8 @@ public abstract class ProviderContainer {
 	
 	public abstract ProvisionResult provide(NeoPlayer player, Runnable callback);
 	
-	public abstract void unload(NeoPlayer player);
+	public abstract void flush(NeoPlayer player, Runnable callback);
+	
+	public abstract void unload(NeoPlayer player, Runnable callback);
 	
 }

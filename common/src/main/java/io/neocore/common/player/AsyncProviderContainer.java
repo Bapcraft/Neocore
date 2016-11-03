@@ -62,7 +62,13 @@ public class AsyncProviderContainer extends ProviderContainer {
 	}
 	
 	@Override
-	public void unload(NeoPlayer player) {
+	public void flush(NeoPlayer player, Runnable callback) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void unload(NeoPlayer player, Runnable callback) {
 		
 		this.scheduler.invokeAsync(() -> {
 			
@@ -71,5 +77,5 @@ public class AsyncProviderContainer extends ProviderContainer {
 		});
 		
 	}
-	
+
 }
