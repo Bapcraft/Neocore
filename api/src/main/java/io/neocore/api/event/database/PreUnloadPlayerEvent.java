@@ -4,9 +4,9 @@ import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.event.Raisable;
 
 @Raisable
-public class PostLoadNeoPlayerEvent extends NeoPlayerSupportedDatabaseEvent<LoadReason> {
+public class PreUnloadPlayerEvent extends NeoPlayerSupportedDatabaseEvent<UnloadReason> {
 
-	public PostLoadNeoPlayerEvent(LoadReason r, NeoPlayer player) {
+	public PreUnloadPlayerEvent(UnloadReason r, NeoPlayer player) {
 		super(r, player);
 	}
 

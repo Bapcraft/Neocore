@@ -11,7 +11,7 @@ public interface PlayerManager {
 	 * they are likely to be soon.
 	 * 
 	 * @see isPopulated(UUID)
-	 * @see PostLoadNeoPlayerEvent
+	 * @see PostLoadPlayerEvent
 	 * 
 	 * @param uuid The UUID of the player.
 	 * @return If the player has been initialized.
