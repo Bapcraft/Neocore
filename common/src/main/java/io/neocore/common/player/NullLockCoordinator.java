@@ -2,9 +2,7 @@ package io.neocore.common.player;
 
 import java.util.UUID;
 
-import io.neocore.api.database.PersistentPlayerIdentity;
-
-public class NullLockCoordinator<T extends PersistentPlayerIdentity> extends LockCoordinator<T> {
+public class NullLockCoordinator extends LockCoordinator {
 	
 	@Override
 	public int lock(UUID uuid) {

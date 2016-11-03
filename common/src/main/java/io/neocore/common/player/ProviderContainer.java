@@ -2,6 +2,7 @@ package io.neocore.common.player;
 
 import com.treyzania.jzania.ExoContainer;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
@@ -10,14 +11,14 @@ public abstract class ProviderContainer {
 	
 	protected ExoContainer exo;
 	
-	private Class<? extends IdentityProvider<?>> serviceClass;
-	
-	public ProviderContainer(Class<? extends IdentityProvider<?>> sc) {
-		this.serviceClass = sc;
-	}
-	
-	public Class<? extends IdentityProvider<?>> getServiceClass() {
-		return this.serviceClass;
+	public ProviderContainer() {
+		
+		this.exo = new ExoContainer(NeocoreAPI.getLogger());
+		
+		this.exo.addHook(ct -> {
+			NeocoreAPI.getLogger().severe("Problem initializing player identity: " + ct.getThrown().getMessage());
+		});
+		
 	}
 	
 	public Class<? extends PlayerIdentity> getProvisionedClass() {
@@ -26,7 +27,7 @@ public abstract class ProviderContainer {
 	
 	public abstract IdentityProvider<?> getProvider();
 	
-	public abstract ProvisionResult provide(NeoPlayer player);
+	public abstract ProvisionResult provide(NeoPlayer player, Runnable callback);
 	
 	public abstract void unload(NeoPlayer player);
 	

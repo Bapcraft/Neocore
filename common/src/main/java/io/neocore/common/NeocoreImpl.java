@@ -15,6 +15,7 @@ import io.neocore.api.host.login.LoginService;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.player.PlayerManager;
 import io.neocore.api.player.extension.ExtensionManager;
 import io.neocore.api.task.TaskQueue;
 import io.neocore.common.database.DatabaseManagerImpl;
@@ -22,6 +23,7 @@ import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.module.ModuleManagerImpl;
 import io.neocore.common.player.CommonPlayerManager;
 import io.neocore.common.player.LoginAcceptorImpl;
+import io.neocore.common.player.PlayerManagerWrapperImpl;
 import io.neocore.common.service.LoginServiceRegHandler;
 import io.neocore.common.service.ServiceManagerImpl;
 import io.neocore.common.tasks.DatabaseInitializerTask;
@@ -32,6 +34,7 @@ public class NeocoreImpl implements Neocore {
 	private final FullHostPlugin host;
 	
 	private CommonPlayerManager playerManager;
+	private PlayerManagerWrapperImpl playerManWrapper;
 	
 	private DatabaseManagerImpl dbManager;
 	private ModuleManagerImpl moduleManager;
@@ -52,11 +55,12 @@ public class NeocoreImpl implements Neocore {
 		
 		// Define various managers.
 		this.serviceManager = new ServiceManagerImpl();
+		this.eventManager = new CommonEventManager();
+		this.extManager = new ExtensionManager();
 		this.dbManager = new DatabaseManagerImpl(this.serviceManager);
 		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
 		this.playerManager = new CommonPlayerManager(this.serviceManager, host.getScheduler());
-		this.eventManager = new CommonEventManager();
-		this.extManager = new ExtensionManager();
+		this.playerManWrapper = new PlayerManagerWrapperImpl(this.playerManager, this.eventManager);
 		
 		// Set up acceptors
 		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, host.getContexts());
@@ -77,23 +81,28 @@ public class NeocoreImpl implements Neocore {
 		
 	}
 	
-	public CommonPlayerManager getPlayerManager() {
-		return this.playerManager;
-	}
-	
 	@Override
 	public HostPlugin getHost() {
 		return this.host;
 	}
 	
 	@Override
-	public DatabaseManager getDatabaseManager() {
-		return this.dbManager;
+	public PlayerManager getPlayerManager() {
+		return this.playerManWrapper;
+	}
+	
+	public CommonPlayerManager getPlayerAssembler() {
+		return this.playerManager;
 	}
 	
 	@Override
 	public NeoPlayer getPlayer(UUID uuid) {
-		return this.playerManager.load(uuid);
+		return this.getPlayerManager().getPlayer(uuid);
+	}
+	
+	@Override
+	public DatabaseManager getDatabaseManager() {
+		return this.dbManager;
 	}
 	
 	@Override

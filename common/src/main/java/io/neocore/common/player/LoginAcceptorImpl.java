@@ -83,6 +83,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		
 		NeoPlayer np = event.getPlayer();
 		
+		// TODO Fix this shit.
 		// Clear session data.
 		if (NeocoreAPI.isFrontend()) {
 			
@@ -93,7 +94,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		}
 		
 		// Broadcast the event straightaway.
-		this.events.broadcast(DisconnectEvent.class, event);
+		this.events.broadcast(event);
 		
 		// Unload once we're sure everyone is done using it.
 		this.players.unloadPlayer(np);

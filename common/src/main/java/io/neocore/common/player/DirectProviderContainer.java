@@ -7,12 +7,8 @@ public class DirectProviderContainer extends ProviderContainer {
 	
 	private IdentityProvider<?> provider;
 	
-	public DirectProviderContainer(Class<? extends IdentityProvider<?>> sc, IdentityProvider<?> prov) {
-		
-		super(sc);
-		
+	public DirectProviderContainer(IdentityProvider<?> prov) {
 		this.provider = prov;
-		
 	}
 	
 	@Override
@@ -21,19 +17,20 @@ public class DirectProviderContainer extends ProviderContainer {
 	}
 	
 	@Override
-	public ProvisionResult provide(NeoPlayer player) {
+	public ProvisionResult provide(NeoPlayer player, Runnable callback) {
 		
 		this.exo.invoke("Provide(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
 			
 			// Very simple, we just have to drop it directly into the player.
 			player.addIdentity(this.getProvider().load(player.getUniqueId()));
+			callback.run();
 			
 		});
 		
 		return ProvisionResult.IMMEDIATELY_INJECTED;
 		
 	}
-
+	
 	@Override
 	public void unload(NeoPlayer player) {
 		

@@ -2,16 +2,12 @@ package io.neocore.common.player;
 
 import java.util.UUID;
 
-import io.neocore.api.database.PersistentPlayerIdentity;
-
 /**
  * Coordinates the locks for the specified identity type across the network.
  * 
  * @author treyzania
- *
- * @param <T> The identity type to deal with.
  */
-public abstract class LockCoordinator<T extends PersistentPlayerIdentity> {
+public abstract class LockCoordinator {
 	
 	public LockCoordinator() {
 		

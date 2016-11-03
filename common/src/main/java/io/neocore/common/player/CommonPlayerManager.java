@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 import io.neocore.api.NeocoreAPI;
@@ -20,7 +21,7 @@ import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
 
-public class CommonPlayerManager implements IdentityProvider<NeoPlayer> { // TODO Impl.
+public class CommonPlayerManager {
 	
 	private Set<NeoPlayer> playerCache = new TreeSet<>();
 	
@@ -37,21 +38,24 @@ public class CommonPlayerManager implements IdentityProvider<NeoPlayer> { // TOD
 		
 	}
 	
-	@Override
-	public NeoPlayer load(UUID uuid) {
-		
-		// FIXME Make this work.
-		return null;
-		
-	}
-	
-	private NeoPlayer findPlayer(UUID uuid) {
+	public NeoPlayer findPlayer(UUID uuid) {
 		
 		for (NeoPlayer np : this.playerCache) {
 			if (np.getUniqueId().equals(uuid)) return np;
 		}
 		
 		return null;
+		
+	}
+	
+	public boolean isInited(UUID uuid) {
+		return this.findPlayer(uuid) != null;
+	}
+	
+	public boolean isPopulated(UUID uuid) {
+		
+		NeoPlayer np = this.findPlayer(uuid);
+		return np != null && np.isPopulated();
 		
 	}
 	
@@ -64,10 +68,15 @@ public class CommonPlayerManager implements IdentityProvider<NeoPlayer> { // TOD
 		// Make sure these are all good to go.
 		this.initProviderContainers();
 		
+		CountDownLatch eventLatch = new CountDownLatch(this.providerContainers.size());
+		
 		// Now actually load the things.
 		for (ProviderContainer container : this.providerContainers) {
 			
-			ProvisionResult result = container.provide(np);
+			ProvisionResult result = container.provide(np, () -> {
+				eventLatch.countDown();
+			});
+			
 			NeocoreAPI.getLogger().finer(
 				String.format(
 					"Provision result for %s on %s was %s.",
@@ -79,9 +88,22 @@ public class CommonPlayerManager implements IdentityProvider<NeoPlayer> { // TOD
 			
 		}
 		
+		// Now wait for all of the containers to finish their work before calling back.
+		this.scheduler.invokeAsync(() -> {
+			
+			try {
+				eventLatch.await();
+			} catch (InterruptedException e) {
+				NeocoreAPI.getLogger().warning("Waiting for player assembly was interrupted, invoking callback anyways...");
+			}
+			
+			// Spawn a thread for the callback.
+			if (callback != null) this.scheduler.invokeAsync(() -> callback.accept(np));
+			
+		});
+		
 		// Done.
 		this.playerCache.add(np);
-		if (callback != null) callback.accept(np);
 		return np;
 		
 	}
@@ -100,10 +122,7 @@ public class CommonPlayerManager implements IdentityProvider<NeoPlayer> { // TOD
 		for (ProviderContainer container : this.providerContainers) {
 			
 			PlayerIdentity ident = np.getIdentity(container.getProvisionedClass());
-			
-			if (ident != null) {
-				container.unload(np);
-			}
+			if (ident != null) container.unload(np);
 			
 		}
 		
@@ -139,13 +158,9 @@ public class CommonPlayerManager implements IdentityProvider<NeoPlayer> { // TOD
 			Class<? extends IdentityProvider<?>> servClazz = (Class<? extends IdentityProvider<?>>) type.getServiceClass();
 			ProviderContainer container = null;
 			if (type.getServiceClass().isAnnotationPresent(LoadAsync.class) && IdentityLinkage.class.isAssignableFrom(servClazz)) {
-				
-				// Ughh so much type destruction!
-				DataServiceWrapper<?, ?> wrapper = new DataServiceWrapper<>(this.scheduler, new DummyLifecyclePublisher<>(), (IdentityLinkage<?>) identProvider);
-				container = new AsyncProviderContainer(servClazz, wrapper, this.scheduler);
-				
+				container = new AsyncProviderContainer(identProvider, this.scheduler);
 			} else {
-				container = new DirectProviderContainer(servClazz, identProvider);
+				container = new DirectProviderContainer(identProvider);
 			}
 			
 			this.providerContainers.add(container);
@@ -172,11 +187,6 @@ public class CommonPlayerManager implements IdentityProvider<NeoPlayer> { // TOD
 		
 		return types;
 		
-	}
-	
-	@Override
-	public Class<? extends PlayerIdentity> getIdentityClass() {
-		return NeoPlayer.class;
 	}
 	
 }
