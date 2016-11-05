@@ -11,6 +11,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.database.DatabaseService;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.player.PlayerService;
 import io.neocore.jdbc.AbstractJdbcService;
@@ -30,6 +31,8 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 	
 	@Override
 	public void init() {
+		
+		NeocoreAPI.getAgent().getPlayerManager().addService(DatabaseService.PLAYER);
 		
 		try {
 			
