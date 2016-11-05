@@ -3,6 +3,8 @@ package io.neocore.api.player;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import io.neocore.api.ServiceType;
+
 public interface PlayerManager {
 	
 	/**
@@ -53,5 +55,31 @@ public interface PlayerManager {
 	public default NeoPlayer startInit(UUID uuid) {
 		return this.startInit(uuid, null);
 	}
+	
+	/**
+	 * Triggers asynchronously-loaded identities to be preloaded into the
+	 * caches for the given UUID.
+	 * 
+	 * @param uuid The player's UUID.
+	 * @param callback A callback to invoke once complete.
+	 */
+	public void preload(UUID uuid, Runnable callback);
+	
+	/**
+	 * Triggers asynchronously-loaded identities to be preloaded into the
+	 * caches for the given UUID.
+	 * 
+	 * @param uuid The player's UUID.
+	 */
+	public default void preload(UUID uuid) {
+		this.preload(uuid, () -> {});
+	}
+	
+	/**
+	 * Registers a service to be loaded on the player.
+	 * 
+	 * @param type The service type.
+	 */
+	public void addService(ServiceType type);
 	
 }
