@@ -20,6 +20,7 @@ import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.host.ServerInitializedEvent;
+import io.neocore.api.player.PlayerManager;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bukkit.cmd.CommandInjector;
@@ -96,6 +97,13 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		neo.registerServiceProvider(HostService.PERMISSIONS, null, this);
 		neo.registerServiceProvider(HostService.CHAT, this.chatService, this);
 		// TODO Gameplay (needs API interface definitions first)
+		
+		// Configure the services that we can provide from Bukkit/Spigot.
+		PlayerManager pm = neo.getPlayerManager();
+		pm.addService(HostService.LOGIN);
+		pm.addService(HostService.PERMISSIONS);
+		pm.addService(HostService.CHAT);
+		pm.addService(HostService.ENDPOINT);
 		
 		// Do the network stuff all at once if we need to do it at all.
 		if (this.config.isNetworked()) {
