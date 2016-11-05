@@ -22,6 +22,8 @@ public class ServiceManagerImpl implements ServiceManager {
 	private List<RegisteredServiceImpl> services;
 	private Map<Class<? extends ServiceProvider>, List<ServiceRegistrationHandler>> registrationHandlers;
 	
+	private boolean locked = false;
+	
 	public ServiceManagerImpl() {
 		
 		this.services = new ArrayList<>();
@@ -58,6 +60,15 @@ public class ServiceManagerImpl implements ServiceManager {
 	
 	@Override
 	public void registerServiceProvider(Module mod, ServiceType type, ServiceProvider service) {
+		
+		if (this.locked) throw new IllegalStateException("Cannot add service, already initialized!");
+		
+		if (service == null) {
+			
+			NeocoreAPI.getLogger().warning("Tried to load a null service from module " + mod + " for type " + type.getName());
+			return;
+			
+		}
 		
 		Class<? extends ServiceProvider> typeClazz = type.getServiceClass();
 		Class<? extends ServiceProvider> clazz = service.getClass();
@@ -121,6 +132,14 @@ public class ServiceManagerImpl implements ServiceManager {
 		
 		// Then just actually add it.
 		handlers.add(handler);
+		
+	}
+	
+	public synchronized void initializeServices() {
+		
+		if (this.locked) throw new IllegalStateException("Tried to initialize services that are already initialized!");
+		this.services.forEach(s -> s.getServiceProvider().init());
+		this.locked = true;
 		
 	}
 	

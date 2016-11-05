@@ -64,7 +64,10 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 
 	@Override
 	public void addService(ServiceType type) {
+		
+		NeocoreAPI.getLogger().info("Registering identity provider type: " + type);
 		this.playerManager.addService(type);
+		
 	}
 	
 }

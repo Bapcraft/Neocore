@@ -28,6 +28,7 @@ import io.neocore.common.service.LoginServiceRegHandler;
 import io.neocore.common.service.ServiceManagerImpl;
 import io.neocore.common.tasks.DatabaseInitializerTask;
 import io.neocore.common.tasks.NeocoreTaskDelegator;
+import io.neocore.common.tasks.ServiceInitializationTask;
 
 public class NeocoreImpl implements Neocore {
 	
@@ -72,6 +73,7 @@ public class NeocoreImpl implements Neocore {
 		this.tasks = new TaskQueue();
 		this.taskDelegator = new NeocoreTaskDelegator();
 		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, host, this.dbManager));
+		this.tasks.enqueue(new ServiceInitializationTask(this.taskDelegator, this.serviceManager));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);

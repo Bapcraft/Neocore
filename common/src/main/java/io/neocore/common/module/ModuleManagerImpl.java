@@ -95,7 +95,7 @@ public class ModuleManagerImpl implements ModuleManager {
 			log.info("Enabling " + m.getName() + " v" + m.getVersion() + "...");
 			
 			this.container.invoke(String.format("MicromoduleEnable(%s)", m.getName()), () -> {
-				((Micromodule) m).onEnable();
+				m.onEnable();
 			});
 			
 			log.info("Micromodule " + m.getName() + " enabled!");
