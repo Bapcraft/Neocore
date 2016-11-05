@@ -1,4 +1,4 @@
-package io.neocore.mysql.player;
+package io.neocore.jdbc.player;
 
 import java.util.Date;
 
@@ -7,9 +7,9 @@ import io.neocore.api.player.group.GroupMembership;
 
 public class MembershipWrapper extends GroupMembership {
 	
-	private MysqlGroupMembership wrapper;
+	private JdbcGroupMembership wrapper;
 	
-	public MembershipWrapper(MysqlGroupMembership mgm) {
+	public MembershipWrapper(JdbcGroupMembership mgm) {
 		
 		super(mgm.begin, mgm.end);
 		

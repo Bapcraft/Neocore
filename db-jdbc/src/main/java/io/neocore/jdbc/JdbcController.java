@@ -1,4 +1,4 @@
-package io.neocore.mysql;
+package io.neocore.jdbc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +9,11 @@ import io.neocore.api.database.DatabaseController;
 import io.neocore.api.database.DatabaseService;
 import io.neocore.api.database.DatabaseServiceProvider;
 
-public class MySqlController implements DatabaseController {
+public class JdbcController implements DatabaseController {
 	
 	private List<DatabaseServiceProvider> services;
 	
-	public MySqlController(Config config) {
+	public JdbcController(Config config) {
 		
 		this.services = new ArrayList<>();
 		
@@ -21,7 +21,7 @@ public class MySqlController implements DatabaseController {
 	
 	@Override
 	public String getBrand() {
-		return "MySQL-ORMLite";
+		return "JDBC-ORMLite";
 	}
 	
 	@Override

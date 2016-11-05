@@ -1,4 +1,4 @@
-package io.neocore.mysql.session;
+package io.neocore.jdbc.session;
 
 import java.util.Date;
 
@@ -10,10 +10,10 @@ import io.neocore.api.database.session.EndpointMove;
 import io.neocore.api.host.proxy.NetworkEndpoint;
 
 @DatabaseTable(tableName = "networkMoves")
-public class MysqlNetworkMove extends AbstractPersistentRecord implements EndpointMove {
+public class JdbcNetworkMove extends AbstractPersistentRecord implements EndpointMove {
 	
 	@DatabaseField(foreign = true)
-	private MysqlSession session;
+	private JdbcSession session;
 	
 	@DatabaseField(canBeNull = false)
 	private Date time;

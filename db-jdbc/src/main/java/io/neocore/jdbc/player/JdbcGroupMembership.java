@@ -1,4 +1,4 @@
-package io.neocore.mysql.player;
+package io.neocore.jdbc.player;
 
 import java.util.Date;
 
@@ -9,10 +9,10 @@ import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.player.group.GroupMembership;
 
 @DatabaseTable(tableName = "groupMemberships")
-public class MysqlGroupMembership extends AbstractPersistentRecord {
+public class JdbcGroupMembership extends AbstractPersistentRecord {
 	
 	@DatabaseField(canBeNull = false, foreign = true)
-	protected MysqlDbPlayer owner;
+	protected JdbcDbPlayer owner;
 	
 	@DatabaseField
 	protected String groupName;
@@ -23,11 +23,11 @@ public class MysqlGroupMembership extends AbstractPersistentRecord {
 	@DatabaseField(canBeNull = true)
 	protected Date end;
 	
-	public MysqlGroupMembership() {
+	public JdbcGroupMembership() {
 		// ORMLite.
 	}
 	
-	public MysqlGroupMembership(MysqlDbPlayer owner, MembershipWrapper em) {
+	public JdbcGroupMembership(JdbcDbPlayer owner, MembershipWrapper em) {
 		
 		this.owner = owner;
 		

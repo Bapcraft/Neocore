@@ -1,4 +1,4 @@
-package io.neocore.mysql.session;
+package io.neocore.jdbc.session;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -18,7 +18,7 @@ import io.neocore.api.database.session.ProxiedSession;
 import io.neocore.api.database.session.SessionState;
 
 @DatabaseTable(tableName = "sessions")
-public class MysqlSession extends AbstractPersistentRecord implements ProxiedSession {
+public class JdbcSession extends AbstractPersistentRecord implements ProxiedSession {
 	
 	@DatabaseField(canBeNull = false, id = true)
 	private UUID sessionId;
@@ -45,7 +45,7 @@ public class MysqlSession extends AbstractPersistentRecord implements ProxiedSes
 	private boolean networked;
 	
 	@ForeignCollectionField
-	private ForeignCollection<MysqlNetworkMove> moves;
+	private ForeignCollection<JdbcNetworkMove> moves;
 	
 	@DatabaseField(canBeNull = false)
 	private Date start;
@@ -53,7 +53,7 @@ public class MysqlSession extends AbstractPersistentRecord implements ProxiedSes
 	@DatabaseField(canBeNull = false)
 	private Date end;
 	
-	public MysqlSession() {
+	public JdbcSession() {
 		
 		// ORMLite.
 		
@@ -62,7 +62,7 @@ public class MysqlSession extends AbstractPersistentRecord implements ProxiedSes
 		
 	}
 	
-	public MysqlSession(UUID sessionId, UUID playerId, String playerName, InetAddress address) {
+	public JdbcSession(UUID sessionId, UUID playerId, String playerName, InetAddress address) {
 		
 		this.sessionId = sessionId;
 		this.uuid = playerId;
@@ -172,7 +172,7 @@ public class MysqlSession extends AbstractPersistentRecord implements ProxiedSes
 	@Override
 	public void addEndpointMove(EndpointMove move) {
 		
-		this.moves.add((MysqlNetworkMove) move); // FIXME Casting.
+		this.moves.add((JdbcNetworkMove) move); // FIXME Casting.
 		this.dirty();
 		
 	}

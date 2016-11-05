@@ -1,4 +1,4 @@
-package io.neocore.mysql.player;
+package io.neocore.jdbc.player;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -6,10 +6,10 @@ import com.j256.ormlite.table.DatabaseTable;
 import io.neocore.api.eco.Account;
 
 @DatabaseTable(tableName = "accounts")
-public class MysqlPlayerAccount implements Account {
+public class JdbcPlayerAccount implements Account {
 	
 	@DatabaseField(canBeNull = false, foreign = true)
-	private MysqlDbPlayer owner;
+	private JdbcDbPlayer owner;
 	
 	@DatabaseField(canBeNull = false)
 	public String currency;
@@ -20,11 +20,11 @@ public class MysqlPlayerAccount implements Account {
 	@DatabaseField
 	private float multiplier = 1F;
 	
-	public MysqlPlayerAccount() {
+	public JdbcPlayerAccount() {
 		// ORMLite.
 	}
 	
-	public MysqlPlayerAccount(String curName) {
+	public JdbcPlayerAccount(String curName) {
 		this.currency = curName;
 	}
 	

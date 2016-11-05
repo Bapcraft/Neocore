@@ -1,4 +1,4 @@
-package io.neocore.mysql.player;
+package io.neocore.jdbc.player;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,7 +19,7 @@ import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
 @DatabaseTable(tableName = "players")
-public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabasePlayer {
+public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePlayer {
 	
 	@DatabaseField(id = true)
 	private UUID uuid;
@@ -28,13 +28,13 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 	private String lastUsername;
 	
 	@ForeignCollectionField
-	private ForeignCollection<MysqlPlayerAccount> accounts;
+	private ForeignCollection<JdbcPlayerAccount> accounts;
 	
 	@ForeignCollectionField
-	private ForeignCollection<MysqlGroupMembership> groupMemberships;
+	private ForeignCollection<JdbcGroupMembership> groupMemberships;
 	
 	@ForeignCollectionField
-	private ForeignCollection<MysqlExtensionRecord> extensions;
+	private ForeignCollection<JdbcExtensionRecord> extensions;
 	
 	@DatabaseField(canBeNull = false)
 	private Date firstLogin;
@@ -45,7 +45,7 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 	@DatabaseField
 	private long loginCount;
 	
-	public MysqlDbPlayer() {
+	public JdbcDbPlayer() {
 		// ORMLite.
 	}
 	
@@ -70,7 +70,7 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 		// TODO Make this not true anymore.
 		if (!(group instanceof MembershipWrapper)) throw new IllegalArgumentException("Group needs to be DB-native!");
 		
-		this.groupMemberships.add(new MysqlGroupMembership(this, (MembershipWrapper) group));
+		this.groupMemberships.add(new JdbcGroupMembership(this, (MembershipWrapper) group));
 		this.dirty();
 		
 	}
@@ -78,10 +78,10 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 	@Override
 	public void removeGroupMembership(Group group) {
 		
-		Iterator<MysqlGroupMembership> iter = this.groupMemberships.iterator();
+		Iterator<JdbcGroupMembership> iter = this.groupMemberships.iterator();
 		while (iter.hasNext()) {
 			
-			MysqlGroupMembership mgm = iter.next();
+			JdbcGroupMembership mgm = iter.next();
 			
 			if (mgm.groupName.equals(group.getName())) {
 				
@@ -97,7 +97,7 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 	@Override
 	public Account getAccount(String currency) {
 		
-		for (MysqlPlayerAccount acct : this.accounts) {
+		for (JdbcPlayerAccount acct : this.accounts) {
 			if (acct.currency.equals(currency)) return acct;
 		}
 		
@@ -108,7 +108,7 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 	@Override
 	public Extension getExtension(String name) {
 		
-		for (MysqlExtensionRecord ext : this.extensions) {
+		for (JdbcExtensionRecord ext : this.extensions) {
 			if (ext.type.equals(name)) return ext.deserialize();
 		}
 		
@@ -119,7 +119,7 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 	@Override
 	public void putExtension(Extension ext) {
 		
-		for (MysqlExtensionRecord myExt : this.extensions) {
+		for (JdbcExtensionRecord myExt : this.extensions) {
 			
 			if (myExt.type.equals(ext.getName())) {
 				
@@ -132,7 +132,7 @@ public class MysqlDbPlayer extends AbstractPersistentRecord implements DatabaseP
 		}
 		
 		// At this point we're sure it's not in it so we can add it.
-		this.extensions.add(new MysqlExtensionRecord(ext));
+		this.extensions.add(new JdbcExtensionRecord(ext));
 		this.dirty();
 		
 	}

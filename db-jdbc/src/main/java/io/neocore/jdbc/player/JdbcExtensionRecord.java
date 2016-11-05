@@ -1,4 +1,4 @@
-package io.neocore.mysql.player;
+package io.neocore.jdbc.player;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -8,10 +8,10 @@ import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.player.extension.Extension;
 
 @DatabaseTable(tableName = "playerExtensions")
-public class MysqlExtensionRecord extends AbstractPersistentRecord {
+public class JdbcExtensionRecord extends AbstractPersistentRecord {
 	
 	@DatabaseField(canBeNull = false, foreign = true)
-	protected MysqlDbPlayer owner;
+	protected JdbcDbPlayer owner;
 	
 	@DatabaseField(canBeNull = false)
 	protected String type;
@@ -19,11 +19,11 @@ public class MysqlExtensionRecord extends AbstractPersistentRecord {
 	@DatabaseField(canBeNull = false)
 	protected String data;
 	
-	public MysqlExtensionRecord() {
+	public JdbcExtensionRecord() {
 		// ORMLite.
 	}
 	
-	public MysqlExtensionRecord(Extension ext) {
+	public JdbcExtensionRecord(Extension ext) {
 		
 		this.type = ext.getName();
 		this.data = ext.serialize();
