@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>io.neocore</groupId>
-	<artifactId>neocore-mysql-database</artifactId>
+	<artifactId>neocore-jdbc-micromodule</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Neocore-MySQL-Database</name>
+	<name>Neocore-JDBC-Micromodule</name>
 	
 	<dependencies>
 		
@@ -20,6 +20,7 @@
 			<groupId>com.treyzania</groupId>
 			<artifactId>jzania</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
