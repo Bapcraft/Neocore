@@ -1,6 +1,7 @@
 package io.neocore.common.player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -26,7 +27,7 @@ public class CommonPlayerManager {
 	private ServiceManager serviceManager;
 	private Scheduler scheduler;
 	
-	private List<ServiceType> loadableServices;
+	private Set<ServiceType> loadableServices;
 	private List<ProviderContainer> providerContainers;
 	
 	public CommonPlayerManager(ServiceManager sm, Scheduler sched) {
@@ -34,15 +35,17 @@ public class CommonPlayerManager {
 		this.serviceManager = sm;
 		this.scheduler = sched;
 		
-		this.loadableServices = new ArrayList<>();
+		this.loadableServices = new HashSet<>();
 		this.wrapServices();
 		
 	}
 	
 	public void addService(ServiceType type) {
 		
-		this.loadableServices.add(type);
-		this.addServiceWrapper(type);
+		// We have to wrap the service if we didn't already have it registered.
+		if (this.loadableServices.add(type)) {
+			this.addServiceWrapper(type);
+		}
 		
 	}
 	
@@ -58,6 +61,14 @@ public class CommonPlayerManager {
 	@SuppressWarnings("unchecked")
 	private void addServiceWrapper(ServiceType type) {
 
+		// Validation.
+		if (!IdentityProvider.class.isAssignableFrom(type.getServiceClass())) {
+			
+			NeocoreAPI.getLogger().warning("Tried to wrap an identity service that wasn't actually an identity service! (" + type.getServiceClass().getName() + ")");
+			return;
+			
+		}
+		
 		NeocoreAPI.getLogger().finer("Making container for provider: " + type.getName());
 		
 		IdentityProvider<?> identProvider = (IdentityProvider<?>) this.serviceManager.getService(type).getServiceProvider();
