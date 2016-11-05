@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import com.treyzania.jzania.ExoContainer;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.ServiceType;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.event.database.LoadReason;
 import io.neocore.api.event.database.PostLoadPlayerEvent;
@@ -54,6 +55,16 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 	@Override
 	public NeoPlayer getPlayer(UUID uuid) {
 		return null;
+	}
+
+	@Override
+	public void preload(UUID uuid, Runnable callback) {
+		this.playerManager.preloadPlayer(uuid, callback);
+	}
+
+	@Override
+	public void addService(ServiceType type) {
+		this.playerManager.addService(type);
 	}
 	
 }
