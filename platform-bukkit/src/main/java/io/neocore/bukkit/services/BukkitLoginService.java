@@ -22,15 +22,12 @@ import io.neocore.bukkit.events.PlayerConnectionForwarder;
 
 public class BukkitLoginService implements LoginService {
 	
-	private ServiceManager serviceManager;
 	private LoginAcceptor acceptor;
 	private PlayerConnectionForwarder forwarder;
 	
 	private List<BukkitPlayer> players;
 	
 	public BukkitLoginService(ServiceManager serviceManager, PlayerConnectionForwarder fwdr) {
-		
-		this.serviceManager = serviceManager;
 		
 		this.forwarder = fwdr;
 		this.players = new ArrayList<>();
