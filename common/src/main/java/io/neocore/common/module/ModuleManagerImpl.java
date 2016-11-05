@@ -67,8 +67,20 @@ public class ModuleManagerImpl implements ModuleManager {
 				
 				this.container.invoke(String.format("MicromoduleConfigure(%s)", m.getName()), () -> {
 					
-					Config config = ConfigFactory.parseFile(new File(m.getName() + ".conf"));
-					((Micromodule) m).configure(config);
+					File f = new File(m.getName() + ".conf");
+					
+					if (f.exists()) {
+						
+						Config config = ConfigFactory.parseFile(f);
+						((Micromodule) m).configure(config);
+						
+					} else {
+						
+						NeocoreAPI.getLogger().warning("No general config found for " + m.getName() + ", passing null...");
+						((Micromodule) m).configure(null); // Hope everything goes well.
+						
+					}
+					
 					ok.add((Micromodule) m);
 					
 				});
