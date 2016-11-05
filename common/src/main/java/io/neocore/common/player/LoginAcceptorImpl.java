@@ -9,7 +9,7 @@ import io.neocore.api.database.ban.BanList;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.SimpleSessionImpl;
-import io.neocore.api.event.database.PostUnloadNeoPlayerEvent;
+import io.neocore.api.event.database.PostUnloadPlayerEvent;
 import io.neocore.api.event.database.UnloadReason;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.Context;
@@ -100,7 +100,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		
 		// Unload once we're sure everyone is done using it.
 		this.players.unloadPlayer(np.getUniqueId(), () -> {
-			this.events.broadcast(new PostUnloadNeoPlayerEvent(UnloadReason.DISCONNECT, np.getUniqueId()));
+			this.events.broadcast(new PostUnloadPlayerEvent(UnloadReason.DISCONNECT, np.getUniqueId()));
 		});
 		
 	}
