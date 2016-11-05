@@ -1,10 +1,19 @@
 package io.neocore.jdbc;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.support.ConnectionSource;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigObject;
+import com.typesafe.config.ConfigValue;
+import com.typesafe.config.ConfigValueType;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.DatabaseController;
 import io.neocore.api.database.DatabaseService;
 import io.neocore.api.database.DatabaseServiceProvider;
@@ -13,9 +22,13 @@ public class JdbcController implements DatabaseController {
 	
 	private List<DatabaseServiceProvider> services;
 	
+	private Config configuration;
+	private ConnectionSource source;
+	
 	public JdbcController(Config config) {
 		
 		this.services = new ArrayList<>();
+		this.configuration = config;
 		
 	}
 	
@@ -27,10 +40,44 @@ public class JdbcController implements DatabaseController {
 	@Override
 	public void initialize() {
 		
+		String url = this.configuration.getString("jdbc-url");
+		ConfigValue authConf = this.configuration.getValue("auth");
+		
+		if (authConf.valueType() == ConfigValueType.OBJECT) {
+			
+			ConfigObject authObj = (ConfigObject) authConf;
+			
+			String username = (String) authObj.get("username").unwrapped();
+			String password = (String) authObj.get("password").unwrapped();
+			
+			try {
+				this.source = new JdbcConnectionSource(url, username, password);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Could not init connection to database!", e);
+			}
+			
+		} else if (authConf.valueType() == ConfigValueType.NULL) {
+			
+			try {
+				this.source = new JdbcConnectionSource(url);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Could not init connection to database!", e);
+			}
+			
+		} else {
+			throw new IllegalArgumentException("JDBC auth configuration isn't valid!  Must be an object with \"username\" and \"password\" keys, or null!");
+		}
+
 	}
 	
 	@Override
 	public void shutdown() {
+		
+		try {
+			this.source.close();
+		} catch (IOException e) {
+			NeocoreAPI.getLogger().log(Level.WARNING, "Problem closing connection to database!", e);
+		}
 		
 	}
 	

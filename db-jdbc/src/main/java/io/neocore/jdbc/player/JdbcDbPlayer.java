@@ -49,6 +49,10 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 		// ORMLite.
 	}
 	
+	public JdbcDbPlayer(UUID uuid) {
+		this.uuid = uuid;
+	}
+	
 	@Override
 	public UUID getUniqueId() {
 		return this.uuid;

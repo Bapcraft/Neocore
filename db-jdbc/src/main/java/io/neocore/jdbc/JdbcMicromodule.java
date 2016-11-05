@@ -1,5 +1,6 @@
 package io.neocore.jdbc;
 
+import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.DatabaseService;
 import io.neocore.api.module.JavaMicromodule;
@@ -11,9 +12,13 @@ public class JdbcMicromodule extends JavaMicromodule {
 	public void onEnable() {
 		
 		NeocoreAPI.getLogger().info("I surrender to JDBC.");
+		Neocore neo = NeocoreAPI.getAgent();
+		
+		// Register the controller itself.
+		neo.getDatabaseManager().registerController("JDBC", JdbcController.class);
 		
 		// Tell the player manager that we can provide these services.
-		PlayerManager pm = NeocoreAPI.getAgent().getPlayerManager();
+		PlayerManager pm = neo.getPlayerManager();
 		pm.addService(DatabaseService.PLAYER);
 		pm.addService(DatabaseService.SESSION);
 		
