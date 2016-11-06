@@ -46,13 +46,17 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		
 		// Verify bans
 		// TODO Flesh this out a lot to actually report the reasons and make the messages more configurable.
-		BanList playerBans = this.services.getService(BanService.class).getBans(uuid);
-		for (Context ctx : this.contexts) {
+		if (NeocoreAPI.getAgent().getHost().getNeocoreConfig().isEnforcingBans()) { // FIXME Encapsulation.
 			
-			if (playerBans.isBannedInContext(ctx)) {
+			BanList playerBans = this.services.getService(BanService.class).getBans(uuid);
+			for (Context ctx : this.contexts) {
 				
-				event.disallow("You're banned!");
-				return;
+				if (playerBans.isBannedInContext(ctx)) {
+					
+					event.disallow("You're banned!");
+					return;
+					
+				}
 				
 			}
 			
