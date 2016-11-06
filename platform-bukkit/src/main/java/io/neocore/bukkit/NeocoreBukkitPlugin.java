@@ -70,14 +70,14 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		// Initialize config
 		BukkitNeocoreConfig.verifyConfig(this.getConfigFile(), this);
 		this.config = new BukkitNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
+
+		// Set up command injector.
+		this.cmdInjector = new CommandInjector_19r2(); // FIXME Make this figure out the details automatically.
+		this.scheduler = new NeoBukkitScheduler(this, Bukkit.getScheduler());
 		
 		// Initialize and install Neocore
 		NeocoreInstaller.applyLogger(Bukkit.getLogger());
 		NeocoreImpl neo = new NeocoreImpl(this);
-		
-		// Set up command injector.
-		this.cmdInjector = new CommandInjector_19r2(); // FIXME Make this figure out the details automatically.
-		this.scheduler = new NeoBukkitScheduler(this, Bukkit.getScheduler());
 		
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
