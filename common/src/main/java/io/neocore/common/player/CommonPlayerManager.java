@@ -10,11 +10,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
+import io.neocore.api.LoadAsync;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.IdentityLinkage;
-import io.neocore.api.database.LoadAsync;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
