@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import io.neocore.api.LoadAsync;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.database.session.SimpleSessionImpl;
@@ -20,6 +21,7 @@ import io.neocore.api.host.login.ServerPlayer;
 import io.neocore.bukkit.BukkitPlayer;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
 
+@LoadAsync
 public class BukkitLoginService implements LoginService {
 	
 	private LoginAcceptor acceptor;
@@ -71,7 +73,20 @@ public class BukkitLoginService implements LoginService {
 	
 	private BukkitPlayer initPlayer(UUID uuid) {
 		
-		Player p = Bukkit.getPlayer(uuid);
+		// FIXME XXX UGLY FUCKING HACK FIX THIS SHIT SOMEWHERE SOMEHOW IDK.
+		Player p = null;
+		while (p == null) {
+			
+			p = Bukkit.getPlayer(uuid);
+			
+			try {
+				Thread.sleep(5L);
+			} catch (InterruptedException e) {
+				// ehh?
+			}
+			
+		}
+		
 		BukkitPlayer bp = new BukkitPlayer(p);
 		
 		this.players.add(bp);
