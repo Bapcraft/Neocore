@@ -3,9 +3,9 @@ package io.neocore.api.database.session;
 import java.net.InetAddress;
 import java.util.Date;
 
-import io.neocore.api.player.PlayerIdentity;
+import io.neocore.api.database.PersistentPlayerIdentity;
 
-public interface Session extends PlayerIdentity {
+public interface Session extends PersistentPlayerIdentity {
 	
 	public String getLoginUsername();
 	

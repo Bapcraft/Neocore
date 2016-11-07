@@ -9,7 +9,7 @@ import com.google.common.base.Preconditions;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.PersistentPlayerIdentity;
 import io.neocore.api.database.player.DatabasePlayer;
-import io.neocore.api.database.session.SimpleSessionImpl;
+import io.neocore.api.database.session.Session;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.ServerPlayer;
 import io.neocore.api.host.permissions.PermissedPlayer;
@@ -59,8 +59,8 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	/**
 	 * @return The session of this player, or <code>null</code> if the player is not connected.
 	 */
-	public SimpleSessionImpl getSession() {
-		return this.getIdentity(SimpleSessionImpl.class);
+	public Session getSession() {
+		return this.getIdentity(Session.class);
 	}
 	
 	/**
