@@ -1,9 +1,9 @@
 package io.neocore.api.player;
 
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import io.neocore.api.ServiceType;
+import io.neocore.api.event.database.PostLoadPlayerEvent;
 
 public interface PlayerManager {
 	
@@ -36,25 +36,6 @@ public interface PlayerManager {
 	 * @return The player, or <code>null</code> if not available.
 	 */
 	public NeoPlayer getPlayer(UUID uuid);
-	
-	/**
-	 * Starts initialization of the player in a separate thread.
-	 * 
-	 * @param uuid The player's UUID.
-	 * @param callback A callback once the player has been populated, before events are fired.
-	 * @return The player before they are populated.
-	 */
-	public NeoPlayer startInit(UUID uuid, Consumer<NeoPlayer> callback);
-	
-	/**
-	 * Starts initialization of the player in a separate thread.
-	 * 
-	 * @param uuid The player's UUID.
-	 * @return The player before they are populated.
-	 */
-	public default NeoPlayer startInit(UUID uuid) {
-		return this.startInit(uuid, null);
-	}
 	
 	/**
 	 * Triggers asynchronously-loaded identities to be preloaded into the
