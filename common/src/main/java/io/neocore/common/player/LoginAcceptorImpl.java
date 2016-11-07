@@ -9,8 +9,11 @@ import io.neocore.api.database.ban.BanList;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.SimpleSessionImpl;
+import io.neocore.api.event.database.LoadReason;
+import io.neocore.api.event.database.PostLoadPlayerEvent;
 import io.neocore.api.event.database.PostUnloadPlayerEvent;
 import io.neocore.api.event.database.UnloadReason;
+import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.login.DisconnectEvent;
@@ -48,19 +51,32 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		// TODO Flesh this out a lot to actually report the reasons and make the messages more configurable.
 		if (NeocoreAPI.getAgent().getHost().getNeocoreConfig().isEnforcingBans()) { // FIXME Encapsulation.
 			
-			BanList playerBans = this.services.getService(BanService.class).getBans(uuid);
-			for (Context ctx : this.contexts) {
+			BanService serv = this.services.getService(BanService.class);
+			if (serv != null) {
 				
-				if (playerBans.isBannedInContext(ctx)) {
+				BanList playerBans = serv.getBans(uuid);
+				for (Context ctx : this.contexts) {
 					
-					event.disallow("You're banned!");
-					return;
+					if (playerBans.isBannedInContext(ctx)) {
+						
+						event.disallow("You're banned!");
+						return;
+						
+					}
 					
 				}
 				
 			}
 			
 		}
+		
+		// Initialize the player themselves.
+		this.players.assemblePlayer(uuid, np -> {
+			
+			np.setPopulated();
+			this.events.broadcast(new PostLoadPlayerEvent(LoadReason.JOIN, np));
+			
+		});
 		
 		// Broadcast the event.
 		this.events.broadcast(InitialLoginEvent.class, event);
@@ -77,9 +93,14 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		NeoPlayer np = event.getPlayer();
 		
 		// Initialize the player username stuff.
-		DatabasePlayer dbp = np.getIdentity(DatabasePlayer.class);
-		dbp.setLastUsername(np.getUsername());
+		if (np.hasIdentity(DatabasePlayer.class)) {
+			
+			DatabasePlayer dbp = np.getIdentity(DatabasePlayer.class);
+			dbp.setLastUsername(np.getUsername());
+			
+		}
 		
+		// Broadcast
 		this.events.broadcast(PostLoginEvent.class, event);
 		
 	}
@@ -91,7 +112,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		
 		// TODO Fix this shit.
 		// Clear session data.
-		if (NeocoreAPI.isFrontend()) {
+		if (NeocoreAPI.isFrontend() && np.hasIdentity(Session.class)) {
 			
 			SimpleSessionImpl sess = np.getSession();
 			sess.setState(SessionState.DISCONNECTED);

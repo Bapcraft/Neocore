@@ -1,31 +1,17 @@
 package io.neocore.common.player;
 
 import java.util.UUID;
-import java.util.function.Consumer;
-
-import com.treyzania.jzania.ExoContainer;
-
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceType;
-import io.neocore.api.event.EventManager;
-import io.neocore.api.event.database.LoadReason;
-import io.neocore.api.event.database.PostLoadPlayerEvent;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerManager;
 
 public class PlayerManagerWrapperImpl implements PlayerManager {
 	
-	private ExoContainer container;
 	private CommonPlayerManager playerManager;
-	private EventManager eventManager;
 	
-	public PlayerManagerWrapperImpl(CommonPlayerManager man, EventManager events) {
-		
+	public PlayerManagerWrapperImpl(CommonPlayerManager man) {
 		this.playerManager = man;
-		this.eventManager = events;
-		
-		this.container = new ExoContainer(NeocoreAPI.getLogger());
-		
 	}
 	
 	@Override
@@ -39,29 +25,15 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 	}
 	
 	@Override
-	public NeoPlayer startInit(UUID uuid, Consumer<NeoPlayer> callback) {
-		
-		return this.playerManager.assemblePlayer(uuid, np -> {
-			
-			np.setPopulated();
-			if (callback != null) this.container.invoke("InitPlayerCallback(" + uuid + ")", () -> callback.accept(np));
-			
-			this.eventManager.broadcast(new PostLoadPlayerEvent(LoadReason.JOIN, np));
-			
-		});
-		
+	public NeoPlayer getPlayer(UUID uuid) {
+		return this.playerManager.findPlayer(uuid);
 	}
 	
-	@Override
-	public NeoPlayer getPlayer(UUID uuid) {
-		return null;
-	}
-
 	@Override
 	public void preload(UUID uuid, Runnable callback) {
 		this.playerManager.preloadPlayer(uuid, callback);
 	}
-
+	
 	@Override
 	public void addService(ServiceType type) {
 		
