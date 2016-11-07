@@ -2,9 +2,9 @@ package io.neocore.api.database.player;
 
 import java.util.UUID;
 
+import io.neocore.api.LoadAsync;
 import io.neocore.api.database.DatabaseServiceProvider;
 import io.neocore.api.database.IdentityLinkage;
-import io.neocore.api.database.LoadAsync;
 import io.neocore.api.player.PlayerIdentity;
 
 @LoadAsync

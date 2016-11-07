@@ -3,9 +3,9 @@ package io.neocore.api.database.session;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import io.neocore.api.LoadAsync;
 import io.neocore.api.database.DatabaseServiceProvider;
 import io.neocore.api.database.IdentityLinkage;
-import io.neocore.api.database.LoadAsync;
 import io.neocore.api.player.PlayerIdentity;
 
 @LoadAsync
