@@ -78,28 +78,6 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 	}
 	
 	@Override
-	public DatabasePlayer reload(UUID uuid) {
-		
-		DatabasePlayer old = this.findPlayer(uuid);
-		
-		if (old != null) {
-			
-			old.invalidate();
-			this.cache.remove(old);
-			
-			// Return the newly-loaded version.  The player gets cached in the process anyways.
-			return this.load(uuid);
-			
-		} else {
-			
-			NeocoreAPI.getLogger().warning("Player " + uuid + " was not loaded, but we tried to reload it anyways!");
-			return null;
-			
-		}
-		
-	}
-	
-	@Override
 	public void invalidate(UUID uuid) {
 		
 		JdbcDbPlayer dbp = this.findPlayer(uuid);
