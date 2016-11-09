@@ -1,6 +1,5 @@
 package io.neocore.common.player;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,13 +7,10 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.ban.BanList;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
-import io.neocore.api.database.session.SimpleSessionImpl;
 import io.neocore.api.event.database.LoadReason;
 import io.neocore.api.event.database.PostLoadPlayerEvent;
 import io.neocore.api.event.database.PostUnloadPlayerEvent;
 import io.neocore.api.event.database.UnloadReason;
-import io.neocore.api.database.session.Session;
-import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.host.login.InitialLoginEvent;
@@ -109,16 +105,6 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 	public void onDisconnectEvent(DisconnectEvent event) {
 		
 		NeoPlayer np = event.getPlayer();
-		
-		// TODO Fix this shit.
-		// Clear session data.
-		if (NeocoreAPI.isFrontend() && np.hasIdentity(Session.class)) {
-			
-			SimpleSessionImpl sess = np.getSession();
-			sess.setState(SessionState.DISCONNECTED);
-			sess.setEndDate(new Date());
-			
-		}
 		
 		// Broadcast the event straightaway.
 		this.events.broadcast(event);
