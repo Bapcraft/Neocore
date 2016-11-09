@@ -1,27 +1,17 @@
 package io.neocore.bukkit.services;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import io.neocore.api.LoadAsync;
-import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
-import io.neocore.api.database.session.SimpleSessionImpl;
-import io.neocore.api.database.session.SessionState;
-import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.LoginService;
 import io.neocore.api.host.login.ServerPlayer;
 import io.neocore.bukkit.BukkitPlayer;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
 
-@LoadAsync
 public class BukkitLoginService implements LoginService {
 	
 	private LoginAcceptor acceptor;
@@ -73,52 +63,9 @@ public class BukkitLoginService implements LoginService {
 	
 	private BukkitPlayer initPlayer(UUID uuid) {
 		
-		// FIXME XXX UGLY FUCKING HACK FIX THIS SHIT SOMEWHERE SOMEHOW IDK.
-		Player p = null;
-		while (p == null) {
-			
-			p = Bukkit.getPlayer(uuid);
-			
-			try {
-				Thread.sleep(5L);
-			} catch (InterruptedException e) {
-				// ehh?
-			}
-			
-		}
-		
-		BukkitPlayer bp = new BukkitPlayer(p);
-		
+		BukkitPlayer bp = new BukkitPlayer(Bukkit.getPlayer(uuid));
 		this.players.add(bp);
 		return bp;
-		
-	}
-	
-	@Override
-	public SimpleSessionImpl initSession(UUID uuid) {
-		
-		// FIXME Breaks encapsulation.
-		HostPlugin host = NeocoreAPI.getAgent().getHost();;
-		if (host.isFrontServer()) {
-			
-			NeocoreAPI.getLogger().info("Initing session for " + uuid + "...");
-			
-			// Initialize the state.
-			Player p = Bukkit.getPlayer(uuid);
-			String name = p.getName();
-			InetAddress addr = p.getAddress().getAddress(); // Eww yucky.
-			String serverName = host.getNeocoreConfig().getServerName();
-			
-			SimpleSessionImpl sess = new SimpleSessionImpl(uuid, name, addr, serverName);
-			sess.setState(SessionState.ACTIVE);
-			sess.setStartDate(new Date());
-			sess.setEndDate(new Date(-1L));
-			
-			return sess;
-			
-		}
-		
-		return null;
 		
 	}
 	

@@ -21,15 +21,15 @@ public class BukkitQuitEvent implements DisconnectEvent {
 	public NeoPlayer getPlayer() {
 		return this.player;
 	}
-
+	
 	@Override
 	public void setQuitMessage(String message) {
 		this.event.setQuitMessage(message);
 	}
-
+	
 	@Override
 	public String getQuitMessage() {
 		return this.event.getQuitMessage();
 	}
-
+	
 }

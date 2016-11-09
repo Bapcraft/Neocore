@@ -82,7 +82,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
 		this.forwarders.add(this.chatForwarder);
-		this.connectionForwarder = new PlayerConnectionForwarder(neo.getPlayerManager());
+		this.connectionForwarder = new PlayerConnectionForwarder(neo.getPlayerManager(), neo.getPlayerAssembler());
 		this.forwarders.add(this.connectionForwarder);
 		
 		// Services
