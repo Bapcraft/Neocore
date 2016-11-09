@@ -57,18 +57,14 @@ public class CommonPlayerManager {
 	public void addService(ServiceType type) {
 		
 		// We have to wrap the service if we didn't already have it registered.
-		if (this.loadableServices.add(type)) {
-			this.addServiceWrapper(type);
-		}
+		if (this.loadableServices.add(type)) this.addServiceWrapper(type);
 		
 	}
 	
 	public void wrapServices() {
 		
 		this.providerContainers = new ArrayList<>();
-		this.loadableServices.forEach(t -> {
-			this.addServiceWrapper(t);
-		});
+		this.loadableServices.forEach(t -> this.addServiceWrapper(t));
 		
 	}
 	
@@ -87,9 +83,7 @@ public class CommonPlayerManager {
 		
 		IdentityProvider<?> identProvider = (IdentityProvider<?>) this.serviceManager.getService(type).getServiceProvider();
 		if (identProvider == null) {
-			
 			NeocoreAPI.getLogger().warning("No identity provider found for type " + type.getName() + "!  Ignoring...");
-			
 		}
 		
 		// Now we actually can initialize it.
@@ -189,10 +183,14 @@ public class CommonPlayerManager {
 			
 			if (container instanceof AsyncProviderContainer) {
 				
+				// Should be done asynchronously because we don't know if the caller is in sync or not.
 				this.scheduler.invokeAsync(() -> {
 					
 					try {
-						container.getProvider().load(uuid);
+						
+						// We have to do some cheating to make sure that the identities get stored in the cache(s).
+						((AsyncProviderContainer) container).loadIdentity(uuid);
+						
 					} catch (Throwable t) {
 						NeocoreAPI.getLogger().log(Level.WARNING, "Problem preloading identity for " + uuid + "!", t);
 					}
@@ -218,7 +216,7 @@ public class CommonPlayerManager {
 				NeocoreAPI.getLogger().warning("Wait for containers to complete when preloading " + uuid + " interrupted.  Continuing anyways...");
 			}
 			
-			callback.run();
+			if (callback != null) callback.run();
 			
 		});
 		
@@ -240,7 +238,7 @@ public class CommonPlayerManager {
 			PlayerIdentity ident = np.getIdentity(container.getProvisionedClass());
 			if (ident != null) {
 				
-				container.unload(np, () -> {
+				container.flush(np, () -> {
 					
 					// Count down the latch when we're done unloading it.
 					latch.countDown();
@@ -262,7 +260,7 @@ public class CommonPlayerManager {
 			try {
 				latch.await();
 			} catch (InterruptedException e) {
-				NeocoreAPI.getLogger().warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
+				NeocoreAPI.getLogger().warning("Waiting for identity flushing was interrupted, broadcasting events and invoking callback anyways...");
 			}
 			
 			this.eventManager.broadcast(new PostFlushPlayerEvent(FlushReason.OTHER, np)); // FIXME Reason.

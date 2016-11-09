@@ -1,5 +1,7 @@
 package io.neocore.common.player;
 
+import java.util.UUID;
+
 import io.neocore.api.database.IdentityLinkage;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.player.IdentityProvider;
@@ -47,10 +49,7 @@ public class AsyncProviderContainer extends ProviderContainer {
 			
 			this.exo.invoke("Provide(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
 				
-				this.locker.blockUntilUnlocked(player.getUniqueId(), 15 * 1000L); // 15 seconds FIXME Make this configurable.
-				PlayerIdentity ident = this.wrapper.load(player.getUniqueId());
-				player.addIdentity(ident);
-				
+				player.addIdentity(this.loadIdentity(player.getUniqueId()));
 				if (callback != null) callback.run();
 				
 			});
@@ -58,6 +57,19 @@ public class AsyncProviderContainer extends ProviderContainer {
 		});
 		
 		return ProvisionResult.THREAD_SPAWNED;
+		
+	}
+	
+	/**
+	 * Used for preloading async identities.
+	 * 
+	 * @param uuid The UUID to load.
+	 * @return The identity corresponding to the UUID.
+	 */
+	public PlayerIdentity loadIdentity(UUID uuid) {
+		
+		this.locker.blockUntilUnlocked(uuid, 15 * 1000L); // 15 seconds FIXME Make this configurable.
+		return this.wrapper.load(uuid);
 		
 	}
 	
