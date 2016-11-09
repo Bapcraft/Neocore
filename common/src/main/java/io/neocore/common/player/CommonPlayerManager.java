@@ -15,6 +15,19 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.IdentityLinkage;
+import io.neocore.api.event.EventManager;
+import io.neocore.api.event.database.FlushReason;
+import io.neocore.api.event.database.LoadReason;
+import io.neocore.api.event.database.PostFlushPlayerEvent;
+import io.neocore.api.event.database.PostLoadPlayerEvent;
+import io.neocore.api.event.database.PostReloadPlayerEvent;
+import io.neocore.api.event.database.PostUnloadPlayerEvent;
+import io.neocore.api.event.database.PreFlushPlayerEvent;
+import io.neocore.api.event.database.PreLoadPlayerEvent;
+import io.neocore.api.event.database.PreReloadPlayerEvent;
+import io.neocore.api.event.database.PreUnloadPlayerEvent;
+import io.neocore.api.event.database.ReloadReason;
+import io.neocore.api.event.database.UnloadReason;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
@@ -25,6 +38,7 @@ public class CommonPlayerManager {
 	private Set<NeoPlayer> playerCache = new TreeSet<>();
 	
 	private ServiceManager serviceManager;
+	private EventManager eventManager;
 	private Scheduler scheduler;
 	
 	private Set<ServiceType> loadableServices;
@@ -60,7 +74,7 @@ public class CommonPlayerManager {
 	
 	@SuppressWarnings("unchecked")
 	private void addServiceWrapper(ServiceType type) {
-
+		
 		// Validation.
 		if (!IdentityProvider.class.isAssignableFrom(type.getServiceClass())) {
 			
@@ -115,6 +129,7 @@ public class CommonPlayerManager {
 	public synchronized NeoPlayer assemblePlayer(UUID uuid, Consumer<NeoPlayer> callback) {
 		
 		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
+		this.eventManager.broadcast(new PreLoadPlayerEvent(LoadReason.OTHER, uuid)); // FIXME Reason.
 		
 		NeoPlayer np = new NeoPlayer(uuid);
 		CountDownLatch eventLatch = new CountDownLatch(this.providerContainers.size());
@@ -146,6 +161,8 @@ public class CommonPlayerManager {
 				NeocoreAPI.getLogger().warning("Waiting for player assembly was interrupted, invoking callback anyways...");
 			}
 			
+			this.eventManager.broadcast(new PostLoadPlayerEvent(LoadReason.OTHER, np)); // FIXME Reason.
+			
 			// Spawn a thread for the callback.
 			if (callback != null) this.scheduler.invokeAsync(() -> callback.accept(np));
 			
@@ -165,6 +182,8 @@ public class CommonPlayerManager {
 	public void preloadPlayer(UUID uuid, Runnable callback) {
 		
 		CountDownLatch latch = new CountDownLatch(this.providerContainers.size());
+		
+		// TODO Event support.
 		
 		for (ProviderContainer container : this.providerContainers) {
 			
@@ -205,12 +224,13 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public synchronized void unloadPlayer(UUID uuid, Runnable callback) {
-		
-		NeocoreAPI.getLogger().fine("Unloading player " + uuid + "...");
+	public synchronized void flushPlayer(UUID uuid, Runnable callback) {
+
+		NeocoreAPI.getLogger().fine("Flushing player " + uuid + " to database...");
 		NeoPlayer np = this.findPlayer(uuid);
 		
 		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
+		this.eventManager.broadcast(new PreFlushPlayerEvent(FlushReason.OTHER, np)); // FIXME Reason.
 		
 		CountDownLatch latch = new CountDownLatch(this.providerContainers.size());
 		
@@ -245,12 +265,80 @@ public class CommonPlayerManager {
 				NeocoreAPI.getLogger().warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
 			}
 			
+			this.eventManager.broadcast(new PostFlushPlayerEvent(FlushReason.OTHER, np)); // FIXME Reason.
+			
 			if (callback != null) callback.run();
 			
 		});
 		
-		// Actually purge from the cache.
-		this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid));
+	}
+	
+	public synchronized void unloadPlayer(UUID uuid, Runnable callback) {
+		
+		NeocoreAPI.getLogger().fine("Unloading player " + uuid + "...");
+		NeoPlayer np = this.findPlayer(uuid);
+		
+		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
+		this.eventManager.broadcast(new PreUnloadPlayerEvent(UnloadReason.OTHER, np)); // FIXME Reason.
+		
+		CountDownLatch latch = new CountDownLatch(this.providerContainers.size());
+		
+		for (ProviderContainer container : this.providerContainers) {
+			
+			// Figure out if we have an identity from that container.
+			PlayerIdentity ident = np.getIdentity(container.getProvisionedClass());
+			if (ident != null) {
+				
+				container.unload(np, () -> {
+					
+					// Count down the latch when we're done unloading it.
+					latch.countDown();
+					
+				});
+				
+			} else {
+				
+				// Nothing to unload but we still need to account for it.
+				latch.countDown();
+				
+			}
+			
+		}
+		
+		// Spawn the thread that invokes the callback once everything's unloaded.
+		this.scheduler.invokeAsync(() -> {
+			
+			try {
+				latch.await();
+			} catch (InterruptedException e) {
+				NeocoreAPI.getLogger().warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
+			}
+			
+			this.eventManager.broadcast(new PostUnloadPlayerEvent(UnloadReason.OTHER, uuid)); // FIXME Reason.
+			
+			if (callback != null) callback.run();
+			
+			// Actually purge from the cache.
+			this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid));
+			
+		});
+		
+	}
+	
+	public synchronized void reloadPlayer(UUID uuid, Consumer<NeoPlayer> callback) {
+		
+		this.eventManager.broadcast(new PreReloadPlayerEvent(ReloadReason.OTHER, uuid));
+		
+		this.unloadPlayer(uuid, () -> {
+			
+			this.assemblePlayer(uuid, np -> {
+				
+				this.eventManager.broadcast(new PostReloadPlayerEvent(ReloadReason.OTHER, np));
+				if (callback != null) callback.accept(np);
+				
+			});
+			
+		});
 		
 	}
 	
