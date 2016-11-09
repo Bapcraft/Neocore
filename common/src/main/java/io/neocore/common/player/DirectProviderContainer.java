@@ -17,13 +17,13 @@ public class DirectProviderContainer extends ProviderContainer {
 	}
 	
 	@Override
-	public ProvisionResult provide(NeoPlayer player, Runnable callback) {
+	public ProvisionResult load(NeoPlayer player, Runnable callback) {
 		
 		this.exo.invoke("Provide(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
 			
 			// Very simple, we just have to drop it directly into the player.
 			player.addIdentity(this.getProvider().load(player.getUniqueId()));
-			callback.run();
+			if (callback != null) callback.run();
 			
 		});
 		
@@ -33,7 +33,18 @@ public class DirectProviderContainer extends ProviderContainer {
 
 	@Override
 	public void flush(NeoPlayer player, Runnable callback) {
-		// TODO Auto-generated method stub
+		
+		if (this.isLinkage()) {
+			
+			this.exo.invoke("Flush(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
+				
+				// Very simple here.
+				this.getProviderAsLinkage().flush(player.getUniqueId());
+				if (callback != null) callback.run();
+				
+			});
+			
+		}
 		
 	}
 	
@@ -43,7 +54,8 @@ public class DirectProviderContainer extends ProviderContainer {
 		this.exo.invoke("Unload(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
 			
 			// Very simple here.
-			this.provider.unload(player.getUniqueId());
+			this.getProvider().unload(player.getUniqueId());
+			if (callback != null) callback.run();
 			
 		});
 		

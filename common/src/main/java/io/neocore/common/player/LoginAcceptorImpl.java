@@ -7,8 +7,6 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.ban.BanList;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
-import io.neocore.api.event.database.LoadReason;
-import io.neocore.api.event.database.PostLoadPlayerEvent;
 import io.neocore.api.event.database.PostUnloadPlayerEvent;
 import io.neocore.api.event.database.UnloadReason;
 import io.neocore.api.host.Context;
@@ -66,16 +64,8 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 			
 		}
 		
-		// Initialize the player themselves.
-		this.players.assemblePlayer(uuid, np -> {
-			
-			np.setPopulated();
-			this.events.broadcast(new PostLoadPlayerEvent(LoadReason.JOIN, np));
-			
-		});
-		
 		// Broadcast the event.
-		this.events.broadcast(InitialLoginEvent.class, event);
+		this.events.broadcast(event);
 		
 		/**
 		 * We can't do any player initialization things here because Bukkit is dumb.

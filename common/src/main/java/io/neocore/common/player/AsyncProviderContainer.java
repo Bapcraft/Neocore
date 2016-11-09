@@ -2,7 +2,6 @@ package io.neocore.common.player;
 
 import java.util.UUID;
 
-import io.neocore.api.database.IdentityLinkage;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
@@ -12,12 +11,12 @@ public class AsyncProviderContainer extends ProviderContainer {
 	
 	private Scheduler scheduler;
 	
-	private IdentityProvider<?> wrapper;
+	private IdentityProvider<?> wrapped;
 	private LockCoordinator locker;
 	
 	public AsyncProviderContainer(IdentityProvider<?> provider, Scheduler sched) {
 		
-		this.wrapper = provider;
+		this.wrapped = provider;
 		this.scheduler = sched;
 		
 		this.locker = new NullLockCoordinator();
@@ -30,19 +29,11 @@ public class AsyncProviderContainer extends ProviderContainer {
 	
 	@Override
 	public IdentityProvider<?> getProvider() {
-		return this.getProvider();
-	}
-	
-	public boolean isLinkage() {
-		return this.getProvider() instanceof IdentityLinkage;
-	}
-	
-	public IdentityLinkage<?> getProviderAsLinkage() {
-		return (IdentityLinkage<?>) this.getProvider();
+		return this.wrapped;
 	}
 	
 	@Override
-	public ProvisionResult provide(NeoPlayer player, Runnable callback) {
+	public ProvisionResult load(NeoPlayer player, Runnable callback) {
 		
 		// Invoke it in a separate thread.
 		this.scheduler.invokeAsync(() -> {
@@ -69,13 +60,23 @@ public class AsyncProviderContainer extends ProviderContainer {
 	public PlayerIdentity loadIdentity(UUID uuid) {
 		
 		this.locker.blockUntilUnlocked(uuid, 15 * 1000L); // 15 seconds FIXME Make this configurable.
-		return this.wrapper.load(uuid);
+		return this.getProvider().load(uuid);
 		
 	}
 	
 	@Override
 	public void flush(NeoPlayer player, Runnable callback) {
-		// TODO Auto-generated method stub
+		
+		this.scheduler.invokeAsync(() -> {
+			
+			this.exo.invoke("Flush(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
+				
+				this.getProviderAsLinkage().flush(player.getUniqueId());
+				if (callback != null) callback.run();
+				
+			});
+			
+		});
 		
 	}
 	
@@ -84,7 +85,12 @@ public class AsyncProviderContainer extends ProviderContainer {
 		
 		this.scheduler.invokeAsync(() -> {
 			
-			// TODO
+			this.exo.invoke("Unload(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
+				
+				this.getProvider().unload(player.getUniqueId());
+				if (callback != null) callback.run();
+				
+			});
 			
 		});
 		

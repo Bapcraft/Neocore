@@ -1,14 +1,15 @@
 package io.neocore.common.player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 import io.neocore.api.LoadAsync;
 import io.neocore.api.NeocoreAPI;
@@ -36,6 +37,7 @@ import io.neocore.api.player.PlayerIdentity;
 public class CommonPlayerManager {
 	
 	private Set<NeoPlayer> playerCache = new TreeSet<>();
+	private Map<UUID, LoadType> loadStates = new HashMap<>();
 	
 	private ServiceManager serviceManager;
 	private EventManager eventManager;
@@ -99,6 +101,10 @@ public class CommonPlayerManager {
 		
 	}
 	
+	public LoadType getLoadType(UUID uuid) {
+		return this.loadStates.get(uuid);
+	}
+	
 	public NeoPlayer findPlayer(UUID uuid) {
 		
 		for (NeoPlayer np : this.playerCache) {
@@ -120,10 +126,21 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public synchronized NeoPlayer assemblePlayer(UUID uuid, Consumer<NeoPlayer> callback) {
+	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadType type, Consumer<NeoPlayer> callback) {
 		
 		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
 		this.eventManager.broadcast(new PreLoadPlayerEvent(LoadReason.OTHER, uuid)); // FIXME Reason.
+		
+		// Check to see if we're actually going to be converting it to a fulll form.
+		if (this.getLoadType(uuid) == LoadType.PRELOAD && type == LoadType.FULL) {
+			
+			/*
+			 * We're removing our local copy because we're going to be loading
+			 * from the provider caches for the full version anyways.
+			 */
+			this.playerCache.remove(uuid);
+			
+		}
 		
 		NeoPlayer np = new NeoPlayer(uuid);
 		CountDownLatch eventLatch = new CountDownLatch(this.providerContainers.size());
@@ -131,7 +148,10 @@ public class CommonPlayerManager {
 		// Now actually load the things.
 		for (ProviderContainer container : this.providerContainers) {
 			
-			ProvisionResult result = container.provide(np, () -> {
+			// Don't load things that are not present on the host yet.  FIXME More context-awareness from the containers.
+			if (type == LoadType.PRELOAD && container instanceof DirectProviderContainer) continue;
+			
+			ProvisionResult result = container.load(np, () -> {
 				eventLatch.countDown();
 			});
 			
@@ -163,62 +183,9 @@ public class CommonPlayerManager {
 		});
 		
 		// Done.
+		this.loadStates.put(uuid, type);
 		this.playerCache.add(np);
 		return np;
-		
-	}
-	
-	/**
-	 * Calls load on all asynchronously-loaded containers.
-	 * 
-	 * @param uuid
-	 */
-	public void preloadPlayer(UUID uuid, Runnable callback) {
-		
-		CountDownLatch latch = new CountDownLatch(this.providerContainers.size());
-		
-		// TODO Event support.
-		
-		for (ProviderContainer container : this.providerContainers) {
-			
-			if (container instanceof AsyncProviderContainer) {
-				
-				// Should be done asynchronously because we don't know if the caller is in sync or not.
-				this.scheduler.invokeAsync(() -> {
-					
-					try {
-						
-						// We have to do some cheating to make sure that the identities get stored in the cache(s).
-						((AsyncProviderContainer) container).loadIdentity(uuid);
-						
-					} catch (Throwable t) {
-						NeocoreAPI.getLogger().log(Level.WARNING, "Problem preloading identity for " + uuid + "!", t);
-					}
-					
-					latch.countDown();
-					
-				});
-				
-			} else {
-				
-				// We need to account for the container if we didn't invoke it.
-				latch.countDown();
-				
-			}
-			
-		}
-		
-		this.scheduler.invokeAsync(() -> {
-			
-			try {
-				latch.await();
-			} catch (InterruptedException e) {
-				NeocoreAPI.getLogger().warning("Wait for containers to complete when preloading " + uuid + " interrupted.  Continuing anyways...");
-			}
-			
-			if (callback != null) callback.run();
-			
-		});
 		
 	}
 	
@@ -318,6 +285,7 @@ public class CommonPlayerManager {
 			
 			// Actually purge from the cache.
 			this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid));
+			this.loadStates.remove(uuid);
 			
 		});
 		
@@ -327,9 +295,11 @@ public class CommonPlayerManager {
 		
 		this.eventManager.broadcast(new PreReloadPlayerEvent(ReloadReason.OTHER, uuid));
 		
+		LoadType type = this.loadStates.get(uuid);
+		
 		this.unloadPlayer(uuid, () -> {
 			
-			this.assemblePlayer(uuid, np -> {
+			this.assemblePlayer(uuid, type, np -> {
 				
 				this.eventManager.broadcast(new PostReloadPlayerEvent(ReloadReason.OTHER, np));
 				if (callback != null) callback.accept(np);
