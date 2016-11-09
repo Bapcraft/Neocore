@@ -13,7 +13,8 @@ import java.util.UUID;
 public interface IdentityProvider<T extends PlayerIdentity> {
 	
 	/**
-	 * Gets the player identity object from the specified UUID.
+	 * Synchronously gets the player identity object from the specified UUID,
+	 * loading from the database if necessary.
 	 * 
 	 * @param uuid The UUID of the player
 	 * @return The corresponding identity
@@ -21,8 +22,8 @@ public interface IdentityProvider<T extends PlayerIdentity> {
 	public T load(UUID uuid);
 	
 	/**
-	 * Unloads the player data from the record and clears any caches, does not
-	 * save anything to any databases.
+	 * Purges player data from any local caches without writing anything to
+	 * backends.
 	 * 
 	 * @param uuid The player UUID.
 	 */

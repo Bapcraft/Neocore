@@ -1,6 +1,7 @@
 package io.neocore.api.player;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import io.neocore.api.ServiceType;
 import io.neocore.api.event.database.PostLoadPlayerEvent;
@@ -44,7 +45,7 @@ public interface PlayerManager {
 	 * @param uuid The player's UUID.
 	 * @param callback A callback to invoke once complete.
 	 */
-	public void preload(UUID uuid, Runnable callback);
+	public void preload(UUID uuid, Consumer<NeoPlayer> callback);
 	
 	/**
 	 * Triggers asynchronously-loaded identities to be preloaded into the
@@ -53,7 +54,7 @@ public interface PlayerManager {
 	 * @param uuid The player's UUID.
 	 */
 	public default void preload(UUID uuid) {
-		this.preload(uuid, () -> {});
+		this.preload(uuid, o -> {});
 	}
 	
 	/**
