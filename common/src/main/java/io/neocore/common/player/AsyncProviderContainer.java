@@ -7,7 +7,7 @@ import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
 
-public class AsyncProviderContainer extends ProviderContainer {
+public class AsyncProviderContainer extends ProviderContainer implements LockableContainer {
 	
 	private Scheduler scheduler;
 	
@@ -23,6 +23,7 @@ public class AsyncProviderContainer extends ProviderContainer {
 		
 	}
 	
+	@Override
 	public void overrideLockCoordinator(LockCoordinator lock) {
 		this.locker = lock;
 	}

@@ -12,7 +12,7 @@ public abstract class LockCoordinator {
 	public LockCoordinator() {
 		
 	}
-
+	
 	/**
 	 * Creates a new lock for the identity.
 	 * 

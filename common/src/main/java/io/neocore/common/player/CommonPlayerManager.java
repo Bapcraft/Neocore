@@ -43,6 +43,8 @@ public class CommonPlayerManager {
 	private EventManager eventManager;
 	private Scheduler scheduler;
 	
+	private NetworkSync networkSync;
+	
 	private Set<ServiceType> loadableServices;
 	private List<ProviderContainer> providerContainers;
 	
@@ -51,8 +53,19 @@ public class CommonPlayerManager {
 		this.serviceManager = sm;
 		this.scheduler = sched;
 		
+		this.networkSync = new NullNetworkSync();
+		
 		this.loadableServices = new HashSet<>();
 		this.wrapServices();
+		
+	}
+	
+	public void overrideNetworkSync(NetworkSync override) {
+		
+		this.networkSync.updatePlayerList(new HashSet<>()); // Close out any inbound connections.
+		this.networkSync = override;
+		
+		this.updateContainerLockCoordinators();
 		
 	}
 	
@@ -63,10 +76,20 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public void wrapServices() {
+	private void wrapServices() {
 		
 		this.providerContainers = new ArrayList<>();
 		this.loadableServices.forEach(t -> this.addServiceWrapper(t));
+		
+		this.updateContainerLockCoordinators();
+		
+	}
+	
+	private void updateContainerLockCoordinators() {
+		
+		for (ProviderContainer pc : this.providerContainers) {
+			if (pc instanceof LockableContainer) ((LockableContainer) pc).overrideLockCoordinator(this.networkSync.getLockCoordinator());
+		}
 		
 	}
 	
@@ -131,6 +154,8 @@ public class CommonPlayerManager {
 		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
 		this.eventManager.broadcast(new PreLoadPlayerEvent(LoadReason.OTHER, uuid)); // FIXME Reason.
 		
+		this.networkSync.updateSubscriptionState(uuid, true);
+		
 		// Check to see if we're actually going to be converting it to a fulll form.
 		if (this.getLoadType(uuid) == LoadType.PRELOAD && type == LoadType.FULL) {
 			
@@ -190,7 +215,7 @@ public class CommonPlayerManager {
 	}
 	
 	public synchronized void flushPlayer(UUID uuid, Runnable callback) {
-
+		
 		NeocoreAPI.getLogger().fine("Flushing player " + uuid + " to database...");
 		NeoPlayer np = this.findPlayer(uuid);
 		
@@ -279,6 +304,7 @@ public class CommonPlayerManager {
 				NeocoreAPI.getLogger().warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
 			}
 			
+			this.networkSync.updateSubscriptionState(uuid, false);
 			this.eventManager.broadcast(new PostUnloadPlayerEvent(UnloadReason.OTHER, uuid)); // FIXME Reason.
 			
 			if (callback != null) callback.run();
