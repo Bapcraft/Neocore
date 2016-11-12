@@ -1,6 +1,9 @@
 package io.neocore.api;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.treyzania.jzania.timing.Timer;
 
 import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
@@ -20,7 +23,16 @@ public class NeocoreInstaller {
 	}
 	
 	public static void applyLogger(Logger log) {
+		
+		log.info(">>>NEOCORE LOGGER INSTALLED.");
+		
 		NeocoreAPI.logger = log;
+		
+		Timer t = Timer.getTimer();
+		t.setLogger(log);
+		t.setLevel(Level.INFO);
+		t.setNewTokenMessage("[New Timer Token (%s)]");
+		
 	}
 	
 	public static void reset() {
