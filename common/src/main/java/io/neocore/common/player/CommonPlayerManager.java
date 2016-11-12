@@ -48,9 +48,10 @@ public class CommonPlayerManager {
 	private Set<ServiceType> loadableServices;
 	private List<ProviderContainer> providerContainers;
 	
-	public CommonPlayerManager(ServiceManager sm, Scheduler sched) {
+	public CommonPlayerManager(ServiceManager sm, EventManager em, Scheduler sched) {
 		
 		this.serviceManager = sm;
+		this.eventManager = em;
 		this.scheduler = sched;
 		
 		this.networkSync = new NullNetworkSync();

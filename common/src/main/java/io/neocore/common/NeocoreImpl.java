@@ -60,7 +60,7 @@ public class NeocoreImpl implements Neocore {
 		this.extManager = new ExtensionManager();
 		this.dbManager = new DatabaseManagerImpl(this.serviceManager);
 		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
-		this.playerManager = new CommonPlayerManager(this.serviceManager, host.getScheduler());
+		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager, host.getScheduler());
 		this.playerManWrapper = new PlayerManagerWrapperImpl(this.playerManager);
 		
 		// Set up acceptors
