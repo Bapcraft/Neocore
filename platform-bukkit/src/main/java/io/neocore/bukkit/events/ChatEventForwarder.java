@@ -24,7 +24,7 @@ public class ChatEventForwarder extends EventForwarder {
 	
 	@EventHandler
 	public void onChatEvent(AsyncPlayerChatEvent event) {
-		this.dest.onChatMessage(new BukkitChatEvent(event));
+		if (dest != null) this.dest.onChatMessage(new BukkitChatEvent(event));
 	}
 	
 }
