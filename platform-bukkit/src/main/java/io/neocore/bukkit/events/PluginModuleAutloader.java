@@ -10,11 +10,11 @@ import org.bukkit.plugin.PluginManager;
 
 import io.neocore.api.module.Module;
 
-public class NeocoreRevalidator implements Listener {
+public class PluginModuleAutloader implements Listener {
 	
 	private PluginManager manager;
 	
-	public NeocoreRevalidator(PluginManager manager) {
+	public PluginModuleAutloader(PluginManager manager) {
 		
 		this.manager = manager;
 		
