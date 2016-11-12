@@ -8,6 +8,9 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.treyzania.jzania.timing.TimeToken;
+import com.treyzania.jzania.timing.Timer;
+
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.event.database.LoadReason;
@@ -47,6 +50,8 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		
+		TimeToken tt = Timer.getTimer().create("Login");
+		
 		if (this.acceptor == null || !NeocoreAPI.getAgent().isInited()) {
 			
 			event.disallow(Result.KICK_OTHER, "Server still starting.  Try again.");
@@ -54,8 +59,12 @@ public class PlayerConnectionForwarder extends EventForwarder {
 			
 		}
 		
+		tt.report("start check complete");
+		
 		BukkitInitialLoginEvent neoEvent = new BukkitInitialLoginEvent(event);
 		this.acceptor.onInitialLoginEvent(neoEvent);
+		
+		tt.report("login event complete");
 		
 	}
 	
@@ -64,18 +73,28 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		
 		if (this.acceptor == null) return;
 		
+		TimeToken tt = Timer.getTimer().create("Join");
+		
 		UUID uuid = event.getPlayer().getUniqueId();
 		
 		// Initialize the player themselves.
 		NeoPlayer np = this.manager.assemblePlayer(uuid, LoadType.FULL, loaded -> {
 			
+			tt.report("player assemble finish");
+			
 			loaded.setPopulated();
-			this.eventManager.broadcast(new PostLoadPlayerEvent(LoadReason.JOIN, loaded));
+			this.eventManager.broadcast(PostLoadPlayerEvent.class, new PostLoadPlayerEvent(LoadReason.JOIN, loaded));
+			
+			tt.report("player assemble event broadcasted");
 			
 		});
 		
+		tt.report("player assemble init");
+		
 		BukkitPostJoinEvent neoEvent = new BukkitPostJoinEvent(event, np);
 		this.acceptor.onPostLoginEvent(neoEvent);
+		
+		tt.report("player join finish");
 		
 	}
 	
@@ -84,9 +103,13 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		
 		if (this.acceptor == null) return;
 		
+		TimeToken tt = Timer.getTimer().create("Quit");
+		
 		NeoPlayer np = this.managerWrapper.getPlayer(event.getPlayer().getUniqueId());
 		BukkitQuitEvent neoEvent = new BukkitQuitEvent(event, np);
 		this.acceptor.onDisconnectEvent(neoEvent);
+		
+		tt.report("quit event broadcast");
 		
 		// The acceptor handles the destruction of the player.
 		

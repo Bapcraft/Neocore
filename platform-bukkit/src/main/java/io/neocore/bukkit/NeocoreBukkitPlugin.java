@@ -27,7 +27,7 @@ import io.neocore.bukkit.cmd.CommandInjector;
 import io.neocore.bukkit.cmd.CommandInjector_19r2;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
-import io.neocore.bukkit.events.NeocoreRevalidator;
+import io.neocore.bukkit.events.PluginModuleAutloader;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
 import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
 import io.neocore.bukkit.services.BukkitBroadcastService;
@@ -121,7 +121,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		}
 		
 		// FIXME Clean up how the server start tasks and stuff are set up.
-		pl.registerEvents(new NeocoreRevalidator(pl), this);
+		pl.registerEvents(new PluginModuleAutloader(pl), this);
 		
 		// Set up a broadcast for server initialization.
 		neo.getTaskQueue().enqueue(new Task(new DumbTaskDelegator("Neocore-Init")) {
