@@ -1,10 +1,8 @@
 package io.neocore.bukkit.shced;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.host.ThreadInfo;
@@ -29,24 +27,13 @@ public class NeoBukkitScheduler implements Scheduler {
 		return new TidThreadInfo(this.sched, taskId);
 		
 	}
-
+	
 	@Override
 	public ThreadInfo invokeAsync(Runnable runnable) {
 		
-		// Yuck.
-		Future<Void> fut = this.sched.callSyncMethod(this.plugin, new Callable<Void>() {
-
-			@Override
-			public Void call() throws Exception {
-				
-				runnable.run();
-				return null;
-				
-			}
-			
-		});
+		BukkitTask task = this.sched.runTaskAsynchronously(this.plugin, runnable);
+		return new TidThreadInfo(this.sched, task.getTaskId());
 		
-		return new BukkitThreadInfo(fut);
 	}
 	
 }

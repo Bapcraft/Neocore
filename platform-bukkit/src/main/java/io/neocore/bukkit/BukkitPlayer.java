@@ -1,6 +1,7 @@
 package io.neocore.bukkit;
 
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -49,6 +50,11 @@ public class BukkitPlayer implements ServerPlayer, ChattablePlayer {
 	@Override
 	public void sendMessage(String message) {
 		this.player.sendMessage(message);
+	}
+
+	@Override
+	public Date getLoginTime() {
+		return null;
 	}
 	
 }
