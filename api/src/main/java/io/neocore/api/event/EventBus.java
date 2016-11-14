@@ -42,6 +42,13 @@ public class EventBus<T extends Event> {
 			priority--; // Decrease the priority by one.
 			rl = new RegisteredListener<>(mod, listener, priority);
 			
+			if (priority < -1000000) {
+				
+				NeocoreAPI.getLogger().warning("Something is messed up with registering listener " + listener.getClass().getName() + " from " + mod.getName() + ".");
+				continue;
+				
+			}
+			
 		}
 		
 		this.listeners.add(rl);
