@@ -17,6 +17,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.DatabaseController;
 import io.neocore.api.database.DatabaseService;
 import io.neocore.api.database.DatabaseServiceProvider;
+import io.neocore.jdbc.player.JdbcPlayerService;
 
 public class JdbcController implements DatabaseController {
 	
@@ -40,6 +41,7 @@ public class JdbcController implements DatabaseController {
 	@Override
 	public void initialize() {
 		
+		// Set up the authentication.
 		String url = this.configuration.getString("jdbc-url");
 		ConfigValue authConf = this.configuration.getValue("auth");
 		
@@ -67,7 +69,10 @@ public class JdbcController implements DatabaseController {
 		} else {
 			throw new IllegalArgumentException("JDBC auth configuration isn't valid!  Must be an object with \"username\" and \"password\" keys, or null!");
 		}
-
+		
+		// Now initialize the actual services, etc.
+		this.services.add(new JdbcPlayerService(this.source));
+		
 	}
 	
 	@Override

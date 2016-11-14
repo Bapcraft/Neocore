@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.DatabaseService;
@@ -41,6 +42,12 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 			DaoManager.createDao(this.getSource(), JdbcGroupMembership.class);
 			DaoManager.createDao(this.getSource(), JdbcExtensionRecord.class);
 			DaoManager.createDao(this.getSource(), JdbcPlayerAccount.class);
+			
+			// I didn't realize we had to create the tables ourselves.
+			TableUtils.createTableIfNotExists(this.getSource(), JdbcDbPlayer.class);
+			TableUtils.createTableIfNotExists(this.getSource(), JdbcGroupMembership.class);
+			TableUtils.createTableIfNotExists(this.getSource(), JdbcExtensionRecord.class);
+			TableUtils.createTableIfNotExists(this.getSource(), JdbcPlayerAccount.class);
 			
 		} catch (SQLException e) {
 			NeocoreAPI.getLogger().log(Level.SEVERE, "Could not initialize database!", e);
@@ -88,12 +95,17 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 	@Override
 	public DatabasePlayer load(UUID uuid) {
 		
+		JdbcDbPlayer p = this.findPlayer(uuid);
+		if (p != null) return p;
+		
 		try {
 			
-			JdbcDbPlayer dbp = this.playerDao.queryForId(uuid);
+			p = this.playerDao.queryForId(uuid);
 			
 			// Create the player if we don't have it.
-			if (dbp == null) {
+			if (p == null) {
+				
+				NeocoreAPI.getLogger().info("Creating new database player entry for " + uuid + "...");
 				
 				// Not the best option, but it works.
 				this.playerDao.create(new JdbcDbPlayer(uuid));
@@ -101,8 +113,8 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 				
 			}
 			
-			this.cache.add(dbp);
-			return dbp;
+			this.cache.add(p);
+			return p;
 			
 		} catch (SQLException e) {
 			

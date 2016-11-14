@@ -19,13 +19,13 @@ import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
 @DatabaseTable(tableName = "players")
-public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePlayer {
+public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePlayer, Comparable<DatabasePlayer> {
 	
 	@DatabaseField(id = true)
 	private UUID uuid;
 	
 	@DatabaseField(canBeNull = false)
-	private String lastUsername;
+	private String lastUsername = "[undefined]";
 	
 	@ForeignCollectionField
 	private ForeignCollection<JdbcPlayerAccount> accounts;
@@ -37,10 +37,10 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	private ForeignCollection<JdbcExtensionRecord> extensions;
 	
 	@DatabaseField(canBeNull = false)
-	private Date firstLogin;
+	private Date firstLogin = new Date();
 	
 	@DatabaseField(canBeNull = false)
-	private Date lastLogin;
+	private Date lastLogin = new Date();
 	
 	@DatabaseField
 	private long loginCount;
@@ -152,6 +152,11 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	@Override
 	public String getLastUsername() {
 		return this.lastUsername;
+	}
+
+	@Override
+	public int compareTo(DatabasePlayer o) {
+		return this.getUniqueId().compareTo(o.getUniqueId());
 	}
 	
 }
