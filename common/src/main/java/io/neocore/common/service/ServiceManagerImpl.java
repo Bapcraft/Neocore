@@ -100,7 +100,6 @@ public class ServiceManagerImpl implements ServiceManager {
 			if (rs.getType().equals(type)) return rs;
 		}
 		
-		NeocoreAPI.getLogger().warning("Returning null for service query " + type.getName() + "!");
 		return null;
 		
 	}
