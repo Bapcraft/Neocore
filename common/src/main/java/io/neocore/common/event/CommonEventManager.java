@@ -38,15 +38,15 @@ public class CommonEventManager extends EventManager {
 	@Override
 	public <T extends Event> EventBus<T> registerEventType(Class<T> event) {
 		
-		EventBus<T> bus = new EventBus<>();
-		
-		if (this.busses.containsKey(event)) {
-			bus = (EventBus<T>) this.busses.get(event);
-		} else {
+		if (!this.busses.containsKey(event)) {
+			
+			EventBus<T> bus = new EventBus<>();
 			this.busses.put(event, bus);
+			return bus;
+			
+		} else {
+			return (EventBus<T>) this.busses.get(event);
 		}
-		
-		return bus;
 		
 	}
 	

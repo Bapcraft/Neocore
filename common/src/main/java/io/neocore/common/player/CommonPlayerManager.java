@@ -36,8 +36,8 @@ import io.neocore.api.player.PlayerIdentity;
 
 public class CommonPlayerManager {
 	
-	private Set<NeoPlayer> playerCache = new TreeSet<>();
-	private Map<UUID, LoadType> loadStates = new HashMap<>();
+	protected Set<NeoPlayer> playerCache = new TreeSet<>();
+	protected Map<UUID, LoadType> loadStates = new HashMap<>();
 	
 	private ServiceManager serviceManager;
 	private EventManager eventManager;
@@ -202,6 +202,7 @@ public class CommonPlayerManager {
 			}
 			
 			this.eventManager.broadcast(new PostLoadPlayerEvent(LoadReason.OTHER, np)); // FIXME Reason.
+			np.setPopulated();
 			
 			// Spawn a thread for the callback.
 			if (callback != null) this.scheduler.invokeAsync(() -> callback.accept(np));

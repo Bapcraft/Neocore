@@ -1,5 +1,7 @@
 package io.neocore.common.player;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -42,6 +44,11 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 		NeocoreAPI.getLogger().info("Registering identity provider type: " + type);
 		this.playerManager.addService(type);
 		
+	}
+
+	@Override
+	public Set<NeoPlayer> getOnlinePlayers() {
+		return new HashSet<>(this.playerManager.playerCache);
 	}
 	
 }

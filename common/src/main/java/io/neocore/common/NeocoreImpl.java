@@ -18,6 +18,7 @@ import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerManager;
 import io.neocore.api.player.extension.ExtensionManager;
 import io.neocore.api.task.TaskQueue;
+import io.neocore.common.cmd.CommandActiveUserManager;
 import io.neocore.common.database.DatabaseManagerImpl;
 import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.module.ModuleManagerImpl;
@@ -74,6 +75,9 @@ public class NeocoreImpl implements Neocore {
 		this.taskDelegator = new NeocoreTaskDelegator();
 		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, host, this.dbManager));
 		this.tasks.enqueue(new ServiceInitializationTask(this.taskDelegator, this.serviceManager));
+		
+		// Register commands.
+		this.host.registerCommand(new CommandActiveUserManager(this.playerManWrapper));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);
