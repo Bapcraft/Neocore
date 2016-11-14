@@ -1,5 +1,6 @@
 package io.neocore.api.player;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -63,5 +64,13 @@ public interface PlayerManager {
 	 * @param type The service type.
 	 */
 	public void addService(ServiceType type);
+	
+	/**
+	 * Returns a set of the online players.  Manipulations to this set will
+	 * have no effect on the players online.
+	 * 
+	 * @return A set of the online players.
+	 */
+	public Set<NeoPlayer> getOnlinePlayers();
 	
 }

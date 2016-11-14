@@ -1,5 +1,7 @@
 package io.neocore.api.host.login;
 
+import java.util.Date;
+
 import io.neocore.api.host.ConnectingPlayer;
 
 /**
@@ -13,5 +15,10 @@ public interface ServerPlayer extends ConnectingPlayer {
 	 * @return The player's actual username.
 	 */
 	public String getName();
+	
+	/**
+	 * @return The time the player logged into the server.
+	 */
+	public Date getLoginTime();
 	
 }

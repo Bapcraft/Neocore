@@ -1,11 +1,13 @@
 package io.neocore.api.player;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import com.google.common.base.Preconditions;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.PersistentPlayerIdentity;
 import io.neocore.api.database.player.DatabasePlayer;
@@ -31,6 +33,11 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	private UUID uuid;
 	
 	/**
+	 * The time this NeoPlayer was constructed.
+	 */
+	private Date constructionTime;
+	
+	/**
 	 * The player's in-game identities that we can use.
 	 */
 	protected List<PlayerIdentity> identities;
@@ -43,8 +50,10 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	public NeoPlayer(UUID uuid) {
 		
 		this.uuid = uuid;
-		
 		this.identities = new ArrayList<>();
+		
+		this.constructionTime = new Date();
+		NeocoreAPI.getLogger().info("Constructed new NeoPlayer with ID: " + uuid);
 		
 	}
 	
@@ -193,6 +202,20 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	
 	public List<PlayerIdentity> getIdentities() {
 		return new ArrayList<>(this.identities);
+	}
+	
+	/**
+	 * Returns the time that the NeoPlayer was constructed.  This is
+	 * effectively the time that this player last was revalidated, or the time
+	 * they connected if they have not been ever revalidated.
+	 * 
+	 * @see ServerPlayer
+	 * @see Session
+	 * 
+	 * @return The time this NeoPlayer was constructed.
+	 */
+	public Date getConstructionTime() {
+		return this.constructionTime;
 	}
 	
 	@Override
