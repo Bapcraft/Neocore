@@ -158,5 +158,44 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	public int compareTo(DatabasePlayer o) {
 		return this.getUniqueId().compareTo(o.getUniqueId());
 	}
+
+	@Override
+	public void setFirstLogin(Date date) {
+		
+		this.firstLogin = date;
+		this.dirty();
+		
+	}
+
+	@Override
+	public Date getFirstLogin() {
+		return this.firstLogin;
+	}
+
+	@Override
+	public void setLastLogin(Date date) {
+		
+		this.lastLogin = date;
+		this.dirty();
+		
+	}
+
+	@Override
+	public Date getLastLogin() {
+		return this.lastLogin;
+	}
+
+	@Override
+	public void setLoginCount(int count) {
+		
+		this.loginCount = count;
+		this.dirty();
+		
+	}
+
+	@Override
+	public int getLoginCount() {
+		return (int) this.loginCount;
+	}
 	
 }
