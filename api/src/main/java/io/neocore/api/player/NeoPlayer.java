@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.AbstractPersistentRecord;
+import io.neocore.api.database.Persistent;
 import io.neocore.api.database.PersistentPlayerIdentity;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.Session;
@@ -222,12 +223,26 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	public int compareTo(NeoPlayer o) {
 		return this.uuid.compareTo(o.uuid);
 	}
-
+	
+	@Override
+	public boolean isDirty() {
+		
+		if (super.isDirty()) return true;
+		
+		for (PlayerIdentity pi : this.identities) {
+			if (pi instanceof Persistent && ((Persistent) pi).isDirty()) return true; 
+		}
+		
+		return false;
+		
+	}
+	
 	@Override
 	public void flush() {
 		
 		// We don't really pay attention to the dirtyness of identities.
 		this.getFlushProcedure().run();
+		this.setDirty(false);
 		
 	}
 	
