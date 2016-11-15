@@ -222,5 +222,13 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	public int compareTo(NeoPlayer o) {
 		return this.uuid.compareTo(o.uuid);
 	}
+
+	@Override
+	public void flush() {
+		
+		// We don't really pay attention to the dirtyness of identities.
+		this.getFlushProcedure().run();
+		
+	}
 	
 }

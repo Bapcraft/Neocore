@@ -42,4 +42,23 @@ public interface Persistent {
 		
 	}
 	
+	/**
+	 * Sets the callback to invoke then this object should be flushed.
+	 * 
+	 * @param callback The callback.
+	 */
+	public void setFlushProcedure(Runnable callback);
+	
+	/**
+	 * @return The callback that will be invoked when flushed.
+	 */
+	public Runnable getFlushProcedure();
+	
+	/**
+	 * Invokes the callback to flush the object to the database.
+	 */
+	public default void flush() {
+		if (this.isDirty()) this.getFlushProcedure().run();
+	}
+	
 }
