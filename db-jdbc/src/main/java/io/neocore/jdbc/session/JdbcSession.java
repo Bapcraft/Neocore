@@ -73,8 +73,24 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 	}
 	
 	@Override
+	public void setLoginUsername(String name) {
+		
+		this.loginUsername = name;
+		this.dirty();
+		
+	}
+	
+	@Override
 	public String getLoginUsername() {
 		return this.loginUsername;
+	}
+
+	@Override
+	public void setAddress(InetAddress addr) {
+		
+		this.addressStr = addr.getHostAddress();
+		this.dirty();
+		
 	}
 	
 	@Override
@@ -85,6 +101,14 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 		} catch (UnknownHostException e) {
 			return null; // TODO Make this exclaim something somewhere.
 		}
+		
+	}
+
+	@Override
+	public void setHostString(String string) {
+		
+		this.hostString = string;
+		this.dirty();
 		
 	}
 	
