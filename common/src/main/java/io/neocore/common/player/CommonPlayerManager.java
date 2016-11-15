@@ -209,9 +209,14 @@ public class CommonPlayerManager {
 			
 		});
 		
-		// Done.
+		// Set up caches.
 		this.loadStates.put(uuid, type);
 		this.playerCache.add(np);
+		
+		// Configure the flushing procedure.
+		np.setFlushProcedure(() -> this.flushPlayer(uuid, () -> {}));
+		
+		// Now return the container while it gets populated in some other thread.
 		return np;
 		
 	}
@@ -257,8 +262,13 @@ public class CommonPlayerManager {
 				NeocoreAPI.getLogger().warning("Waiting for identity flushing was interrupted, broadcasting events and invoking callback anyways...");
 			}
 			
+			// Mark the player as clean.
+			np.setDirty(false);
+			
+			// Broadcast the event.
 			this.eventManager.broadcast(new PostFlushPlayerEvent(FlushReason.OTHER, np)); // FIXME Reason.
 			
+			// Run the callback.
 			if (callback != null) callback.run();
 			
 		});
