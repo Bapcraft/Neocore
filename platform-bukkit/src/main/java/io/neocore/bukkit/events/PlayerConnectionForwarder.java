@@ -98,6 +98,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 				Session sess = loaded.getIdentity(Session.class);
 				
 				// Update all the fancy values.
+				sess.setLoginUsername(player.getName());
 				sess.setStartDate(new Date());
 				sess.setState(SessionState.ACTIVE);
 				sess.setFrontend(NeocoreAPI.getServerName());
@@ -125,6 +126,24 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		if (this.acceptor == null) return;
 		
 		NeoPlayer np = this.managerWrapper.getPlayer(event.getPlayer().getUniqueId());
+		
+		// Set the session state to disconnected.
+		if (NeocoreAPI.isFrontend()) {
+			
+			if (np.hasIdentity(Session.class)) {
+				
+				Session sess = np.getSession();
+				
+				sess.setEndDate(new Date());
+				sess.setState(SessionState.DISCONNECTED);
+				
+				// We don't flush it because it'll do that for unloading, just make sure it's dirty.
+				np.dirty();
+				
+			}
+			
+		}
+		
 		BukkitQuitEvent neoEvent = new BukkitQuitEvent(event, np);
 		this.acceptor.onDisconnectEvent(neoEvent);
 		
