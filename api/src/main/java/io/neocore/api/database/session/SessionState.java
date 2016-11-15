@@ -17,6 +17,9 @@ public enum SessionState {
 	KICKED,
 	
 	/** The player timed out from the server so were "disconnected" by the server. */
-	TIMEOUT;
+	TIMEOUT,
+	
+	/** Placeholder for when we don't really know what happened but they're not active anymore. */
+	UNKNOWN;
 	
 }
