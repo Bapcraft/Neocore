@@ -1,5 +1,6 @@
 package io.neocore.api.database.player;
 
+import java.util.Date;
 import java.util.List;
 
 import io.neocore.api.NeocoreAPI;
@@ -79,5 +80,42 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	 * @return The username.
 	 */
 	public String getLastUsername();
+	
+	/**
+	 * Sets when this player apparently first logged in.
+	 * 
+	 * @param date When the player should have first logged in.
+	 */
+	public void setFirstLogin(Date date);
+	
+	/**
+	 * Returns the time that the player first joined the server.  Typically
+	 * just when this object was first constructed.
+	 * 
+	 * @return The time the player first joined the server.
+	 */
+	public Date getFirstLogin();
+	
+	/**
+	 * Sets the last login date for this player.
+	 * 
+	 * @param date When the player last logged in.
+	 */
+	public void setLastLogin(Date date);
+	
+	/**
+	 * @return The time that this player last logged in.
+	 */
+	public Date getLastLogin();
+	
+	/**
+	 * @param count Sets the number of logins this player has done.
+	 */
+	public void setLoginCount(int count);
+	
+	/**
+	 * @return Gets the number of logins this player has done.
+	 */
+	public int getLoginCount();
 	
 }
