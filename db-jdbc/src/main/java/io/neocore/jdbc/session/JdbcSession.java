@@ -15,61 +15,60 @@ import com.j256.ormlite.table.DatabaseTable;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.session.EndpointMove;
 import io.neocore.api.database.session.ProxiedSession;
+import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
 
 @DatabaseTable(tableName = "sessions")
-public class JdbcSession extends AbstractPersistentRecord implements ProxiedSession {
+public class JdbcSession extends AbstractPersistentRecord implements ProxiedSession, Comparable<Session> {
 	
 	@DatabaseField(canBeNull = false, id = true)
-	private UUID sessionId;
+	private UUID sessionId = UUID.randomUUID();
 	
 	@DatabaseField(canBeNull = false)
-	private UUID uuid;
+	private UUID uuid = UUID.randomUUID(); // This gets overridden quickly, usually.
 	
 	@DatabaseField(canBeNull = false)
-	private String loginUsername;
+	private String loginUsername = "";
 	
 	@DatabaseField(canBeNull = false)
-	private String addressStr;
+	private String addressStr = "0.0.0.0";
 	
 	@DatabaseField(canBeNull = false)
-	private String hostString;
+	private String hostString = "undefined.localhost";
 	
 	@DatabaseField(canBeNull = false)
-	private SessionState state;
+	private SessionState state = SessionState.UNKNOWN;
 	
 	@DatabaseField(canBeNull = false)
-	private String frontend;
+	private String frontend = "[undefined]";
 	
 	@DatabaseField
-	private boolean networked;
+	private boolean networked = false;
 	
 	@ForeignCollectionField
 	private ForeignCollection<JdbcNetworkMove> moves;
 	
 	@DatabaseField(canBeNull = false)
-	private Date start;
+	private Date start = new Date();
 	
 	@DatabaseField(canBeNull = false)
-	private Date end;
+	private Date end = new Date();
 	
 	public JdbcSession() {
-		
 		// ORMLite.
-		
-		// So we don't do something totally crazy.
-		this.sessionId = UUID.randomUUID();
-		
 	}
 	
-	public JdbcSession(UUID sessionId, UUID playerId, String playerName, InetAddress address) {
-		
-		this.sessionId = sessionId;
+	public JdbcSession(UUID playerId) {
 		this.uuid = playerId;
-		this.loginUsername = playerName;
-		this.addressStr = address.getHostAddress();
-		this.hostString = address.toString();
-		
+	}
+
+	@Override
+	public UUID getUniqueId() {
+		return this.uuid;
+	}
+	
+	public UUID getSessionId() {
+		return this.sessionId;
 	}
 	
 	@Override
@@ -180,11 +179,6 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 	}
 	
 	@Override
-	public UUID getUniqueId() {
-		return this.uuid;
-	}
-
-	@Override
 	public List<EndpointMove> getEndpointMoves() {
 		
 		List<EndpointMove> ret = new ArrayList<>(this.moves.size());
@@ -199,6 +193,11 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 		this.moves.add((JdbcNetworkMove) move); // FIXME Casting.
 		this.dirty();
 		
+	}
+
+	@Override
+	public int compareTo(Session o) {
+		return this.getUniqueId().compareTo(o.getUniqueId());
 	}
 	
 }

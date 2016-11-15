@@ -88,7 +88,12 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 	public void invalidate(UUID uuid) {
 		
 		JdbcDbPlayer dbp = this.findPlayer(uuid);
-		if (dbp != null) dbp.invalidate();
+		if (dbp != null) {
+			
+			dbp.invalidate();
+			this.cache.remove(dbp);
+			
+		}
 		
 	}
 	
