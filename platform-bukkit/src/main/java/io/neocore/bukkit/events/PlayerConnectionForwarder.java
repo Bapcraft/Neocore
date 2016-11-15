@@ -1,7 +1,9 @@
 package io.neocore.bukkit.events;
 
+import java.util.Date;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -9,6 +11,9 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.database.player.DatabasePlayer;
+import io.neocore.api.database.session.Session;
+import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerManager;
@@ -60,10 +65,52 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		
 		if (this.acceptor == null) return;
 		
-		UUID uuid = event.getPlayer().getUniqueId();
+		Player player = event.getPlayer();
+		UUID uuid = player.getUniqueId();
 		
 		// Initialize the player themselves.
 		NeoPlayer np = this.manager.assemblePlayer(uuid, LoadType.FULL, loaded -> {
+			
+			boolean flush = false;
+			
+			// Handle the general player data.
+			if (NeocoreAPI.isFrontend() && loaded.hasIdentity(DatabasePlayer.class)) {
+				
+				DatabasePlayer dbp = loaded.getIdentity(DatabasePlayer.class);
+				
+				// Potentially update the name.
+				String playerName = player.getName();
+				if (!playerName.equals(dbp.getLastUsername())) dbp.setLastUsername(playerName);
+				
+				// Update the last login.
+				dbp.setLastLogin(new Date());
+				
+				// Update the login count.
+				dbp.setLoginCount(dbp.getLoginCount() + 1);
+				
+				flush = true;
+				
+			}
+			
+			// Handle setting data.
+			if (NeocoreAPI.isFrontend() && loaded.hasIdentity(Session.class)) {
+				
+				Session sess = loaded.getIdentity(Session.class);
+				
+				// Update all the fancy values.
+				sess.setStartDate(new Date());
+				sess.setState(SessionState.ACTIVE);
+				sess.setFrontend(NeocoreAPI.getServerName());
+				
+				// Update network info.
+				sess.setAddress(player.getAddress().getAddress());
+				sess.setHostString(player.getAddress().getHostString());
+				
+				flush = true;
+				
+			}
+			
+			if (flush) loaded.flush();
 			
 		});
 		
