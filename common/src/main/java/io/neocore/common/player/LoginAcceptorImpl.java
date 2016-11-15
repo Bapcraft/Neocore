@@ -99,10 +99,27 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		// Broadcast the event straightaway.
 		this.events.broadcast(event);
 		
-		// Unload once we're sure everyone is done using it.
-		this.players.unloadPlayer(np.getUniqueId(), () -> {
-			this.events.broadcast(new PostUnloadPlayerEvent(UnloadReason.DISCONNECT, np.getUniqueId()));
-		});
+		// Setup the unload and broadcast.
+		Runnable unloadAndBroadcast = () -> {
+			
+			this.players.unloadPlayer(np.getUniqueId(), () -> {
+				this.events.broadcast(new PostUnloadPlayerEvent(UnloadReason.DISCONNECT, np.getUniqueId()));
+			});
+			
+		};
+		
+		// Now we (flush and) unload once we're sure everyone is done using it.
+		if (np.isDirty()) {
+			
+			// Either do the unload after a flush...
+			this.players.flushPlayer(np.getUniqueId(), unloadAndBroadcast);
+			
+		} else {
+			
+			/// ...or do immediately.
+			unloadAndBroadcast.run();
+			
+		}
 		
 	}
 	
