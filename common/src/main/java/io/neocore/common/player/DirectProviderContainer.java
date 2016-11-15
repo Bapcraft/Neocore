@@ -1,7 +1,9 @@
 package io.neocore.common.player;
 
+import io.neocore.api.database.Persistent;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.player.PlayerIdentity;
 
 public class DirectProviderContainer extends ProviderContainer {
 	
@@ -21,11 +23,18 @@ public class DirectProviderContainer extends ProviderContainer {
 		
 		this.exo.invoke("Provide(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
 			
-			// Very simple, we just have to drop it directly into the player.
-			player.addIdentity(this.getProvider().load(player.getUniqueId()));
-			if (callback != null) callback.run();
+			PlayerIdentity ident = this.getProvider().load(player.getUniqueId());
+			
+			// Call outward to the container.
+			if (ident instanceof Persistent) {
+				((Persistent) ident).setFlushProcedure(() -> player.flush());
+			}
+			
+			player.addIdentity(ident);
 			
 		});
+		
+		if (callback != null) callback.run();
 		
 		return ProvisionResult.IMMEDIATELY_INJECTED;
 		
@@ -37,14 +46,12 @@ public class DirectProviderContainer extends ProviderContainer {
 		if (this.isLinkage()) {
 			
 			this.exo.invoke("Flush(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
-				
-				// Very simple here.
-				this.getProviderAsLinkage().flush(player.getUniqueId());
-				if (callback != null) callback.run();
-				
+				this.getProviderAsLinkage().flush(player.getUniqueId()); // Very simple here.
 			});
 			
 		}
+		
+		if (callback != null) callback.run();
 		
 	}
 	
@@ -55,9 +62,10 @@ public class DirectProviderContainer extends ProviderContainer {
 			
 			// Very simple here.
 			this.getProvider().unload(player.getUniqueId());
-			if (callback != null) callback.run();
 			
 		});
+		
+		if (callback != null) callback.run();
 		
 	}
 	

@@ -2,6 +2,7 @@ package io.neocore.common.player;
 
 import java.util.UUID;
 
+import io.neocore.api.database.Persistent;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
@@ -41,10 +42,18 @@ public class AsyncProviderContainer extends ProviderContainer implements Lockabl
 			
 			this.exo.invoke("Provide(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
 				
-				player.addIdentity(this.loadIdentity(player.getUniqueId()));
-				if (callback != null) callback.run();
+				PlayerIdentity ident = this.loadIdentity(player.getUniqueId());
+				
+				// Call outward to the container.
+				if (ident instanceof Persistent) {
+					((Persistent) ident).setFlushProcedure(() -> player.flush());
+				}
+				
+				player.addIdentity(ident);
 				
 			});
+			
+			if (callback != null) callback.run();
 			
 		});
 		
@@ -71,11 +80,10 @@ public class AsyncProviderContainer extends ProviderContainer implements Lockabl
 		this.scheduler.invokeAsync(() -> {
 			
 			this.exo.invoke("Flush(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
-				
 				this.getProviderAsLinkage().flush(player.getUniqueId());
-				if (callback != null) callback.run();
-				
 			});
+			
+			if (callback != null) callback.run();
 			
 		});
 		
@@ -87,11 +95,10 @@ public class AsyncProviderContainer extends ProviderContainer implements Lockabl
 		this.scheduler.invokeAsync(() -> {
 			
 			this.exo.invoke("Unload(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
-				
 				this.getProvider().unload(player.getUniqueId());
-				if (callback != null) callback.run();
-				
 			});
+			
+			if (callback != null) callback.run();
 			
 		});
 		
