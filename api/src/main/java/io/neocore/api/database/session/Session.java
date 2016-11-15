@@ -7,9 +7,13 @@ import io.neocore.api.database.PersistentPlayerIdentity;
 
 public interface Session extends PersistentPlayerIdentity {
 	
+	public void setLoginUsername();
 	public String getLoginUsername();
 	
+	public void setAddress(InetAddress addr);
 	public InetAddress getAddress();
+	
+	public void setHostString(String string);
 	public String getHostString();
 	
 	public void setState(SessionState state);
