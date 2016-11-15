@@ -94,12 +94,21 @@ public class NeocoreAPI {
 	}
 	
 	/**
-	 * Convenience method/
+	 * Convenience method.
 	 * 
 	 * @return <code>true<code> if players connect directly to this server, <code>false</code> if it's behind a proxy.
 	 */
 	public static boolean isFrontend() {
 		return getAgent().getHost().isFrontServer();
+	}
+	
+	/**
+	 * Convenience method.
+	 * 
+	 * @return The server's name.
+	 */
+	public static String getServerName() {
+		return getAgent().getHost().getNeocoreConfig().getServerName();
 	}
 	
 }
