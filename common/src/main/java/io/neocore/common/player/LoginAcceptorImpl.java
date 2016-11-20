@@ -52,11 +52,36 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 				List<BanEntry> playerBans = serv.getBans(uuid);
 				List<BanEntry> relevant = new ArrayList<>();
 				for (BanEntry ban : playerBans) {
-					if (this.contexts.contains(ban.getContext()) || ban.isGlobal()) relevant.add(ban);
+					
+					// Need to make sure that we can have temporary bans.
+					if (!ban.isActive()) continue;
+					
+					if (ban.isGlobal()) {
+						
+						relevant.add(ban);
+						continue;
+						
+					} else {
+						
+						for (Context c : this.contexts) {
+							
+							if (c.equals(ban.getContext())) {
+								
+								relevant.add(ban);
+								continue;
+								
+							}
+							
+						}
+						
+					}
+					
 				}
 				
 				// Now report to the player if they're banned, and why.
 				if (relevant.size() > 0) {
+					
+					NeocoreAPI.getLogger().fine("Found " + relevant.size() + " relevant bans for player logging in.");
 					
 					StringBuilder sb = new StringBuilder("Banned!\n");
 					relevant.forEach(b -> sb.append("- " + b.getReason() + "\n"));
@@ -66,6 +91,8 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 					event.allow(); // Verbosity.
 				}
 				
+			} else {
+				NeocoreAPI.getLogger().warning("Ban service null but we're supposed to be checking bans!");
 			}
 			
 		}
