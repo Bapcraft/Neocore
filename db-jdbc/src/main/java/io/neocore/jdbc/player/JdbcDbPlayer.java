@@ -11,6 +11,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.eco.Account;
@@ -60,39 +61,36 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	
 	@Override
 	public List<GroupMembership> getGroupMemberships() {
-		
-		// Export the things.
-		List<GroupMembership> gms = new ArrayList<>(this.groupMemberships.size());
-		this.groupMemberships.forEach(c -> gms.add(c.wrap()));
-		return gms;
-		
+		return new ArrayList<>(this.groupMemberships);
 	}
 	
 	@Override
 	public void addGroupMembership(GroupMembership group) {
 		
-		// TODO Make this not true anymore.
-		if (!(group instanceof MembershipWrapper)) throw new IllegalArgumentException("Group needs to be DB-native!");
-		
-		this.groupMemberships.add(new JdbcGroupMembership(this, (MembershipWrapper) group));
-		this.dirty();
+		if (group instanceof JdbcGroupMembership) {
+			
+			this.groupMemberships.add((JdbcGroupMembership) group);
+			this.dirty();
+			
+		} else {
+			NeocoreAPI.getLogger().severe("Someone gave me a group membership that isn't one I like.");
+		}
 		
 	}
 	
 	@Override
-	public void removeGroupMembership(Group group) {
+	public GroupMembership addGroup(Group group) {
+		return null; // FIXME TODO
+	}
+	
+	@Override
+	public void removeGroupMembership(GroupMembership gm) {
 		
 		Iterator<JdbcGroupMembership> iter = this.groupMemberships.iterator();
 		while (iter.hasNext()) {
 			
 			JdbcGroupMembership mgm = iter.next();
-			
-			if (mgm.groupName.equals(group.getName())) {
-				
-				iter.remove();
-				this.dirty(); // We can do it multiple times.
-				
-			}
+			if (mgm == gm) iter.remove();
 			
 		}
 		

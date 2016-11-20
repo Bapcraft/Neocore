@@ -6,10 +6,11 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import io.neocore.api.database.AbstractPersistentRecord;
+import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
 @DatabaseTable(tableName = "groupMemberships")
-public class JdbcGroupMembership extends AbstractPersistentRecord {
+public class JdbcGroupMembership extends AbstractPersistentRecord implements GroupMembership {
 	
 	@DatabaseField(canBeNull = false, foreign = true)
 	protected JdbcDbPlayer owner;
@@ -27,33 +28,47 @@ public class JdbcGroupMembership extends AbstractPersistentRecord {
 		// ORMLite.
 	}
 	
-	public JdbcGroupMembership(JdbcDbPlayer owner, MembershipWrapper em) {
-		
+	public JdbcGroupMembership(JdbcDbPlayer owner) {
 		this.owner = owner;
+	}
+
+	@Override
+	public void setGroup(Group group) {
 		
-		this.groupName = null;
-		this.begin = em.getBegin();
-		this.end = em.getExpiration();
+		this.groupName = group.getName();
+		this.dirty();
 		
 	}
-	
-	public GroupMembership wrap() {
-		return new MembershipWrapper(this);
-	}
-	
+
 	@Override
-	public void setDirty(boolean val) {
-		this.owner.setDirty(val);
+	public Group getGroup() {
+		return null; // TODO Make this query the group properly.
 	}
-	
+
 	@Override
-	public boolean isDirty() {
-		return this.owner.isDirty();
+	public void setStartDate(Date date) {
+		
+		this.begin = date;
+		this.dirty();
+		
 	}
-	
+
 	@Override
-	public boolean isGloballyValid() {
-		return this.owner.isGloballyValid();
+	public Date getStartDate() {
+		return this.begin;
+	}
+
+	@Override
+	public void setEndDate(Date date) {
+		
+		this.end = date;
+		this.dirty();
+		
+	}
+
+	@Override
+	public Date getEndDate() {
+		return this.end;
 	}
 	
 }
