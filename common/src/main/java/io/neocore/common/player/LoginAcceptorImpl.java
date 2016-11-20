@@ -1,10 +1,11 @@
 package io.neocore.common.player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import io.neocore.api.NeocoreAPI;
-import io.neocore.api.database.ban.BanList;
+import io.neocore.api.database.ban.BanEntry;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.event.database.PostUnloadPlayerEvent;
@@ -42,22 +43,27 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		UUID uuid = event.getPlayerUniqueId();
 		
 		// Verify bans
-		// TODO Flesh this out a lot to actually report the reasons and make the messages more configurable.
 		if (NeocoreAPI.getAgent().getHost().getNeocoreConfig().isEnforcingBans()) { // FIXME Encapsulation.
 			
 			BanService serv = this.services.getService(BanService.class);
 			if (serv != null) {
 				
-				BanList playerBans = serv.getBans(uuid);
-				for (Context ctx : this.contexts) {
+				// Figure out which bans we care about.
+				List<BanEntry> playerBans = serv.getBans(uuid);
+				List<BanEntry> relevant = new ArrayList<>();
+				for (BanEntry ban : playerBans) {
+					if (this.contexts.contains(ban.getContext()) || ban.isGlobal()) relevant.add(ban);
+				}
+				
+				// Now report to the player if they're banned, and why.
+				if (relevant.size() > 0) {
 					
-					if (playerBans.isBannedInContext(ctx)) {
-						
-						event.disallow("You're banned!");
-						return;
-						
-					}
+					StringBuilder sb = new StringBuilder("Banned!\n");
+					relevant.forEach(b -> sb.append("- " + b.getReason() + "\n"));
+					event.disallow(sb.toString());
 					
+				} else {
+					event.allow(); // Verbosity.
 				}
 				
 			}
