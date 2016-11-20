@@ -1,7 +1,6 @@
 package io.neocore.api.host.permissions;
 
 import io.neocore.api.player.PlayerIdentity;
-import io.neocore.api.player.permission.DynamicPermissionCollection;
 
 /**
  * Represents a player that can have permissions attached to them.
@@ -24,20 +23,6 @@ public interface PermissedPlayer extends PlayerIdentity {
 	public boolean hasPermission(String perm);
 	
 	/**
-	 * Adds a new dynamic permission collection to the player and returns it.
-	 * 
-	 * @return The new dynamic permission collection.
-	 */
-	public DynamicPermissionCollection addPermCollection();
-	
-	/**
-	 * Removes the specified permission collection from the player.
-	 * 
-	 * @param collection The collection to remove.
-	 */
-	public void removePermCollection(DynamicPermissionCollection collection);
-	
-	/**
 	 * Checks to see if there is a definition for the specified permission on the player.
 	 * 
 	 * @param permission The permission to check.
@@ -45,9 +30,17 @@ public interface PermissedPlayer extends PlayerIdentity {
 	public void isPermSet(String permission);
 	
 	/**
-	 * Recalculates the static permission states, which may change the
-	 * resultant states of dynamic permission collections.
+	 * Gets a new, empty permission collection for the player.
+	 * 
+	 * @return The new collection.
 	 */
-	public void recalculatePermissions();
+	public PermissionCollection createCollection();
+	
+	/**
+	 * Removes the permission collection from the player.
+	 * 
+	 * @param col The collection to remove.
+	 */
+	public void removeCollection(PermissionCollection col);
 	
 }

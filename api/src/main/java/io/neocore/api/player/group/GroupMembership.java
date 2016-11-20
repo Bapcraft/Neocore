@@ -1,85 +1,52 @@
 package io.neocore.api.player.group;
 
-import java.time.Instant;
 import java.util.Date;
 
-import io.neocore.api.database.AbstractPersistentRecord;
-
-/**
- * A membership in a group, agnostic of which player it belongs to.
- * 
- * @author treyzania
- */
-public abstract class GroupMembership extends AbstractPersistentRecord {
-	
-	private Date start, expires;
-	
-	public GroupMembership(Date start, Date expires) {
-		
-		this.start = start;
-		this.expires = expires;
-		
-	}
-	
-	public GroupMembership() {
-		this(Date.from(Instant.MIN), Date.from(Instant.MAX));
-	}
+public interface GroupMembership {
 	
 	/**
-	 * Sets the group that this belongs to.
-	 */
-	public abstract void setGroup(Group group);
-	
-	/**
-	 * @return The group that the membership deals with.
-	 */
-	public abstract Group getGroup();
-	
-	/**
-	 * Sets the begin date of the membership.
+	 * Sets the group that this membership is of.
 	 * 
-	 * @param begin The begin date.
+	 * @param group The group.
 	 */
-	public void setBegin(Date begin) {
-		
-		this.start = begin;
-		this.dirty();
-		
-	}
+	public void setGroup(Group group);
 	
 	/**
-	 * @return Gets the date that the membership period begins.
+	 * @return The group this membership is of.
 	 */
-	public Date getBegin() {
-		return this.start;
-	}
-
+	public Group getGroup();
+	
 	/**
-	 * Sets the expiration date of the membership.
+	 * Sets the date that this membership goes into effect.
 	 * 
-	 * @param expiration The expiration date.
+	 * @param date The date of start.
 	 */
-	public void setExpiration(Date expiration) {
-		
-		this.expires = expiration;
-		this.dirty();
-		
-	}
+	public void setStartDate(Date date);
 	
 	/**
-	 * @return The date that the membership period ends.
+	 * @return The start date of the membership.
 	 */
-	public Date getExpiration() {
-		return this.expires;
-	}
+	public Date getStartDate();
 	
 	/**
-	 * @return <code>true</code> if the membership is currently within the before and end times, <code>false</code> otherwise.
+	 * Sets the date that this membership should no longer be valid.
+	 * 
+	 * @param date The end date of the membership.
 	 */
-	public boolean isCurrentlyValid() {
+	public void setEndDate(Date date);
+	
+	/**
+	 * @return The end date of this membership.
+	 */
+	public Date getEndDate();
+	
+	/**
+	 * @return If this membership is currently in effect.
+	 */
+	public default boolean isCurrentlyValid() {
 		
-		Date current = Date.from(Instant.now());
-		return (this.start == null || this.start.before(current)) && (this.expires == null || this.expires.after(current));
+		Date now = new Date();
+		return (this.getStartDate() == null || this.getStartDate().before(now)) && (this.getEndDate() == null || this.getEndDate().after(now));
 		
 	}
 	

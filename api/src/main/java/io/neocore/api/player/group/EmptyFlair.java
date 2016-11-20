@@ -1,32 +1,40 @@
 package io.neocore.api.player.group;
 
-import net.md_5.bungee.api.ChatColor;
-
-/**
- * A simple, empty flair class that effectively leaves the player's name unchanged.
- * 
- * @author treyzania
- */
-public class EmptyFlair extends AbstractFlair {
+public class EmptyFlair implements Flair {
 	
-	private String name;
-	
-	public EmptyFlair(String name) {
-		this.name = name;
-	}
-	
-	public EmptyFlair() {
-		this("");
+	@Override
+	public void setName(String name) {
+		
 	}
 	
 	@Override
 	public String getName() {
-		return this.name;
+		return "[none]";
 	}
-
+	
 	@Override
-	public ChatColor getPrimaryColor() {
-		return ChatColor.RESET;
+	public void setPrefix(String prefix) {
+		
+	}
+	
+	@Override
+	public String getPrefix() {
+		return "";
+	}
+	
+	@Override
+	public void setSuffix(String suffix) {
+		
+	}
+	
+	@Override
+	public String getSuffix() {
+		return "";
+	}
+	
+	@Override
+	public String apply(String playerName) {
+		return playerName;
 	}
 	
 }

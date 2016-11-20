@@ -12,7 +12,6 @@ public interface PermissionManager {
 	 */
 	public List<Group> getGroups();
 	
-
 	/**
 	 * Finds the group with the specified name if it's loaded.
 	 * 

@@ -18,18 +18,28 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	public List<GroupMembership> getGroupMemberships();
 	
 	/**
-	 * Adds the group membership specified to the player in the database, and commits the change.
+	 * Adds the group membership specified to the player in the database, and
+	 * commits the change.
 	 * 
 	 * @param group The group membership to be added.
 	 */
-	public void addGroupMembership(GroupMembership group);
+	public void addGroupMembership(GroupMembership gm);
 	
 	/**
-	 * Removes the group specified from the player in the databse, and commits the change.
+	 * Creates a new group membership for the given group.
 	 * 
-	 * @param group The group to be removed.
+	 * @param group The group to create a membership for.
+	 * @return The created group membership.
 	 */
-	public void removeGroupMembership(Group group);
+	public GroupMembership addGroup(Group group);
+	
+	/**
+	 * Removes the group membership specified from the player in the database,
+	 * and commits the change.
+	 * 
+	 * @param group The group membership to be removed.
+	 */
+	public void removeGroupMembership(GroupMembership gm);
 	
 	/**
 	 * Gets the player's global account for the given currency.
@@ -48,7 +58,8 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	public Extension getExtension(String name);
 	
 	/**
-	 * Attaches the extension onto the player, replacing any other extensions of that type.
+	 * Attaches the extension onto the player, replacing any other extensions
+	 * of that type.
 	 * 
 	 * @param ext The extension to attach.
 	 */

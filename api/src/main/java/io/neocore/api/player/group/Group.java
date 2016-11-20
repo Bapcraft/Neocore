@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.neocore.api.player.permission.PermissionEntry;
-
 public interface Group {
 	
 	/**
@@ -21,7 +19,7 @@ public interface Group {
 	/**
 	 * @return A list of all the Flairs that this Group provides to the player.
 	 */
-	public List<AbstractFlair> getFlairs();
+	public List<Flair> getFlairs();
 	
 	/**
 	 * Adds the specified flair to the list.
@@ -29,7 +27,7 @@ public interface Group {
 	 * @param flair The flair to add.
 	 * @return The index of the newly-added flair.
 	 */
-	public int addFlair(AbstractFlair flair);
+	public int addFlair(Flair flair);
 	
 	/**
 	 * Deletes a flair from the records at the specified index.
@@ -39,29 +37,9 @@ public interface Group {
 	public void deleteFlair(int index);
 	
 	/**
-	 * @return A map of all of the permissions brought by this group.
+	 * @return A map of all of the permissions brought by this group, by context name.
 	 */
 	public Map<String, Set<PermissionEntry>> getPermissions();
-	
-	/**
-	 * Get information about what state the permission is in the group's configuration.
-	 * 
-	 * @param contextName the name of the context in which to check.
-	 * @param permission The permission to be checked.
-	 * @return The permission defined in the database, <code>null</code> if undefined.
-	 */
-	public default PermissionEntry getStatedPermission(String contextName, String permission) {
-		
-		Set<PermissionEntry> perms = this.getPermissions().get(contextName);
-		if (perms == null) return null;
-		
-		for (PermissionEntry entry : perms) {
-			if (entry.getName().equals(permission)) return entry;
-		}
-		
-		return null;
-		
-	}
 	
 	/**
 	 * Puts the permission into the records, ignoring what might have been there before.
@@ -87,10 +65,5 @@ public interface Group {
 	 * @return The restriction level of this group.
 	 */
 	public int getRestrictionLevel();
-	
-	/**
-	 * Flushed the current information into the database.
-	 */
-	public void flush();
 	
 }

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.neocore.api.player.permission.PermissionEntry;
-
 /**
  * A placeholder group used when an actual Group reference cannot be provided.
  * 
@@ -40,12 +38,12 @@ public class PlaceholderGroup implements Group {
 	}
 
 	@Override
-	public List<AbstractFlair> getFlairs() {
+	public List<Flair> getFlairs() {
 		return Collections.emptyList();
 	}
 	
 	@Override
-	public int addFlair(AbstractFlair flair) {
+	public int addFlair(Flair flair) {
 		return -1; // I wanted to do 42, but someone would find a way to break something with that.
 	}
 
@@ -72,11 +70,6 @@ public class PlaceholderGroup implements Group {
 	@Override
 	public int getPriority() {
 		return this.priority;
-	}
-	
-	@Override
-	public void flush() {
-		
 	}
 	
 }

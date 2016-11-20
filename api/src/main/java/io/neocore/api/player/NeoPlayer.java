@@ -197,7 +197,7 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 			if (ident != null && clazz.isAssignableFrom(ident.getClass())) return (T) ident;
 		}
 		
-		throw new IllegalArgumentException("This wasn't populated on the player! (" + clazz.getName() + ")");
+		return null;
 		
 	}
 	
