@@ -21,6 +21,11 @@ public interface BanService extends DatabaseServiceProvider {
 	public void reloadBans();
 	
 	/**
+	 * Flushes any dirty bans to the backend. 
+	 */
+	public void flushBans();
+	
+	/**
 	 * Adds the ban to the database and updates it in the relevant local cache.
 	 * 
 	 * @param entry
