@@ -1,5 +1,6 @@
 package io.neocore.api.database.ban;
 
+import java.util.List;
 import java.util.UUID;
 
 import io.neocore.api.database.DatabaseServiceProvider;
@@ -12,19 +13,27 @@ public interface BanService extends DatabaseServiceProvider {
 	 * @param uuid The UUID of the player.
 	 * @return The player's ban list.
 	 */
-	public BanList getBans(UUID uuid);
+	public List<BanEntry> getBans(UUID uuid);
 	
 	/**
-	 * Adds a new ban record to the database.
-	 * @param entry The ban entry to be added.
+	 * Clears and loads the local cache of bans from the database.
+	 */
+	public void reloadBans();
+	
+	/**
+	 * Adds the ban to the database and updates it in the relevant local cache.
+	 * 
+	 * @param entry
 	 */
 	public void addBan(BanEntry entry);
 	
 	/**
-	 * Purges all previous bans for the player and adds in the bans from the list to the database.
+	 * Creates a new native ban for the specified ID than can be used directly
+	 * with this service.  Does not add the ban to the official record yet.
 	 * 
-	 * @param list The list to use as the "current" for the list's "owner".
+	 * @param uuid The player's UUID.
+	 * @return The ban entry.
 	 */
-	public void updateBanList(BanList list);
+	public BanEntry createNewBan(UUID uuid);
 	
 }
