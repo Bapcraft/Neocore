@@ -3,10 +3,7 @@ package io.neocore.api.database.player;
 import java.util.Date;
 import java.util.List;
 
-import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.PersistentPlayerIdentity;
-import io.neocore.api.database.ban.BanList;
-import io.neocore.api.database.ban.BanService;
 import io.neocore.api.eco.Account;
 import io.neocore.api.player.PlayerIdentity;
 import io.neocore.api.player.extension.Extension;
@@ -33,16 +30,6 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	 * @param group The group to be removed.
 	 */
 	public void removeGroupMembership(Group group);
-	
-	/**
-	 * @return The list of bans for the player.
-	 */
-	public default BanList getBans() {
-		
-		// FIXME Breaks encapsulation.
-		return NeocoreAPI.getAgent().getServiceManager().getService(BanService.class).getBans(this.getUniqueId());
-		
-	}
 	
 	/**
 	 * Gets the player's global account for the given currency.
