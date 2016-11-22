@@ -3,16 +3,21 @@ package io.neocore.bungee.network;
 import java.net.InetAddress;
 import java.util.UUID;
 
-import io.neocore.api.host.proxy.NetworkEndpoint;
-import io.neocore.api.host.proxy.NetworkPlayer;
+import io.neocore.api.infrastructure.NetworkEndpoint;
+import io.neocore.api.infrastructure.NetworkPlayer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BungeeNetworkPlayer implements NetworkPlayer {
 	
+	private DownstreamWrapper downstream;
 	private ProxiedPlayer player;
 	
-	public BungeeNetworkPlayer(ProxiedPlayer player) {
+	public BungeeNetworkPlayer(DownstreamWrapper down, ProxiedPlayer player) {
+		
+		this.downstream = down;
 		this.player = player;
+		
 	}
 	
 	@Override
@@ -22,7 +27,7 @@ public class BungeeNetworkPlayer implements NetworkPlayer {
 
 	@Override
 	public void kick(String message) {
-		// TODO
+		this.player.disconnect(new TextComponent(message));
 	}
 
 	@Override
@@ -32,7 +37,7 @@ public class BungeeNetworkPlayer implements NetworkPlayer {
 
 	@Override
 	public NetworkEndpoint getDownstreamServer() {
-		return new BungeeEndpoint(this.player.getServer().getInfo());
+		return this.downstream.getEndpoint(player.getServer().getInfo().getName());
 	}
 
 }

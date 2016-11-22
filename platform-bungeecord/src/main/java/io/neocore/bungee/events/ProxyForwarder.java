@@ -1,6 +1,6 @@
 package io.neocore.bungee.events;
 
-import io.neocore.api.host.proxy.ProxyAcceptor;
+import io.neocore.api.infrastructure.ProxyAcceptor;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.event.EventHandler;
 

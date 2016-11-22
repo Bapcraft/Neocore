@@ -14,11 +14,13 @@ import io.neocore.api.host.Context;
 import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.Scheduler;
+import io.neocore.api.infrastructure.InfrastructureService;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bungee.broadcast.BungeeBroadcastService;
 import io.neocore.bungee.events.EventForwarder;
 import io.neocore.bungee.events.ProxyForwarder;
+import io.neocore.bungee.network.BungeeNetworkMapService;
 import io.neocore.bungee.network.BungeeProxyService;
 import io.neocore.common.FullHostPlugin;
 import io.neocore.common.NeocoreImpl;
@@ -32,6 +34,7 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	
 	private BungeeProxyService proxyService;
 	private BungeeBroadcastService broadcastService;
+	private BungeeNetworkMapService netMapService;
 	
 	private List<EventForwarder> forwarders = new ArrayList<>();
 	private ProxyForwarder proxyForwarder;
@@ -52,15 +55,17 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		this.forwarders.add(this.proxyForwarder);
 		
 		// Services
-		this.proxyService = new BungeeProxyService(this.getProxy());
+		this.proxyService = new BungeeProxyService();
 		this.broadcastService = new BungeeBroadcastService();
+		this.netMapService = new BungeeNetworkMapService(this.getNeocoreConfig().getServerName(), this.getProxy());
 		
 		// Actually register the services.
 		// TODO Login
 		// TODO Session
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
-		neo.registerServiceProvider(HostService.PROXY, this.proxyService, this);
+		neo.registerServiceProvider(InfrastructureService.PROXY, this.proxyService, this);
 		// TODO Permissions
+		neo.registerServiceProvider(InfrastructureService.NETWORKMAP, this.netMapService, this);
 		
 		// Set up a broadcast for server initialization.
 		neo.getTaskQueue().enqueue(new Task(new DumbTaskDelegator("Neocore-Init")) {
