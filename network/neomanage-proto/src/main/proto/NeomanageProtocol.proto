@@ -88,3 +88,16 @@ message UnregisterServer {
 	
 }
 
+message PlayerSubscriptionUpdate {
+	
+	required string uuid = 1;
+	required bool state = 2;
+	
+}
+
+message PlayerListUpdate {
+	
+	repeated string uuids = 1;
+	
+}
+
