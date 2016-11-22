@@ -25,21 +25,21 @@ public class NmdLockCoordinator extends LockCoordinator {
 	@Override
 	public int lock(UUID uuid) {
 		
-		this.network.getActiveServer().broadcastLock(uuid, LockType.PLAYER);
+		this.network.broadcastLockChange(uuid, LockType.PLAYER, true);
 		this.locker.lock(uuid);
 		
 		return 0;
 		
 	}
-
+	
 	@Override
 	public void unlock(UUID uuid) {
 		
-		this.network.getActiveServer().broadcastUnlock(uuid, LockType.PLAYER);
-		this.locker.lock(uuid);
+		this.network.broadcastLockChange(uuid, LockType.PLAYER, false);
+		this.locker.release(uuid);
 		
 	}
-
+	
 	@Override
 	public boolean isLocked(UUID uuid) {
 		return this.locker.isLocked(uuid);
