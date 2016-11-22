@@ -6,32 +6,27 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.host.permissions.PermissionsService;
-import io.neocore.bukkit.PermissionInjector;
-import io.neocore.common.player.CommonPlayerManager;
 
 public class BukkitPermsService implements PermissionsService {
 	
-	// apparently?  (I mean it is just a utility thing...)
-	private static final PermissionInjector injector = new PermissionInjector();
+	private Plugin plugin;
 	
-	private List<BukkitPermPlayer> playerCache = new ArrayList<>();
-	private CommonPlayerManager playerManager;
+	private List<BukkitPermPlayer> cache = new ArrayList<>();
 	
-	public BukkitPermsService(CommonPlayerManager cpm) {
-		this.playerManager = cpm;
+	public BukkitPermsService(Plugin plugin) {
+		this.plugin = plugin;
 	}
 	
 	@Override
 	public PermissedPlayer load(UUID uuid) {
 		
 		BukkitPermPlayer bpp = this.findPlayer(uuid);
-		
 		if (bpp == null) bpp = this.initPlayer(uuid);
-		
-		return null;
+		return bpp;
 		
 	}
 	
@@ -40,15 +35,15 @@ public class BukkitPermsService implements PermissionsService {
 		Player p = Bukkit.getPlayer(uuid);
 		if (p == null) throw new IllegalArgumentException("Player is not on server!");
 		
-		BukkitPermPlayer bpp = new BukkitPermPlayer(injector, this.playerManager, p);
-		this.playerCache.add(bpp);
+		BukkitPermPlayer bpp = new BukkitPermPlayer(this.plugin, p);
+		this.cache.add(bpp);
 		return bpp;
 		
 	}
 	
 	private BukkitPermPlayer findPlayer(UUID uuid) {
 	
-		for (BukkitPermPlayer bpp : this.playerCache) {
+		for (BukkitPermPlayer bpp : this.cache) {
 			if (bpp.getUniqueId().equals(uuid)) return bpp;
 		}
 		
@@ -60,7 +55,7 @@ public class BukkitPermsService implements PermissionsService {
 	public void unload(UUID uuid) {
 		
 		// Just remove it from the cache.
-		this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid));
+		this.cache.removeIf(p -> p.getUniqueId().equals(uuid));
 		
 	}
 	

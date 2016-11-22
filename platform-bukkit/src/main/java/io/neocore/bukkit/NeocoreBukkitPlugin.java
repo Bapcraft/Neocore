@@ -20,6 +20,8 @@ import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.host.ServerInitializedEvent;
+import io.neocore.api.infrastructure.InfrastructureService;
+import io.neocore.api.infrastructure.NetworkMapService;
 import io.neocore.api.player.PlayerManager;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
@@ -33,8 +35,8 @@ import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
 import io.neocore.bukkit.services.BukkitBroadcastService;
 import io.neocore.bukkit.services.BukkitChatService;
 import io.neocore.bukkit.services.BukkitLoginService;
-import io.neocore.bukkit.services.network.BukkitEndpointService;
-import io.neocore.bukkit.services.network.SelfEndpoint;
+import io.neocore.bukkit.services.network.StandaloneNetworkMapService;
+import io.neocore.bukkit.services.permissions.BukkitPermsService;
 import io.neocore.bukkit.shced.NeoBukkitScheduler;
 import io.neocore.common.FullHostPlugin;
 import io.neocore.common.NeocoreImpl;
@@ -44,19 +46,24 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	
 	public static NeocoreBukkitPlugin inst;
 	
+	// Metadata
 	private BukkitNeocoreConfig config;
 	
+	// Host services
 	private BukkitLoginService loginService;
 	private BukkitBroadcastService broadcastService;
+	private BukkitPermsService permsService;
 	private BukkitChatService chatService;
 	
-	private SelfEndpoint selfEndpoint;
-	private BukkitEndpointService endpointService;
+	// Potential infrastructure services.
+	private NetworkMapService netMapService;
 	
+	// Forwarders
 	private List<EventForwarder> forwarders = new ArrayList<>();
 	private PlayerConnectionForwarder connectionForwarder;
 	private ChatEventForwarder chatForwarder;
 	
+	// Utils
 	private BungeeCom bungee;
 	private CommandInjector cmdInjector;
 	private NeoBukkitScheduler scheduler;
@@ -86,31 +93,32 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		this.forwarders.add(this.connectionForwarder);
 		
 		// Services
-		this.broadcastService = new BukkitBroadcastService();
-		this.chatService = new BukkitChatService(this.chatForwarder);
 		this.loginService = new BukkitLoginService(neo.getServiceManager(), this.connectionForwarder);
+		this.broadcastService = new BukkitBroadcastService();
+		this.permsService = new BukkitPermsService(this);
+		this.chatService = new BukkitChatService(this.chatForwarder);
 		
 		// FIXME Make these register *before* we load the micromodules, somehow.
 		// Register services properly with Neocore.
 		neo.registerServiceProvider(HostService.LOGIN, this.loginService, this);
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
-		//neo.registerServiceProvider(HostService.PERMISSIONS, null, this);
+		neo.registerServiceProvider(HostService.PERMISSIONS, this.permsService, this);
 		neo.registerServiceProvider(HostService.CHAT, this.chatService, this);
 		// TODO Gameplay (needs API interface definitions first)
 		
 		// Configure the services that we can provide from Bukkit/Spigot.
 		PlayerManager pm = neo.getPlayerManager();
 		pm.addService(HostService.LOGIN);
-		//pm.addService(HostService.PERMISSIONS);
+		pm.addService(HostService.PERMISSIONS);
 		pm.addService(HostService.CHAT);
-		//pm.addService(HostService.ENDPOINT);
 		
 		// Do the network stuff all at once if we need to do it at all.
 		if (this.config.isNetworked()) {
+			NeocoreAPI.getLogger().warning("It is strongly suggested that you run Neocore in standalone mode if you do not have a sync daemon.");
+		} else {
 			
-			this.selfEndpoint = new SelfEndpoint(this.getNeocoreConfig());
-			this.endpointService = new BukkitEndpointService(this.selfEndpoint);
-			neo.registerServiceProvider(HostService.ENDPOINT, this.endpointService, this);
+			this.netMapService = new StandaloneNetworkMapService(this.getNeocoreConfig().getServerName());
+			neo.registerServiceProvider(InfrastructureService.NETWORKMAP, this.netMapService, this);
 			
 		}
 		
