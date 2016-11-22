@@ -26,8 +26,9 @@ public interface PermissedPlayer extends PlayerIdentity {
 	 * Checks to see if there is a definition for the specified permission on the player.
 	 * 
 	 * @param permission The permission to check.
+	 * @return TODO
 	 */
-	public void isPermSet(String permission);
+	public boolean isPermSet(String permission);
 	
 	/**
 	 * Gets a new, empty permission collection for the player.

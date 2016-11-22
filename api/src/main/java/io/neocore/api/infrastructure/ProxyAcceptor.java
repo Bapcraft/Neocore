@@ -1,4 +1,4 @@
-package io.neocore.api.host.proxy;
+package io.neocore.api.infrastructure;
 
 /**
  * Receives events regarding proxy traffic.

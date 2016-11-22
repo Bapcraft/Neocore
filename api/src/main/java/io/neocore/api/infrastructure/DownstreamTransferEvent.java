@@ -1,4 +1,4 @@
-package io.neocore.api.host.proxy;
+package io.neocore.api.infrastructure;
 
 import io.neocore.api.event.PlayerEvent;
 import io.neocore.api.event.Raisable;

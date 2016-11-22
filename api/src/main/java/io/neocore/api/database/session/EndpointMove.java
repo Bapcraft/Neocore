@@ -2,7 +2,7 @@ package io.neocore.api.database.session;
 
 import java.util.Date;
 
-import io.neocore.api.host.proxy.NetworkEndpoint;
+import io.neocore.api.infrastructure.NetworkEndpoint;
 
 public interface EndpointMove {
 	

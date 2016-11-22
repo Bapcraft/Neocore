@@ -19,9 +19,7 @@ public enum DatabaseService implements ServiceType {
 	PLAYER(PlayerService.class), // Core player data, extensions, etc.
 	GROUP(GroupService.class), // Group definitions, flair, inheritance, tracks, etc.
 	ARTIFACT(null), // Warnings, evidence, etc.
-	ACTION_RECORD(null),
-	
-	MISC(null); // Miscellaneous sets of data with schema defined by modules.
+	ACTIONRECORD(null);
 	
 	private Class<? extends DatabaseServiceProvider> serviceClass;
 	
@@ -29,19 +27,15 @@ public enum DatabaseService implements ServiceType {
 		this.serviceClass = clazz;
 	}
 	
-	public Class<? extends DatabaseServiceProvider> getProvider() {
-		return this.serviceClass;
-	}
-	
 	public boolean isCompatible(Class<? extends DatabaseServiceProvider> serv) {
 		
 		if (serv == null) return false;
-		if (this.getProvider() == null) return false;
+		if (this.getServiceClass() == null) return false;
 		
-		return this.getProvider().isAssignableFrom(serv.getClass());
+		return this.getServiceClass().isAssignableFrom(serv.getClass());
 		
 	}
-
+	
 	@Override
 	public String getName() {
 		return this.name();
