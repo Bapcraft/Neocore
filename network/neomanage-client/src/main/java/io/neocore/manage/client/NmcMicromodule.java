@@ -16,17 +16,29 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueType;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.infrastructure.InfrastructureService;
 import io.neocore.api.module.JavaMicromodule;
+import io.neocore.common.NeocoreImpl;
+import io.neocore.common.player.NetworkSync;
+import io.neocore.manage.client.network.DaemonNetworkMapService;
 
 public class NmcMicromodule extends JavaMicromodule {
 	
+	// Identity information.
 	private EncryptionConfig cryptoConf;
 	private List<InetSocketAddress> remotes = new ArrayList<>();
+	private NmNetwork network;
+	
+	// Services.
+	private DaemonNetworkMapService netMapService;
+	
+	// Sync utils.
+	private NetworkSync networkSync;
 	
 	@Override
 	public void configure(Config config) {
 		
-		// Check for traffic incryption settings.
+		// Check for traffic encryption settings.
 		if (config.getBoolean("useCrypto")) {
 			
 			String pub = config.getString("serverPrivateKey");
@@ -68,6 +80,25 @@ public class NmcMicromodule extends JavaMicromodule {
 	
 	@Override
 	public void onEnable() {
+		
+		// Set up our view of the network.
+		List<NmServer> servers = new ArrayList<>();
+		this.remotes.forEach(a -> servers.add(new NmServer(a)));
+		this.network = new NmNetwork(servers);
+		
+		// Set up connections.
+		// TODO Connection.
+		
+		// Set up services.
+		this.netMapService = new DaemonNetworkMapService(NeocoreAPI.getServerName());
+		
+		// Register them.
+		this.registerService(InfrastructureService.NETWORKMAP, this.netMapService);
+		
+		// Set up sync.
+		this.networkSync = new NmdNetworkSync(this.network);
+		NeocoreImpl impl = (NeocoreImpl) NeocoreAPI.getAgent();
+		impl.getPlayerAssembler().overrideNetworkSync(this.networkSync);
 		
 	}
 	
