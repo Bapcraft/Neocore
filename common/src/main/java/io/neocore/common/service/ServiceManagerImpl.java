@@ -15,6 +15,7 @@ import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseService;
 import io.neocore.api.host.HostService;
+import io.neocore.api.infrastructure.InfrastructureService;
 import io.neocore.api.module.Module;
 
 public class ServiceManagerImpl implements ServiceManager {
@@ -37,6 +38,7 @@ public class ServiceManagerImpl implements ServiceManager {
 		// Assemble a list of all service types.
 		List<ServiceType> types = new ArrayList<>();
 		types.addAll(Arrays.asList(HostService.values()));
+		types.addAll(Arrays.asList(InfrastructureService.values()));
 		types.addAll(Arrays.asList(DatabaseService.values()));
 		
 		// Loop through the services and see which there are to deal with.  This funny loop logic is to avoid checking types we've already ruled out.
