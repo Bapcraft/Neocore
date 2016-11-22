@@ -7,7 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.session.EndpointMove;
-import io.neocore.api.host.proxy.NetworkEndpoint;
+import io.neocore.api.infrastructure.NetworkEndpoint;
 
 @DatabaseTable(tableName = "networkMoves")
 public class JdbcNetworkMove extends AbstractPersistentRecord implements EndpointMove {
@@ -58,7 +58,7 @@ public class JdbcNetworkMove extends AbstractPersistentRecord implements Endpoin
 	
 	@Override
 	public void setDestination(NetworkEndpoint ep) {
-		this.destination = ep.getName();
+		this.destination = ep.getNetworkName();
 	}
 	
 	@Override
