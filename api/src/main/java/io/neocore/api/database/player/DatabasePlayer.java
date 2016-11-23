@@ -7,6 +7,7 @@ import io.neocore.api.database.PersistentPlayerIdentity;
 import io.neocore.api.eco.Account;
 import io.neocore.api.player.PlayerIdentity;
 import io.neocore.api.player.extension.Extension;
+import io.neocore.api.player.extension.ExtensionType;
 import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
@@ -42,12 +43,28 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	public void removeGroupMembership(GroupMembership gm);
 	
 	/**
-	 * Gets the player's global account for the given currency.
+	 * Gets the player's global account for the given currency.  Creates a new
+	 * account if none exists.
 	 * 
 	 * @param currency The name of the currency.
 	 * @return The account object representing their store of the currency.
 	 */
 	public Account getAccount(String currency);
+	
+	/**
+	 * Gets all of the accounts that this player has currently.
+	 * 
+	 * @return A list of the player's accounts.
+	 */
+	public List<Account> getAccounts();
+	
+	/**
+	 * Attaches the extension onto the player, replacing any other extensions
+	 * of that type.
+	 * 
+	 * @param ext The extension to attach.
+	 */
+	public void putExtension(Extension ext);
 	
 	/**
 	 * Gets the extension of the given name/type.
@@ -58,12 +75,31 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	public Extension getExtension(String name);
 	
 	/**
-	 * Attaches the extension onto the player, replacing any other extensions
-	 * of that type.
+	 * Gets the identifier names of all of the extensions this player has.
 	 * 
-	 * @param ext The extension to attach.
+	 * @return The list of names.
 	 */
-	public void putExtension(Extension ext);
+	public List<String> getExtensionNames();
+	
+	/**
+	 * Gets the extension by class.  Returns null if not present on the player.
+	 * 
+	 * @param type The type of the extension.
+	 * @return The extension data.
+	 */
+	public default Extension getExtension(Class<? extends Extension> type) {
+		
+		ExtensionType etAnno = type.getAnnotation(ExtensionType.class);
+		return etAnno != null ? this.getExtension(etAnno.name()) : null;
+		
+	}
+	
+	/**
+	 * Gets all of the extensions that this player has as the actual objects.
+	 * 
+	 * @return The list of extensions.
+	 */
+	public List<Extension> getExtensions();
 	
 	/**
 	 * Sets the record of the player's last known username.
