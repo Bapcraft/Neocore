@@ -1,11 +1,13 @@
 package io.neocore.jdbc.player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
@@ -108,6 +110,48 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	}
 	
 	@Override
+	public List<Account> getAccounts() {
+		
+		List<Account> out = new ArrayList<>();
+		CloseableIterator<JdbcPlayerAccount> iter = this.accounts.closeableIterator();
+		while (iter.hasNext()) {
+			out.add(iter.next());
+		}
+		
+		iter.closeQuietly();
+		return Collections.unmodifiableList(out);
+		
+	}
+	
+	@Override
+	public void putExtension(Extension ext) {
+		
+		// Update the existing one.
+		CloseableIterator<JdbcExtensionRecord> iter = this.extensions.closeableIterator();
+		while (iter.hasNext()) {
+			
+			JdbcExtensionRecord test = iter.next();
+			if (test.type.equals(ext.getName())) {
+				
+				// Update the data.
+				test.data = ext.serialize();
+				
+				// And close out everything.
+				this.dirty();
+				iter.closeQuietly();
+				return;
+				
+			}
+
+		}
+		
+		// At this point we're sure it's not in it so far so we can add it.
+		this.extensions.add(new JdbcExtensionRecord(ext));
+		this.dirty();
+		
+	}
+	
+	@Override
 	public Extension getExtension(String name) {
 		
 		for (JdbcExtensionRecord ext : this.extensions) {
@@ -119,23 +163,30 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	}
 	
 	@Override
-	public void putExtension(Extension ext) {
+	public List<String> getExtensionNames() {
 		
-		for (JdbcExtensionRecord myExt : this.extensions) {
-			
-			if (myExt.type.equals(ext.getName())) {
-				
-				myExt.data = ext.serialize();
-				this.dirty();
-				break;
-				
-			}
-			
+		List<String> names = new ArrayList<>();
+		CloseableIterator<JdbcExtensionRecord> iter = this.extensions.closeableIterator();
+		while (iter.hasNext()) {
+			names.add(iter.next().type);
 		}
 		
-		// At this point we're sure it's not in it so we can add it.
-		this.extensions.add(new JdbcExtensionRecord(ext));
-		this.dirty();
+		iter.closeQuietly();
+		return names;
+		
+	}
+	
+	@Override
+	public List<Extension> getExtensions() {
+		
+		List<Extension> names = new ArrayList<>();
+		CloseableIterator<JdbcExtensionRecord> iter = this.extensions.closeableIterator();
+		while (iter.hasNext()) {
+			names.add(iter.next().deserialize());
+		}
+		
+		iter.closeQuietly();
+		return names;
 		
 	}
 	
@@ -151,12 +202,12 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	public String getLastUsername() {
 		return this.lastUsername;
 	}
-
+	
 	@Override
 	public int compareTo(DatabasePlayer o) {
 		return this.getUniqueId().compareTo(o.getUniqueId());
 	}
-
+	
 	@Override
 	public void setFirstLogin(Date date) {
 		
@@ -164,12 +215,12 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 		this.dirty();
 		
 	}
-
+	
 	@Override
 	public Date getFirstLogin() {
 		return this.firstLogin;
 	}
-
+	
 	@Override
 	public void setLastLogin(Date date) {
 		
@@ -177,12 +228,12 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 		this.dirty();
 		
 	}
-
+	
 	@Override
 	public Date getLastLogin() {
 		return this.lastLogin;
 	}
-
+	
 	@Override
 	public void setLoginCount(int count) {
 		
@@ -190,7 +241,7 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 		this.dirty();
 		
 	}
-
+	
 	@Override
 	public int getLoginCount() {
 		return (int) this.loginCount;

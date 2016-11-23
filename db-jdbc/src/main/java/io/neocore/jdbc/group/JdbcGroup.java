@@ -1,15 +1,18 @@
 package io.neocore.jdbc.group;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
+import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.host.Context;
 import io.neocore.api.player.group.Flair;
@@ -115,18 +118,28 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	public boolean removeFlair(Flair flair) {
 		
 		boolean did = false;
-		Iterator<JdbcFlair> iter = this.flairs.iterator();
-		while (iter.hasNext()) {
+		CloseableIterator<JdbcFlair> iter = null;
+		try {
 			
-			JdbcFlair colFlair = iter.next();
-			if (colFlair.getPrefix().equals(flair.getPrefix()) && colFlair.getSuffix().equals(flair.getSuffix())) {
+			iter = this.flairs.closeableIterator();
+			while (iter.hasNext()) {
 				
-				iter.remove();
-				did = true;
+				JdbcFlair colFlair = iter.next();
+				if (colFlair.getPrefix().equals(flair.getPrefix()) && colFlair.getSuffix().equals(flair.getSuffix())) {
+					
+					iter.remove();
+					did = true;
+					
+				}
 				
 			}
 			
+		} catch (Exception e) {
+			NeocoreAPI.getLogger().log(Level.WARNING, "Problem removing flair.", e);
 		}
+		
+		// Close it if we did anything.
+		iter.closeQuietly();
 		
 		if (did) this.dirty();
 		return did;
@@ -135,7 +148,17 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	
 	@Override
 	public List<Flair> getFlairs() {
-		return new ArrayList<>(this.flairs);
+		
+		List<Flair> out = new ArrayList<>();
+		
+		CloseableIterator<JdbcFlair> iter = this.flairs.closeableIterator();
+		while (iter.hasNext()) {
+			out.add(iter.next());
+		}
+		
+		iter.closeQuietly();
+		return Collections.unmodifiableList(out);
+		
 	}
 	
 	@Override
@@ -156,7 +179,17 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	
 	@Override
 	public List<PermissionEntry> getPermissions() {
-		return new ArrayList<>(this.perms);
+		
+		// Stupid crap to make it immutable.
+		List<PermissionEntry> out = new ArrayList<>();
+		CloseableIterator<JdbcPermissionEntry> iter = this.perms.closeableIterator();
+		while (iter.hasNext()) {
+			out.add(iter.next());
+		}
+		
+		iter.closeQuietly();
+		return Collections.unmodifiableList(out);
+		
 	}
 	
 	@Override

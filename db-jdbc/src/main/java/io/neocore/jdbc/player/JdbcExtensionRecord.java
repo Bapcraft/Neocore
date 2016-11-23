@@ -4,11 +4,10 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import io.neocore.api.NeocoreAPI;
-import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.player.extension.Extension;
 
 @DatabaseTable(tableName = "playerExtensions")
-public class JdbcExtensionRecord extends AbstractPersistentRecord {
+public class JdbcExtensionRecord {
 	
 	@DatabaseField(canBeNull = false, foreign = true)
 	protected JdbcDbPlayer owner;
