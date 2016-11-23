@@ -3,16 +3,6 @@ package io.neocore.api.player.group;
 public class EmptyFlair implements Flair {
 	
 	@Override
-	public void setName(String name) {
-		
-	}
-	
-	@Override
-	public String getName() {
-		return "[none]";
-	}
-	
-	@Override
 	public void setPrefix(String prefix) {
 		
 	}

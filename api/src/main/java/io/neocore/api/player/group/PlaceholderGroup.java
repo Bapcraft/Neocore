@@ -1,9 +1,8 @@
 package io.neocore.api.player.group;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import io.neocore.api.host.Context;
 
 /**
  * A placeholder group used when an actual Group reference cannot be provided.
@@ -11,65 +10,85 @@ import java.util.Set;
  * @author treyzania
  */
 public class PlaceholderGroup implements Group {
-	
-	private String name;
-	private int level, priority;
-	
-	public PlaceholderGroup(String name, int level, int priority) {
-		
-		this.name = name;
-		this.level = level;
-		this.priority = priority;
+
+	@Override
+	public void setName(String name) {
 		
 	}
-	
-	public PlaceholderGroup(String name) {
-		this(name, 0, 0);
-	}
-	
+
 	@Override
 	public String getName() {
-		return this.name;
-	}
-	
-	@Override
-	public Group getParent() {
-		return new PlaceholderGroup(this.getName() + "_parent");
+		return "[placeholder]";
 	}
 
 	@Override
-	public List<Flair> getFlairs() {
-		return Collections.emptyList();
-	}
-	
-	@Override
-	public int addFlair(Flair flair) {
-		return -1; // I wanted to do 42, but someone would find a way to break something with that.
-	}
-
-	@Override
-	public void deleteFlair(int index) {
+	public void setDisplayName(String displayName) {
 		
 	}
 
 	@Override
-	public Map<String, Set<PermissionEntry>> getPermissions() {
+	public String getDisplayName() {
+		return "[PLACEHOLDER]";
+	}
+
+	@Override
+	public void setParent(Group parent) {
+		
+	}
+
+	@Override
+	public Group getParent() {
 		return null;
 	}
 
 	@Override
-	public void putPermission(String context, PermissionEntry permission) {
-		// No.
+	public void addFlair(Flair flair) {
+		
 	}
-	
+
 	@Override
-	public int getRestrictionLevel() {
-		return this.level;
+	public boolean removeFlair(Flair flair) {
+		return true;
 	}
-	
+
+	@Override
+	public List<Flair> getFlairs() {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public void setPermission(Context context, String node, boolean state) {
+		
+	}
+
+	@Override
+	public void unsetPermission(Context context, String node) {
+		
+	}
+
+	@Override
+	public List<PermissionEntry> getPermissions() {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public void setPriority(int priority) {
+		
+	}
+
 	@Override
 	public int getPriority() {
-		return this.priority;
+		return 0;
+	}
+
+	@Override
+	public void setRestrictionLevel(int restriction) {
+		
+	}
+
+	@Override
+	public int getRestrictionLevel() {
+		return 0;
 	}
 	
 }

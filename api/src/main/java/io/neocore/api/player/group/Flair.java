@@ -3,18 +3,6 @@ package io.neocore.api.player.group;
 public interface Flair {
 	
 	/**
-	 * Sets the name of the flair.
-	 * 
-	 * @param name The flair's new name.
-	 */
-	public void setName(String name);
-	
-	/**
-	 * @return The name of the flair.
-	 */
-	public String getName();
-	
-	/**
 	 * Sets the new prefix for the flair, to be put before the player's name.
 	 * 
 	 * @param prefix The flair prefix.
