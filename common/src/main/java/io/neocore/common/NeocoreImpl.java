@@ -17,11 +17,13 @@ import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerManager;
 import io.neocore.api.player.extension.ExtensionManager;
+import io.neocore.api.player.permission.PermissionManager;
 import io.neocore.api.task.TaskQueue;
 import io.neocore.common.cmd.CommandActiveUserManager;
 import io.neocore.common.database.DatabaseManagerImpl;
 import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.module.ModuleManagerImpl;
+import io.neocore.common.permissions.PermissionManagerImpl;
 import io.neocore.common.player.CommonPlayerManager;
 import io.neocore.common.player.LoginAcceptorImpl;
 import io.neocore.common.player.PlayerManagerWrapperImpl;
@@ -43,6 +45,7 @@ public class NeocoreImpl implements Neocore {
 	private ServiceManagerImpl serviceManager;
 	private CommonEventManager eventManager;
 	private ExtensionManager extManager;
+	private PermissionManagerImpl permManager;
 	
 	private LoginAcceptor loginAcceptor;
 	
@@ -63,6 +66,7 @@ public class NeocoreImpl implements Neocore {
 		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
 		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager, host.getScheduler());
 		this.playerManWrapper = new PlayerManagerWrapperImpl(this.playerManager);
+		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager);
 		
 		// Set up acceptors
 		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, host.getContexts());
@@ -139,6 +143,11 @@ public class NeocoreImpl implements Neocore {
 	@Override
 	public ExtensionManager getExtensionManager() {
 		return this.extManager;
+	}
+	
+	@Override
+	public PermissionManager getPermissionManager() {
+		return this.permManager;
 	}
 	
 	@Override
