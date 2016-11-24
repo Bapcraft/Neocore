@@ -1,5 +1,7 @@
 package io.neocore.api.host.permissions;
 
+import java.util.Set;
+
 public interface PermissionCollection {
 	
 	/**
@@ -24,5 +26,25 @@ public interface PermissionCollection {
 	 * @param perm The state to set the permission to.
 	 */
 	public void unsetPermission(String perm);
+	
+	/**
+	 * Adds the tag onto the permission collection.
+	 * 
+	 * @param tag The tag to add.
+	 */
+	public void addTag(String tag);
+	
+	/**
+	 * Checks to see if the tag is on the permission collection.
+	 * 
+	 * @param tag The tag to check for.
+	 * @return If the collection has the tag.
+	 */
+	public boolean hasTag(String tag);
+	
+	/**
+	 * @return A copy of the set of tags on the collection.
+	 */
+	public Set<String> getTags();
 	
 }

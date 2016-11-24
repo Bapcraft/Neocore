@@ -1,9 +1,10 @@
 package io.neocore.api.player.group;
 
+import java.util.ArrayList;
 import java.util.List;
 import io.neocore.api.host.Context;
 
-public interface Group {
+public interface Group extends Comparable<Group> {
 	
 	/**
 	 * Sets the name of the group.
@@ -118,5 +119,26 @@ public interface Group {
 	 * @return The restriction level of this group.
 	 */
 	public int getRestrictionLevel();
+	
+	public default List<Group> getAncestors() {
+		
+		Group parent = this.getParent();
+		
+		if (parent != null || parent == this) {
+			
+			List<Group> parentGroups = parent.getAncestors();
+			parentGroups.add(0, parent); // Make our parent the immediate ancestor.
+			return parentGroups;
+			
+		} else {
+			return new ArrayList<>();
+		}
+		
+	}
+	
+	@Override
+	public default int compareTo(Group o) {
+		return this.getPriority() - o.getPriority();
+	}
 	
 }

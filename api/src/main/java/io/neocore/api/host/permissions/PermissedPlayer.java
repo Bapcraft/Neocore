@@ -1,5 +1,7 @@
 package io.neocore.api.host.permissions;
 
+import java.util.List;
+
 import io.neocore.api.player.PlayerIdentity;
 
 /**
@@ -43,5 +45,14 @@ public interface PermissedPlayer extends PlayerIdentity {
 	 * @param col The collection to remove.
 	 */
 	public void removeCollection(PermissionCollection col);
+	
+	/**
+	 * Returns a list of all of the permission collections that have been
+	 * created by this object in the cache.  Changes to the returned list
+	 * should not effect the actual collections allocated.
+	 * 
+	 * @return A list of cached collections.
+	 */
+	public List<PermissionCollection> getCollections();
 	
 }

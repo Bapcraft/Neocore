@@ -1,5 +1,6 @@
 package io.neocore.api.database.player;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +42,23 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	 * @param group The group membership to be removed.
 	 */
 	public void removeGroupMembership(GroupMembership gm);
+	
+	/**
+	 * Returns a list of all of the groups that this player is immediately a
+	 * member of right now in time.
+	 * 
+	 * @return A list of the player's groups.
+	 */
+	public default List<Group> getGroups() {
+		
+		List<Group> groups = new ArrayList<>();
+		for (GroupMembership gm : this.getGroupMemberships()) {
+			if (gm.isCurrentlyValid()) groups.add(gm.getGroup());
+		}
+		
+		return groups;
+		
+	}
 	
 	/**
 	 * Gets the player's global account for the given currency.  Creates a new

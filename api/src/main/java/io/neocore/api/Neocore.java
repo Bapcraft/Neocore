@@ -10,6 +10,7 @@ import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerManager;
 import io.neocore.api.player.extension.ExtensionManager;
+import io.neocore.api.player.permission.PermissionManager;
 import io.neocore.api.task.TaskQueue;
 
 /**
@@ -78,6 +79,11 @@ public interface Neocore {
 	 * @return The extension manager used by Neocore.
 	 */
 	public ExtensionManager getExtensionManager();
+	
+	/**
+	 * @return The permission manager used by Neocore.
+	 */
+	public PermissionManager getPermissionManager();
 	
 	/**
 	 * @return The async task queue used by the Neocore async worker.
