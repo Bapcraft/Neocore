@@ -17,6 +17,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.DatabaseController;
 import io.neocore.api.database.DatabaseService;
 import io.neocore.api.database.DatabaseServiceProvider;
+import io.neocore.jdbc.artifact.JdbcArtifactService;
 import io.neocore.jdbc.ban.JdbcBanService;
 import io.neocore.jdbc.group.JdbcGroupService;
 import io.neocore.jdbc.player.JdbcPlayerService;
@@ -78,6 +79,7 @@ public class JdbcController implements DatabaseController {
 		this.services.add(new JdbcSessionService(this.source));
 		this.services.add(new JdbcBanService(this.source));
 		this.services.add(new JdbcGroupService(this.source));
+		this.services.add(new JdbcArtifactService(this.source));
 		
 	}
 	
