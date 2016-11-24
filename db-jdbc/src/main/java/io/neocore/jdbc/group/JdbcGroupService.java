@@ -26,8 +26,6 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 		
 		super(src);
 		
-		this.cache = new ArrayList<>();
-		
 	}
 	
 	@Override
@@ -49,6 +47,55 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 		
 	}
 
+	@Override
+	public Group createGroup(String name) {
+		
+		try {
+			
+			// Make the local copy to work with.
+			JdbcGroup created = new JdbcGroup(name);
+			
+			// Scary bit here.
+			this.groupDao.create(created);
+			
+			// Update the cache and return.
+			this.cache.add(created);
+			return created;
+			
+		} catch (SQLException e) {
+			NeocoreAPI.getLogger().log(Level.WARNING, "Problem adding new group to database.", e);
+		}
+		
+		return null;
+		
+	}
+
+	@Override
+	public boolean deleteGroup(Group group) {
+		
+		try {
+			
+			// Get our version of the group.
+			JdbcGroup needed = this.getGroup(group.getName());
+			if (needed == null) return false;
+			
+			// Now actually delete it.
+			int done = this.groupDao.delete(needed);
+			if (done == 1) {
+				
+				this.cache.remove(needed);
+				return true;
+				
+			}
+			
+		} catch (SQLException e) {
+			NeocoreAPI.getLogger().log(Level.WARNING, "Problem deleteing group in database.", e);
+		}
+		
+		return false;
+		
+	}
+	
 	public JdbcGroup getGroup(String name) {
 		
 		for (JdbcGroup jg : this.cache) {
