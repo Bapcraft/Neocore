@@ -2,6 +2,7 @@ package io.neocore.api.database;
 
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
+import io.neocore.api.database.artifact.ArtifactService;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.group.GroupService;
 import io.neocore.api.database.player.PlayerService;
@@ -18,7 +19,7 @@ public enum DatabaseService implements ServiceType {
 	SESSION(SessionService.class), // Information about who is connecting, as well as when, from where, and to do what they are.
 	PLAYER(PlayerService.class), // Core player data, extensions, etc.
 	GROUP(GroupService.class), // Group definitions, flair, inheritance, tracks, etc.
-	ARTIFACT(null), // Warnings, evidence, etc.
+	ARTIFACT(ArtifactService.class), // Warnings, evidence, etc.
 	ACTIONRECORD(null);
 	
 	private Class<? extends DatabaseServiceProvider> serviceClass;
