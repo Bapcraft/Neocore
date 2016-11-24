@@ -45,6 +45,7 @@ public class JdbcArtifactService extends AbstractJdbcService implements Artifact
 			
 			JdbcArtifact art = new JdbcArtifact(owner, type, data);
 			this.artifactDao.create(art);
+			this.addCallback(art);
 			return art;
 			
 		} catch (SQLException e) {
@@ -59,7 +60,11 @@ public class JdbcArtifactService extends AbstractJdbcService implements Artifact
 	public Artifact getArtifact(UUID uuid) {
 		
 		try {
-			return this.artifactDao.queryForId(uuid);			
+			
+			JdbcArtifact art = this.artifactDao.queryForId(uuid);
+			this.addCallback(art);
+			return art;
+			
 		} catch (SQLException e) {
 			NeocoreAPI.getLogger().log(Level.SEVERE, "Could not query artifact!", e);
 		}
@@ -75,6 +80,7 @@ public class JdbcArtifactService extends AbstractJdbcService implements Artifact
 			
 			List<Artifact> out = new ArrayList<>();
 			List<JdbcArtifact> arts = this.artifactDao.queryForEq("type", type);
+			arts.forEach(a -> this.addCallback(a));
 			out.addAll(arts);
 			return out;
 			
@@ -93,6 +99,7 @@ public class JdbcArtifactService extends AbstractJdbcService implements Artifact
 			
 			List<Artifact> out = new ArrayList<>();
 			List<JdbcArtifact> arts = this.artifactDao.queryForEq("ownerId", ownerId);
+			arts.forEach(a -> this.addCallback(a));
 			out.addAll(arts);
 			return out;
 			
@@ -101,6 +108,20 @@ public class JdbcArtifactService extends AbstractJdbcService implements Artifact
 		}
 		
 		return null;
+		
+	}
+	
+	private void addCallback(JdbcArtifact art) {
+		
+		art.setFlushProcedure(() -> {
+			
+			try {
+				this.artifactDao.update(art);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing artifact!", e);
+			}
+			
+		});
 		
 	}
 	
