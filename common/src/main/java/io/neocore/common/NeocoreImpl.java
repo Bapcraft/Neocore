@@ -8,6 +8,7 @@ import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.DatabaseManager;
+import io.neocore.api.database.artifact.IdentifierManager;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.login.LoginAcceptor;
@@ -48,6 +49,7 @@ public class NeocoreImpl implements Neocore {
 	private CommonEventManager eventManager;
 	private ExtensionManager extManager;
 	private PermissionManagerImpl permManager;
+	private IdentifierManager identManager;
 	
 	private LoginAcceptor loginAcceptor;
 	
@@ -64,6 +66,7 @@ public class NeocoreImpl implements Neocore {
 		this.serviceManager = new ServiceManagerImpl();
 		this.eventManager = new CommonEventManager();
 		this.extManager = new ExtensionManager();
+		this.identManager = new IdentifierManager();
 		this.dbManager = new DatabaseManagerImpl(this.serviceManager);
 		this.moduleManager = new ModuleManagerImpl(host.getMicromoduleDirectory());
 		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager, host.getScheduler());
@@ -71,7 +74,7 @@ public class NeocoreImpl implements Neocore {
 		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager);
 		
 		// Set up acceptors
-		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, host.getContexts());
+		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, this.identManager, host.getContexts());
 		
 		// Set up the service manager with the listeners we want
 		this.serviceManager.registerRegistrationHandler(LoginService.class, new LoginServiceRegHandler(this.loginAcceptor));
@@ -152,6 +155,11 @@ public class NeocoreImpl implements Neocore {
 	@Override
 	public PermissionManager getPermissionManager() {
 		return this.permManager;
+	}
+	
+	@Override
+	public IdentifierManager getIdentifierManager() {
+		return this.identManager;
 	}
 	
 	@Override

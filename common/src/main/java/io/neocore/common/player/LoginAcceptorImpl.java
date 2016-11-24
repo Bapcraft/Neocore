@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.database.artifact.IdentifierManager;
 import io.neocore.api.database.ban.BanEntry;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
@@ -24,14 +25,16 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 	private CommonPlayerManager players;
 	private CommonEventManager events;
 	private ServiceManagerImpl services;
+	private IdentifierManager idents;
 	
 	private List<Context> contexts;
 	
-	public LoginAcceptorImpl(CommonPlayerManager players, CommonEventManager events, ServiceManagerImpl services, List<Context> ctxs) {
+	public LoginAcceptorImpl(CommonPlayerManager players, CommonEventManager events, ServiceManagerImpl services, IdentifierManager idents, List<Context> ctxs) {
 		
 		this.players = players;
 		this.events = events;
 		this.services = services;
+		this.idents = idents;
 		
 		this.contexts = ctxs;
 		
@@ -84,7 +87,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 					NeocoreAPI.getLogger().fine("Found " + relevant.size() + " relevant bans for player logging in.");
 					
 					StringBuilder sb = new StringBuilder("Banned!\n");
-					relevant.forEach(b -> sb.append("- " + b.getReason() + "\n"));
+					relevant.forEach(b -> sb.append("- " + b.getReason() + " (" + this.idents.getIdentifier(b.getIssuerId()) + ")\n"));
 					event.disallow(sb.toString());
 					
 				} else {
