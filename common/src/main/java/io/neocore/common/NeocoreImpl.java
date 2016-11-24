@@ -20,6 +20,7 @@ import io.neocore.api.player.extension.ExtensionManager;
 import io.neocore.api.player.permission.PermissionManager;
 import io.neocore.api.task.TaskQueue;
 import io.neocore.common.cmd.CommandActiveUserManager;
+import io.neocore.common.cmd.CommandArtifactManager;
 import io.neocore.common.database.DatabaseManagerImpl;
 import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.module.ModuleManagerImpl;
@@ -82,6 +83,7 @@ public class NeocoreImpl implements Neocore {
 		
 		// Register commands.
 		this.host.registerCommand(new CommandActiveUserManager(this.playerManWrapper));
+		this.host.registerCommand(new CommandArtifactManager(this.serviceManager));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);

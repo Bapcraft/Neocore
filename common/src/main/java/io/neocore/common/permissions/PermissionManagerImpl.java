@@ -44,10 +44,13 @@ public class PermissionManagerImpl implements PermissionManager {
 		services.registerRegistrationHandler(GroupService.class, e -> {
 			
 			this.groupService = (GroupService) e.getServiceProvider();
-			this.reloadGroups();
 			
 		});
 		
+	}
+	
+	private void checkReloadGroups() {
+		if (this.cache == null) this.reloadGroups();
 	}
 	
 	private void reloadGroups() {
@@ -57,6 +60,8 @@ public class PermissionManagerImpl implements PermissionManager {
 	@Override
 	public Group createGroup(String name) {
 		
+		this.checkReloadGroups();
+		
 		Group found = this.groupService.createGroup(name);
 		this.cache.add(found);
 		return found;
@@ -65,6 +70,8 @@ public class PermissionManagerImpl implements PermissionManager {
 	
 	@Override
 	public boolean deleteGroup(Group group) {
+		
+		this.checkReloadGroups();
 		
 		if (this.groupService.deleteGroup(group)) {
 			
@@ -80,6 +87,8 @@ public class PermissionManagerImpl implements PermissionManager {
 	@Override
 	public Group getGroup(String name) {
 		
+		this.checkReloadGroups();
+		
 		for (Group g : this.cache) {
 			if (g.getName().equals(name)) return g;
 		}
@@ -90,7 +99,10 @@ public class PermissionManagerImpl implements PermissionManager {
 
 	@Override
 	public List<Group> getGroups() {
+		
+		this.checkReloadGroups();
 		return new ArrayList<>(this.cache);
+		
 	}
 	
 	@Override
