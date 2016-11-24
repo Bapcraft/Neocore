@@ -3,7 +3,9 @@ package io.neocore.api.database.artifact;
 import java.util.Date;
 import java.util.UUID;
 
-public interface Artifact {
+import io.neocore.api.database.Persistent;
+
+public interface Artifact extends Persistent {
 	
 	/**
 	 * Returns a UUID based on the creation time of the artifact.

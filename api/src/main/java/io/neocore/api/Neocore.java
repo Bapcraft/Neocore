@@ -3,6 +3,7 @@ package io.neocore.api;
 import java.util.UUID;
 
 import io.neocore.api.database.DatabaseManager;
+import io.neocore.api.database.artifact.IdentifierManager;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.module.Module;
@@ -84,6 +85,11 @@ public interface Neocore {
 	 * @return The permission manager used by Neocore.
 	 */
 	public PermissionManager getPermissionManager();
+	
+	/**
+	 * @return The identifier manager used by Neocore.
+	 */
+	public IdentifierManager getIdentifierManager();
 	
 	/**
 	 * @return The async task queue used by the Neocore async worker.
