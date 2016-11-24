@@ -1,5 +1,7 @@
 package io.neocore.bukkit.services.permissions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -13,6 +15,7 @@ public class BukkitPermPlayer implements PermissedPlayer {
 	
 	private Plugin plugin;
 	private Player player;
+	private List<AttachmentWrapperCollection> collections = new ArrayList<>();
 	
 	public BukkitPermPlayer(Plugin plugin, Player p) {
 		
@@ -43,18 +46,30 @@ public class BukkitPermPlayer implements PermissedPlayer {
 	
 	@Override
 	public PermissionCollection createCollection() {
-		return new AttachmentWrapperCollection(this.player.addAttachment(this.plugin));
+		
+		AttachmentWrapperCollection col = new AttachmentWrapperCollection(this.player.addAttachment(this.plugin));
+		this.collections.add(col);
+		return col;
+		
 	}
 	
 	@Override
 	public void removeCollection(PermissionCollection col) {
 		
 		if (col instanceof AttachmentWrapperCollection) {
+			
+			this.collections.remove(col);
 			this.player.removeAttachment(((AttachmentWrapperCollection) col).getAttachment());
+			
 		} else {
 			NeocoreAPI.getLogger().warning("Um, someone tried to remove an attachment from player " + this.getUniqueId() + ", but it doesn't seem like they passed in an AttachmentWrapperCollection that we like.");
 		}
 		
+	}
+
+	@Override
+	public List<PermissionCollection> getCollections() {
+		return new ArrayList<>(this.collections);
 	}
 	
 }

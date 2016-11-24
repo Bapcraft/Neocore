@@ -15,8 +15,10 @@ import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.login.LoginAcceptor;
+import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerManager;
+import io.neocore.api.player.permission.PermissionManager;
 import io.neocore.bukkit.events.wrappers.BukkitInitialLoginEvent;
 import io.neocore.bukkit.events.wrappers.BukkitPostJoinEvent;
 import io.neocore.bukkit.events.wrappers.BukkitQuitEvent;
@@ -27,13 +29,16 @@ import io.neocore.common.player.LoadType;
 public class PlayerConnectionForwarder extends EventForwarder {
 	
 	public LoginAcceptor acceptor;
+	
 	private PlayerManager managerWrapper;
 	private CommonPlayerManager manager;
+	private PermissionManager permissions;
 	
-	public PlayerConnectionForwarder(PlayerManager wrap, CommonPlayerManager man) {
+	public PlayerConnectionForwarder(PlayerManager wrap, CommonPlayerManager man, PermissionManager perms) {
 		
 		this.managerWrapper = wrap;
 		this.manager = man;
+		this.permissions = perms;
 		
 	}
 	
@@ -70,6 +75,11 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		
 		// Initialize the player themselves.
 		NeoPlayer np = this.manager.assemblePlayer(uuid, LoadType.FULL, loaded -> {
+			
+			/*
+			 * First we increase the login count and update the last login, and
+			 * then we deal with the session stuff. 
+			 */
 			
 			boolean flush = false;
 			
@@ -112,6 +122,14 @@ public class PlayerConnectionForwarder extends EventForwarder {
 			}
 			
 			if (flush) loaded.flush();
+			
+			/*
+			 * Now, we have to apply the permissions for the player.
+			 */
+			
+			if (loaded.hasIdentity(DatabasePlayer.class) && loaded.hasIdentity(PermissedPlayer.class)) {
+				this.permissions.assignPermissions(loaded);
+			}
 			
 		});
 		
