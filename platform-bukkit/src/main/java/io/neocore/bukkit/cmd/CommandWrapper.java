@@ -37,9 +37,15 @@ public class CommandWrapper extends Command {
 		} catch (ErrorSignal s) {
 			return true;
 		} catch (InsufficientPermissionsSignal s) {
+			
+			sender.sendMessage("Insufficient permissions.");
 			return true;
+			
 		} catch (InvalidUsageSignal s) {
+			
+			sender.sendMessage("Invalid usage.");
 			return false;
+			
 		}
 		
 		NeocoreAPI.getLogger().warning("Command " + this.getName() + " finished execution but no explicit resolution was announced!");
