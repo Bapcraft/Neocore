@@ -48,6 +48,9 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	@DatabaseField
 	private long loginCount;
 	
+	@DatabaseField
+	private int restrictionLevel;
+	
 	public JdbcDbPlayer() {
 		// ORMLite.
 	}
@@ -245,6 +248,16 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	@Override
 	public int getLoginCount() {
 		return (int) this.loginCount;
+	}
+	
+	@Override
+	public void setRestrictionLevel(int level) {
+		this.restrictionLevel = level;
+	}
+	
+	@Override
+	public int getRestrictionLevel() {
+		return this.restrictionLevel;
 	}
 	
 }

@@ -55,6 +55,7 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	
 	public JdbcGroup(String name) {
 		
+		this.groupId = UUID.randomUUID();
 		this.name = name;
 		
 		// Capitalize the first letter of the set name for the pretty name.

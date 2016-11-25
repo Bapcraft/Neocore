@@ -20,7 +20,7 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 	
 	private Dao<JdbcGroup, UUID> groupDao;
 	
-	private List<JdbcGroup> cache;
+	private List<JdbcGroup> cache = new ArrayList<>();
 	
 	public JdbcGroupService(ConnectionSource src) {
 		
@@ -54,6 +54,17 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 			
 			// Make the local copy to work with.
 			JdbcGroup created = new JdbcGroup(name);
+			
+			// Hook up callback.
+			created.setFlushProcedure(() -> {
+				
+				try {
+					this.groupDao.createOrUpdate(created);
+				} catch (SQLException e) {
+					NeocoreAPI.getLogger().log(Level.WARNING, "Problem flushing group to database for the first time.", e);
+				}
+				
+			});
 			
 			// Scary bit here.
 			this.groupDao.create(created);
