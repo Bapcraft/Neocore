@@ -25,6 +25,11 @@ public interface PermissionEntry {
 	public String getPermissionNode();
 	
 	/**
+	 * @return If the permission is set to anything.
+	 */
+	public boolean isSet();
+	
+	/**
 	 * @return The state that the permission node gets set to.
 	 */
 	public boolean getState();
