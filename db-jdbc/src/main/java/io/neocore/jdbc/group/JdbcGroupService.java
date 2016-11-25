@@ -8,6 +8,7 @@ import java.util.logging.Level;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -46,6 +47,22 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 		}
 		
 	}
+	
+	@Override
+	public void finish() {
+		
+		try {
+			
+			// Cleanup the "UNSET" values.
+			DeleteBuilder<JdbcGroup, UUID> deleter = this.groupDao.deleteBuilder();
+			deleter.where().eq("state", PermState.UNSET.name());
+			this.groupDao.delete(deleter.prepare());
+			
+		} catch (SQLException e) {
+			NeocoreAPI.getLogger().log(Level.WARNING, "Cleanup problem.", e);
+		}
+		
+	}
 
 	@Override
 	public Group createGroup(String name) {
@@ -59,7 +76,10 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 			created.setFlushProcedure(() -> {
 				
 				try {
+					
 					this.groupDao.createOrUpdate(created);
+					created.setDirty(false);
+					
 				} catch (SQLException e) {
 					NeocoreAPI.getLogger().log(Level.WARNING, "Problem flushing group to database for the first time.", e);
 				}
@@ -133,12 +153,13 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 				jg.setFlushProcedure(() -> {
 					
 					try {
+						
 						this.groupDao.update(jg);
+						jg.setDirty(false);
+						
 					} catch (SQLException e) {
 						NeocoreAPI.getLogger().log(Level.WARNING, "Problem flushing group to database.", e);
 					}
-					
-					jg.setDirty(false);
 					
 				});
 				

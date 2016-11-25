@@ -1,5 +1,6 @@
 package io.neocore.jdbc.group;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -103,7 +104,7 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	
 	@Override
 	public Group getParent() {
-		return this.resolver.getGroup(this.parentName);
+		return this.parentName != null ? this.resolver.getGroup(this.parentName) : null;
 	}
 	
 	@Override
@@ -164,19 +165,75 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 		
 	}
 	
+	private JdbcPermissionEntry getPermEntry(Context context, String node) {
+		
+		CloseableIterator<JdbcPermissionEntry> iter = this.perms.closeableIterator();
+		while (iter.hasNext()) {
+			
+			JdbcPermissionEntry entry = iter.next();
+			boolean contextEqual = (entry.getContext() == null && context == null) || (entry.getContext() != null && entry.getContext().getName().equals(context.getName())); 
+			if (contextEqual && entry.getPermissionNode().equals(node)) {
+				
+				iter.closeQuietly();
+				return entry;
+				
+			}
+			
+		}
+		
+		iter.closeQuietly();
+		return null;
+		
+	}
+	
 	@Override
 	public void setPermission(Context context, String node, boolean state) {
 		
-		this.perms.add(new JdbcPermissionEntry(context, node, state));
+		PermState to = state ? PermState.TRUE : PermState.FALSE;
+		
+		JdbcPermissionEntry pe = this.getPermEntry(context, node);
+		if (pe == null) {
+			
+			pe = new JdbcPermissionEntry(context, node, to);
+			this.perms.add(pe);
+			
+		} else {
+			
+			pe.setState(to);
+			
+			try {
+				this.perms.update(pe);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem updating permission setting!", e);
+			}
+			
+		}
+		
 		this.dirty();
+		this.flush();
 		
 	}
 
 	@Override
 	public void unsetPermission(Context context, String node) {
 		
-		this.perms.removeIf(e -> e.getContext().equals(context) && e.getPermissionNode().equals(node));
-		this.dirty();
+		JdbcPermissionEntry pe = this.getPermEntry(context, node);
+		if (pe != null) {
+			
+			pe.setState(PermState.UNSET);
+			
+			try {
+				this.perms.update(pe);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem removing permission setting!", e);
+			}
+			
+			this.dirty();
+			this.flush();
+			
+		} else {
+			NeocoreAPI.getLogger().warning("Tried to unset a permission that was never set.");
+		}
 		
 	}
 	
