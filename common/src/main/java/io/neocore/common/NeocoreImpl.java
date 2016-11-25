@@ -1,5 +1,6 @@
 package io.neocore.common;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import io.neocore.api.Neocore;
@@ -7,6 +8,7 @@ import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
+import io.neocore.api.cmd.TreeCommand;
 import io.neocore.api.database.DatabaseManager;
 import io.neocore.api.database.artifact.IdentifierManager;
 import io.neocore.api.event.EventManager;
@@ -23,6 +25,10 @@ import io.neocore.api.task.TaskQueue;
 import io.neocore.common.cmd.CommandActiveUserManager;
 import io.neocore.common.cmd.CommandArtifactManager;
 import io.neocore.common.cmd.CommandBroadcast;
+import io.neocore.common.cmd.CommandCheckPerms;
+import io.neocore.common.cmd.CommandCreateGroup;
+import io.neocore.common.cmd.CommandReloadPermissions;
+import io.neocore.common.cmd.CommandSetPermission;
 import io.neocore.common.database.DatabaseManagerImpl;
 import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.module.ModuleManagerImpl;
@@ -89,6 +95,14 @@ public class NeocoreImpl implements Neocore {
 		this.host.registerCommand(new CommandActiveUserManager(this.playerManWrapper));
 		this.host.registerCommand(new CommandArtifactManager(this.serviceManager));
 		this.host.registerCommand(new CommandBroadcast(this.serviceManager));
+		this.host.registerCommand(new TreeCommand(
+			"permissions",
+			"neocore.cmd.permissions",
+			Arrays.asList(
+				new CommandCreateGroup(this.serviceManager),
+				new CommandReloadPermissions(),
+				new CommandSetPermission(),
+				new CommandCheckPerms())));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);

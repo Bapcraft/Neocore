@@ -4,20 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.neocore.api.ServiceManager;
-import io.neocore.api.cmd.AbstractCommand;
+import io.neocore.api.cmd.AbstractServiceCommand;
 import io.neocore.api.cmd.CmdSender;
 import io.neocore.api.host.broadcast.BroadcastService;
 
-public class CommandBroadcast extends AbstractCommand {
-	
-	private ServiceManager services;
+public class CommandBroadcast extends AbstractServiceCommand {
 	
 	public CommandBroadcast(ServiceManager serv) {
-		
-		super("broadcast");
-		
-		this.services = serv;
-		
+		super("broadcast", serv);
 	}
 	
 	@Override
@@ -31,7 +25,7 @@ public class CommandBroadcast extends AbstractCommand {
 			sb.append(" " + args[i]);
 		}
 		
-		BroadcastService serv = this.services.getService(BroadcastService.class);
+		BroadcastService serv = this.getService(BroadcastService.class);
 		if (serv != null) {
 			
 			serv.broadcast(sb.toString());

@@ -31,7 +31,7 @@ public class PermissionManagerImpl implements PermissionManager {
 	private PermissionsService permsService;
 	private GroupService groupService;
 	
-	private List<Group> cache = new ArrayList<>();
+	private List<Group> cache;
 	
 	public PermissionManagerImpl(PlayerManagerWrapperImpl players, ServiceManagerImpl services) {
 		
@@ -108,6 +108,8 @@ public class PermissionManagerImpl implements PermissionManager {
 	@Override
 	public void assignPermissions(NeoPlayer player) {
 		
+		this.checkReloadGroups();
+		
 		if (this.permsService == null) {
 			
 			NeocoreAPI.getLogger().severe("Can't assign permissions if we don't have a permissions service!");
@@ -169,7 +171,7 @@ public class PermissionManagerImpl implements PermissionManager {
 			
 			// Iterate through all of the permission nodes for the group.
 			for (PermissionEntry pe : g.getPermissions()) {
-				if (this.contexts.contains(pe.getContext())) permMap.put(pe.getPermissionNode(), pe.getState());
+				if (this.contexts.contains(pe.getContext()) && pe.isSet()) permMap.put(pe.getPermissionNode(), pe.getState());
 			}
 			
 		}

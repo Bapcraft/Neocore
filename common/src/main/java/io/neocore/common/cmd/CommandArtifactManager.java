@@ -3,21 +3,15 @@ package io.neocore.common.cmd;
 import java.util.List;
 
 import io.neocore.api.ServiceManager;
-import io.neocore.api.cmd.AbstractCommand;
+import io.neocore.api.cmd.AbstractServiceCommand;
 import io.neocore.api.cmd.CmdSender;
 import io.neocore.api.database.artifact.Artifact;
 import io.neocore.api.database.artifact.ArtifactService;
 
-public class CommandArtifactManager extends AbstractCommand {
-	
-	private ServiceManager services;
+public class CommandArtifactManager extends AbstractServiceCommand {
 	
 	public CommandArtifactManager(ServiceManager serv) {
-		
-		super("artifacts");
-		
-		this.services = serv;
-		
+		super("artifacts", serv);
 	}
 	
 	@Override
@@ -29,7 +23,7 @@ public class CommandArtifactManager extends AbstractCommand {
 		String subcommand = args[0];
 		
 		// Encapsulation.
-		ArtifactService arts = this.services.getService(ArtifactService.class);
+		ArtifactService arts = this.getService(ArtifactService.class);
 		
 		if (subcommand.equals("create")) {
 			
