@@ -2,12 +2,12 @@ package io.neocore.api.cmd;
 
 import java.util.List;
 
-public class AbstractTreeCommand extends AbstractCommand {
+public class TreeCommand extends AbstractCommand {
 	
 	private String rootPerm;
 	private List<AbstractCommand> subcommands;
 	
-	public AbstractTreeCommand(String name, String perm, List<AbstractCommand> subs) {
+	public TreeCommand(String name, String perm, List<AbstractCommand> subs) {
 		
 		super(name);
 		
@@ -22,7 +22,7 @@ public class AbstractTreeCommand extends AbstractCommand {
 		if (!sender.hasPermission(this.rootPerm)) this.noPerms();
 		
 		// We need to have at least one base argument.
-		if (args.length >= 1) this.badUsage();
+		if (args.length < 1) this.badUsage();
 		
 		// Now we determine which subcommand to use.
 		for (AbstractCommand ac : this.subcommands) {
@@ -43,6 +43,7 @@ public class AbstractTreeCommand extends AbstractCommand {
 		}
 		
 		// At this point we can assume there were no children, so assume bad syntax.
+		sender.sendMessage("Invalid subcommand.");
 		this.badUsage();
 		
 	}

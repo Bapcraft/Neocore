@@ -2,9 +2,11 @@ package io.neocore.api.player.group;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.neocore.api.database.Persistent;
 import io.neocore.api.host.Context;
 
-public interface Group extends Comparable<Group> {
+public interface Group extends Persistent, Comparable<Group> {
 	
 	/**
 	 * Sets the name of the group.

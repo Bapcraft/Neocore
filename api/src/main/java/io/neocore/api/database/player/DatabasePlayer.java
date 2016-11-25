@@ -170,4 +170,16 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	 */
 	public int getLoginCount();
 	
+	/**
+	 * Sets the player's restriction level.  Defaults to 0.
+	 * 
+	 * @param level The new level to set.
+	 */
+	public void setRestrictionLevel(int level);
+	
+	/**
+	 * @return Gets the player's restriction level.
+	 */
+	public int getRestrictionLevel();
+	
 }

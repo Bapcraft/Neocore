@@ -90,5 +90,25 @@ public class PlaceholderGroup implements Group {
 	public int getRestrictionLevel() {
 		return 0;
 	}
+
+	@Override
+	public boolean isDirty() {
+		return false;
+	}
+
+	@Override
+	public boolean isGloballyValid() {
+		return true;
+	}
+
+	@Override
+	public void setFlushProcedure(Runnable callback) {
+		
+	}
+
+	@Override
+	public Runnable getFlushProcedure() {
+		return null;
+	}
 	
 }
