@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
@@ -27,13 +28,13 @@ public class JdbcController implements DatabaseController {
 	
 	private List<DatabaseServiceProvider> services;
 	
-	private Config configuration;
-	private ConnectionSource source;
+	private Config config;
+	private JdbcPooledConnectionSource source;
 	
 	public JdbcController(Config config) {
 		
 		this.services = new ArrayList<>();
-		this.configuration = config;
+		this.config = config;
 		
 	}
 	
@@ -46,8 +47,8 @@ public class JdbcController implements DatabaseController {
 	public void initialize() {
 		
 		// Set up the authentication.
-		String url = this.configuration.getString("jdbc-url");
-		ConfigValue authConf = this.configuration.getValue("auth");
+		String url = this.config.getString("jdbc-url");
+		ConfigValue authConf = this.config.getValue("auth");
 		
 		if (authConf.valueType() == ConfigValueType.OBJECT) {
 			
@@ -57,7 +58,7 @@ public class JdbcController implements DatabaseController {
 			String password = (String) authObj.get("password").unwrapped();
 			
 			try {
-				this.source = new JdbcConnectionSource(url, username, password);
+				this.source = new JdbcPooledConnectionSource(url, username, password);
 			} catch (SQLException e) {
 				NeocoreAPI.getLogger().log(Level.SEVERE, "Could not init connection to database!", e);
 			}
@@ -65,7 +66,7 @@ public class JdbcController implements DatabaseController {
 		} else if (authConf.valueType() == ConfigValueType.NULL) {
 			
 			try {
-				this.source = new JdbcConnectionSource(url);
+				this.source = new JdbcPooledConnectionSource(url);
 			} catch (SQLException e) {
 				NeocoreAPI.getLogger().log(Level.SEVERE, "Could not init connection to database!", e);
 			}
@@ -73,6 +74,9 @@ public class JdbcController implements DatabaseController {
 		} else {
 			throw new IllegalArgumentException("JDBC auth configuration isn't valid!  Must be an object with \"username\" and \"password\" keys, or null!");
 		}
+		
+		// Set the timeout, if applicable.
+		if (this.config.hasPath("timeout")) this.source.setMaxConnectionAgeMillis(this.config.getLong("timeout"));
 		
 		// Now initialize the actual services, etc.
 		this.services.add(new JdbcPlayerService(this.source));
