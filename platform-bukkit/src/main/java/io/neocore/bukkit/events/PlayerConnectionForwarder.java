@@ -115,7 +115,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 				
 				// Update network info.
 				sess.setAddress(player.getAddress().getAddress());
-				sess.setHostString(player.getAddress().getHostString());
+				sess.setHostString(player.getAddress().getHostName());
 				
 				flush = true;
 				
