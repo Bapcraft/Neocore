@@ -25,8 +25,10 @@ import io.neocore.api.task.TaskQueue;
 import io.neocore.common.cmd.CommandActiveUserManager;
 import io.neocore.common.cmd.CommandArtifactManager;
 import io.neocore.common.cmd.CommandBroadcast;
+import io.neocore.common.cmd.CommandCheckPerm;
 import io.neocore.common.cmd.CommandCheckPerms;
 import io.neocore.common.cmd.CommandCreateGroup;
+import io.neocore.common.cmd.CommandException;
 import io.neocore.common.cmd.CommandReloadPermissions;
 import io.neocore.common.cmd.CommandSetPermission;
 import io.neocore.common.database.DatabaseManagerImpl;
@@ -103,6 +105,8 @@ public class NeocoreImpl implements Neocore {
 				new CommandReloadPermissions(),
 				new CommandSetPermission(),
 				new CommandCheckPerms())));
+		this.host.registerCommand(new CommandCheckPerm());
+		this.host.registerCommand(new CommandException());
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);
