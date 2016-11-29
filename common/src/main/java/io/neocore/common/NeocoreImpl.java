@@ -10,6 +10,7 @@ import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.cmd.TreeCommand;
 import io.neocore.api.database.DatabaseManager;
+import io.neocore.api.database.artifact.ArtifactTypes;
 import io.neocore.api.database.artifact.IdentifierManager;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.host.HostPlugin;
@@ -23,6 +24,7 @@ import io.neocore.api.player.extension.ExtensionManager;
 import io.neocore.api.player.permission.PermissionManager;
 import io.neocore.api.task.TaskQueue;
 import io.neocore.common.cmd.CommandActiveUserManager;
+import io.neocore.common.cmd.CommandAdminArtifact;
 import io.neocore.common.cmd.CommandArtifactManager;
 import io.neocore.common.cmd.CommandBroadcast;
 import io.neocore.common.cmd.CommandCheckPerm;
@@ -109,6 +111,8 @@ public class NeocoreImpl implements Neocore {
 				new CommandSetGroupParent())));
 		this.host.registerCommand(new CommandCheckPerm());
 		this.host.registerCommand(new CommandException());
+		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "blame", ArtifactTypes.ADMIN_EVIDENCE, "neocore.cmd.blame"));
+		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "warn", ArtifactTypes.ADMIN_WARNING, "neocore.cmd.warn"));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(host);
