@@ -3,9 +3,12 @@ package io.neocore.common.cmd;
 import java.util.Arrays;
 import java.util.List;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.cmd.AbstractServiceCommand;
 import io.neocore.api.cmd.CmdSender;
+import io.neocore.api.database.artifact.ArtifactTypes;
+import io.neocore.api.database.artifact.IdentifierManager;
 import io.neocore.api.host.broadcast.BroadcastService;
 
 public class CommandBroadcast extends AbstractServiceCommand {
@@ -25,10 +28,20 @@ public class CommandBroadcast extends AbstractServiceCommand {
 			sb.append(" " + args[i]);
 		}
 		
+		String prefix = "";
+		try {
+			
+			IdentifierManager im = NeocoreAPI.getAgent().getIdentifierManager();
+			prefix = im.getLiteralIdentifierValue(ArtifactTypes.BCAST_DEFAULT_PREFIX);
+			
+		} catch (UnsupportedOperationException e) {
+			NeocoreAPI.getLogger().warning("You should set a default broadcast prefix.");
+		}
+		
 		BroadcastService serv = this.getService(BroadcastService.class);
 		if (serv != null) {
 			
-			serv.broadcast(sb.toString());
+			serv.broadcast(prefix + sb.toString());
 			this.success();
 			
 		} else {
