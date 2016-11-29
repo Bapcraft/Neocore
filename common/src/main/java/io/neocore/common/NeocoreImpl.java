@@ -30,6 +30,7 @@ import io.neocore.common.cmd.CommandCheckPerms;
 import io.neocore.common.cmd.CommandCreateGroup;
 import io.neocore.common.cmd.CommandException;
 import io.neocore.common.cmd.CommandReloadPermissions;
+import io.neocore.common.cmd.CommandSetGroupParent;
 import io.neocore.common.cmd.CommandSetPermission;
 import io.neocore.common.database.DatabaseManagerImpl;
 import io.neocore.common.event.CommonEventManager;
@@ -104,7 +105,8 @@ public class NeocoreImpl implements Neocore {
 				new CommandCreateGroup(this.serviceManager),
 				new CommandReloadPermissions(),
 				new CommandSetPermission(),
-				new CommandCheckPerms())));
+				new CommandCheckPerms(),
+				new CommandSetGroupParent())));
 		this.host.registerCommand(new CommandCheckPerm());
 		this.host.registerCommand(new CommandException());
 		
