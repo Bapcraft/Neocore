@@ -48,6 +48,16 @@ public interface ArtifactService extends DatabaseServiceProvider {
 	public List<Artifact> getArtifacts(String type);
 	
 	/**
+	 * Gets the singleton artifact with the given type/key.
+	 * 
+	 * @param key The type/key of the artifact
+	 * @return The singleton artifact
+	 */
+	public default Artifact getSingletonArtifact(String key) {
+		return this.getArtifacts(key).get(0);
+	}
+	
+	/**
 	 * Returns all artifacts with the specified owner ID.  Passing
 	 * <code>null</code> will return artifacts without owners, as expected.
 	 * 

@@ -24,7 +24,7 @@ public class IdentifierManager {
 	private Artifact getArtifact(String name) {
 		
 		if (this.artifacts == null) throw new UnsupportedOperationException("No artifact service loaded.");
-		return this.artifacts.getArtifacts(ArtifactTypes.DATA_IDENTIFIER + "." + name).get(0);
+		return this.artifacts.getArtifacts(ArtifactTypes.DATA_IDENTIFIER_PREFIX + "." + name).get(0);
 		
 	}
 	
