@@ -33,8 +33,9 @@ public interface Group extends Persistent, Comparable<Group> {
 	public String getDisplayName();
 	
 	/**
-	 * Sets the parent group for this group.  Returns null if it has no parent.
-	 * The group will inherit all the permissions of this group.
+	 * Sets the parent group for this group.  Should be null if the group
+	 * should not have a parent.  The group will inherit all the permissions of
+	 * this group.
 	 * 
 	 * @param parent The group to be the new parent.
 	 */
