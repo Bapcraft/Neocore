@@ -2,12 +2,14 @@ package io.neocore.api;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import io.neocore.api.database.DatabaseController;
 import io.neocore.api.database.DatabaseManager;
 import io.neocore.api.host.Context;
 import io.neocore.api.module.Module;
+import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.extension.RegisteredExtension;
 
 /**
@@ -109,6 +111,34 @@ public class NeocoreAPI {
 	 */
 	public static String getServerName() {
 		return getAgent().getHost().getNeocoreConfig().getServerName();
+	}
+	
+	/**
+	 * Gets a NeoPlayer based on their UUID.
+	 * 
+	 * @param uuid The player's UUID.
+	 * @return The NeoPlayer, if available.
+	 */
+	public static NeoPlayer getPlayer(UUID uuid) {
+		return getAgent().getPlayerManager().getPlayer(uuid);
+	}
+	
+	/**
+	 * Gets an online NeoPlayer based on their username.
+	 * 
+	 * @param name The player's username.
+	 * @return The NeoPlayer, if available.
+	 */
+	public static NeoPlayer getPlayer(String name) {
+		
+		Set<NeoPlayer> players = getAgent().getPlayerManager().getOnlinePlayers();
+		
+		for (NeoPlayer np : players) {
+			if (np.getUsername().equalsIgnoreCase(name)) return np;
+		}
+		
+		return null;
+		
 	}
 	
 }
