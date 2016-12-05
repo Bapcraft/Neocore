@@ -123,6 +123,9 @@ public interface Group extends Persistent, Comparable<Group> {
 	 */
 	public int getRestrictionLevel();
 	
+	/**
+	 * @return A list of all groups that this group inherits from.
+	 */
 	public default List<Group> getAncestors() {
 		
 		Group parent = this.getParent();
@@ -138,6 +141,22 @@ public interface Group extends Persistent, Comparable<Group> {
 		}
 		
 	}
+	
+	/**
+	 * Sets the secret flag.  If the flag is set, then players without an
+	 * override permission will not be able to see if a player is in this group
+	 * without being in the group themselves.  Members of this group will still
+	 * be able to use flair from the group, potentially defeating the purpose
+	 * of this flag.
+	 * 
+	 * @param secret The new state of the secret flag.
+	 */
+	public void setSecret(boolean secret);
+	
+	/**
+	 * @return If this group is secret or not.
+	 */
+	public boolean isSecret();
 	
 	@Override
 	public default int compareTo(Group o) {

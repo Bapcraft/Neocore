@@ -110,5 +110,15 @@ public class PlaceholderGroup implements Group {
 	public Runnable getFlushProcedure() {
 		return null;
 	}
+
+	@Override
+	public void setSecret(boolean secret) {
+		
+	}
+
+	@Override
+	public boolean isSecret() {
+		return false;
+	}
 	
 }
