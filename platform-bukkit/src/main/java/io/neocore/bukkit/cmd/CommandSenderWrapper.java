@@ -2,6 +2,7 @@ package io.neocore.bukkit.cmd;
 
 import java.util.UUID;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -48,7 +49,7 @@ public class CommandSenderWrapper implements CmdSender {
 	
 	@Override
 	public void sendMessage(String str) {
-		this.sender.sendMessage(str);
+		this.sender.sendMessage(ChatColor.translateAlternateColorCodes('&', str));
 	}
 	
 }
