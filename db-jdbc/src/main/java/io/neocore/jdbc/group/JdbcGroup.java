@@ -47,6 +47,9 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	@DatabaseField
 	private int restrictionLevel = 0;
 	
+	@DatabaseField
+	private boolean secret = false;
+	
 	// This is for parental resolution.
 	protected transient JdbcGroupService resolver;
 	
@@ -276,6 +279,19 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	@Override
 	public int getRestrictionLevel() {
 		return this.restrictionLevel;
+	}
+
+	@Override
+	public void setSecret(boolean secret) {
+		
+		this.secret = secret;
+		this.dirty();
+		
+	}
+
+	@Override
+	public boolean isSecret() {
+		return this.secret;
 	}
 	
 }
