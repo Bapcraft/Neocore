@@ -56,7 +56,7 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		
 		// Services
 		this.proxyService = new BungeeProxyService();
-		this.broadcastService = new BungeeBroadcastService();
+		this.broadcastService = new BungeeBroadcastService(this.getProxy());
 		this.netMapService = new BungeeNetworkMapService(this.getNeocoreConfig().getServerName(), this.getProxy());
 		
 		// Actually register the services.
