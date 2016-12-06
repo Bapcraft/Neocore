@@ -70,7 +70,6 @@ public class NeocoreImpl implements Neocore {
 	private LoginAcceptor loginAcceptor;
 	
 	private TaskQueue tasks;
-	private NeocoreTaskDelegator taskDelegator;
 	
 	public NeocoreImpl(FullHostPlugin host) {
 		
@@ -93,7 +92,6 @@ public class NeocoreImpl implements Neocore {
 		
 		// Set up the task queue.
 		this.tasks = new TaskQueue();
-		this.taskDelegator = new NeocoreTaskDelegator();
 		
 	}
 	
