@@ -7,7 +7,8 @@ public enum InfrastructureService implements ServiceType {
 	
 	PROXY(ProxyService.class),
 	ENDPOINT(EndpointService.class),
-	NETWORKMAP(NetworkMapService.class); // Stores data for the state of the local network.
+	NETWORKMAP(NetworkMapService.class), // Stores data for the state of the local network.
+	CHANNELS(NetworkChannelService.class); // General communcation library.
 	
 	private Class<? extends InfraServiceProvider> serviceClass;
 	
