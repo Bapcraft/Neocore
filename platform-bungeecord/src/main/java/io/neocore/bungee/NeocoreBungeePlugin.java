@@ -3,10 +3,9 @@ package io.neocore.bungee;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.typesafe.config.ConfigFactory;
 
-import io.neocore.api.Neocore;
-import io.neocore.api.NeocoreAPI;
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.cmd.AbstractCommand;
@@ -51,7 +50,8 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		this.config = new BungeeNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
 		
 		NeocoreInstaller.applyLogger(this.getProxy().getLogger());
-		Neocore neo = new NeocoreImpl(this);
+		NeocoreImpl neo = new NeocoreImpl(this);
+		NeocoreInstaller.install(neo);
 		
 		this.scheduler = new BungeeScheduler(this, this.getProxy().getScheduler());
 		
@@ -78,7 +78,8 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 			@Override
 			public void run() {
 				
-				NeocoreAPI.announceCompletion();
+				neo.init();
+				neo.getEventManager().broadcast(new BungeeServerInitializedEvent());
 				
 			}
 			
