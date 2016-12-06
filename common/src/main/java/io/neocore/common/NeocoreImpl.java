@@ -46,10 +46,12 @@ import io.neocore.common.service.ServiceManagerImpl;
 import io.neocore.common.tasks.DatabaseInitializerTask;
 import io.neocore.common.tasks.NeocoreTaskDelegator;
 import io.neocore.common.tasks.ServiceInitializationTask;
+import io.neocore.common.tasks.Worker;
 
 public class NeocoreImpl implements Neocore {
 	
 	private final FullHostPlugin host;
+	private boolean active = false;
 	
 	private CommonPlayerManager playerManager;
 	private PlayerManagerWrapperImpl playerManWrapper;
@@ -92,7 +94,10 @@ public class NeocoreImpl implements Neocore {
 		
 	}
 	
-	public void init() {
+	public synchronized void init() {
+		
+		// Sanity check.
+		if (this.active) return;
 		
 		// Add simple initializer tasks.
 		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, this.host, this.dbManager));
@@ -122,13 +127,24 @@ public class NeocoreImpl implements Neocore {
 		// Enable things
 		this.moduleManager.enableMicromodules();
 		
+		// Task worker.
+		this.host.getScheduler().invokeAsync(new Worker(this.tasks, NeocoreAPI.getLogger()));
+		
 		// Announce.
 		NeocoreAPI.announceCompletion();
+		this.active = true;
 		
 	}
 	
-	public void shutdown() {
+	public synchronized void shutdown() {
+		
+		// Sanity check.
+		if (!this.active) return;
+		
 		// TODO
+		
+		this.active = false;
+		
 	}
 	
 	@Override
