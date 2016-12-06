@@ -19,7 +19,7 @@ public class BukkitLoginService implements LoginService {
 	
 	private List<BukkitPlayer> players;
 	
-	public BukkitLoginService(ServiceManager serviceManager, PlayerConnectionForwarder fwdr) {
+	public BukkitLoginService(PlayerConnectionForwarder fwdr) {
 		
 		this.forwarder = fwdr;
 		this.players = new ArrayList<>();

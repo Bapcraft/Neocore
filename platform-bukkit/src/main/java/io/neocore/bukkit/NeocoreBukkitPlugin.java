@@ -93,7 +93,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		this.forwarders.add(this.connectionForwarder);
 		
 		// Services
-		this.loginService = new BukkitLoginService(neo.getServiceManager(), this.connectionForwarder);
+		this.loginService = new BukkitLoginService(this.connectionForwarder);
 		this.broadcastService = new BukkitBroadcastService();
 		this.permsService = new BukkitPermsService(this);
 		this.chatService = new BukkitChatService(this.chatForwarder);
