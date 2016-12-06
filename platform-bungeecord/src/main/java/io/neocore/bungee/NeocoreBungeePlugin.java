@@ -29,6 +29,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	
 	public static NeocoreBungeePlugin inst;
+	private NeocoreImpl neocore;
 	
 	private BungeeNeocoreConfig config;
 	
@@ -45,13 +46,14 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	public void onEnable() {
 		
 		inst = this;
-
+		
 		BungeeNeocoreConfig.verifyConfig(this.getConfigFile(), this);
 		this.config = new BungeeNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
 		
 		NeocoreInstaller.applyLogger(this.getProxy().getLogger());
 		NeocoreImpl neo = new NeocoreImpl(this);
 		NeocoreInstaller.install(neo);
+		this.neocore = neo; // Alias because we use it a lot here.
 		
 		this.scheduler = new BungeeScheduler(this, this.getProxy().getScheduler());
 		
@@ -77,11 +79,21 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 			
 			@Override
 			public void run() {
-				
-				neo.init();
 				neo.getEventManager().broadcast(new BungeeServerInitializedEvent());
-				
 			}
+			
+		});
+		
+		// Queue up a thing to initialize Neocore.
+		this.getProxy().getScheduler().runAsync(this, () -> {
+			
+			/*
+			 * If a player connects before this actually gets invoked then the
+			 * prelogin event handler will initialze neocore from that thread,
+			 * then once this is allowed to enter it will exit it pretty
+			 * quickly because it's already inited.
+			 */
+			neo.init();
 			
 		});
 		
@@ -89,6 +101,9 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	
 	@Override
 	public void onDisable() {
+		
+		// Do all the other things automatically.
+		this.neocore.shutdown();
 		
 	}
 	
