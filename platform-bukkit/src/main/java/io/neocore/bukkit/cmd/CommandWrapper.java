@@ -9,6 +9,7 @@ import io.neocore.api.cmd.ErrorSignal;
 import io.neocore.api.cmd.InsufficientPermissionsSignal;
 import io.neocore.api.cmd.InvalidUsageSignal;
 import io.neocore.api.cmd.SuccessSignal;
+import net.md_5.bungee.api.ChatColor;
 
 public class CommandWrapper extends Command {
 	
@@ -38,12 +39,12 @@ public class CommandWrapper extends Command {
 			return true;
 		} catch (InsufficientPermissionsSignal s) {
 			
-			sender.sendMessage("Insufficient permissions.");
+			sender.sendMessage(ChatColor.RED + "Insufficient permissions.");
 			return true;
 			
 		} catch (InvalidUsageSignal s) {
 			
-			sender.sendMessage("Invalid usage.");
+			sender.sendMessage(ChatColor.RED + "Invalid usage.");
 			return false;
 			
 		}
