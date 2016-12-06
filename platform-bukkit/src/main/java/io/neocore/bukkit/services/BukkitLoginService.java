@@ -14,7 +14,6 @@ import io.neocore.bukkit.events.PlayerConnectionForwarder;
 
 public class BukkitLoginService implements LoginService {
 	
-	private LoginAcceptor acceptor;
 	private PlayerConnectionForwarder forwarder;
 	
 	private List<BukkitPlayer> players;
@@ -28,15 +27,12 @@ public class BukkitLoginService implements LoginService {
 	
 	@Override
 	public void setLoginAcceptor(LoginAcceptor acceptor) {
-		
-		this.acceptor = acceptor;
 		this.forwarder.acceptor = acceptor;
-		
 	}
 	
 	@Override
 	public LoginAcceptor getLoginAcceptor() {
-		return this.acceptor;
+		return this.forwarder.acceptor;
 	}
 	
 	@Override
