@@ -59,7 +59,7 @@ public class ModuleManagerImpl implements ModuleManager {
 		
 		final Logger log = NeocoreAPI.getLogger();
 		
-		log.info("Configuring micromodules...");
+		log.fine("Configuring micromodules...");
 		Set<Micromodule> ok = new HashSet<>();
 		this.modules.forEach(m -> {
 			
@@ -89,16 +89,16 @@ public class ModuleManagerImpl implements ModuleManager {
 			
 		});
 		
-		log.info("Enabling micromodules...");
+		log.fine("Enabling micromodules...");
 		ok.forEach(m -> {
 			
-			log.info("Enabling " + m.getName() + " v" + m.getVersion() + "...");
+			log.finer("Enabling " + m.getName() + " v" + m.getVersion() + "...");
 			
 			this.container.invoke(String.format("MicromoduleEnable(%s)", m.getName()), () -> {
 				m.onEnable();
 			});
 			
-			log.info("Micromodule " + m.getName() + " enabled!");
+			log.finer("Micromodule " + m.getName() + " enabled!");
 			
 		});
 		

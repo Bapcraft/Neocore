@@ -2,6 +2,7 @@ package io.neocore.common;
 
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
@@ -9,9 +10,12 @@ import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
 import io.neocore.api.cmd.TreeCommand;
+import io.neocore.api.database.DatabaseConfig;
 import io.neocore.api.database.DatabaseManager;
+import io.neocore.api.database.artifact.ArtifactService;
 import io.neocore.api.database.artifact.ArtifactTypes;
 import io.neocore.api.database.artifact.IdentifierManager;
+import io.neocore.api.database.player.PlayerService;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.login.LoginAcceptor;
@@ -34,6 +38,7 @@ import io.neocore.common.cmd.CommandException;
 import io.neocore.common.cmd.CommandReloadPermissions;
 import io.neocore.common.cmd.CommandSetGroupParent;
 import io.neocore.common.cmd.CommandSetPermission;
+import io.neocore.common.database.DatabaseConfImpl;
 import io.neocore.common.database.DatabaseManagerImpl;
 import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.module.ModuleManagerImpl;
@@ -43,9 +48,7 @@ import io.neocore.common.player.LoginAcceptorImpl;
 import io.neocore.common.player.PlayerManagerWrapperImpl;
 import io.neocore.common.service.LoginServiceRegHandler;
 import io.neocore.common.service.ServiceManagerImpl;
-import io.neocore.common.tasks.DatabaseInitializerTask;
 import io.neocore.common.tasks.NeocoreTaskDelegator;
-import io.neocore.common.tasks.ServiceInitializationTask;
 import io.neocore.common.tasks.Worker;
 
 public class NeocoreImpl implements Neocore {
@@ -98,12 +101,10 @@ public class NeocoreImpl implements Neocore {
 		
 		// Sanity check.
 		if (this.active) return;
-		
-		// Add simple initializer tasks.
-		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, this.host, this.dbManager));
-		this.tasks.enqueue(new ServiceInitializationTask(this.taskDelegator, this.serviceManager));
+		Logger log = NeocoreAPI.getLogger();
 		
 		// Register ALL these commands.
+		log.info("Installing commands...");
 		this.host.registerCommand(new CommandActiveUserManager(this.playerManWrapper));
 		this.host.registerCommand(new CommandArtifactManager(this.serviceManager));
 		this.host.registerCommand(new CommandBroadcast(this.serviceManager));
@@ -124,10 +125,27 @@ public class NeocoreImpl implements Neocore {
 		// Register the host right now.
 		this.moduleManager.registerModule(this.host);
 		
-		// Enable things
+		// Enable micromodules.
+		log.info("Setting up micromodules...");
 		this.moduleManager.enableMicromodules();
 		
-		// Task worker.
+		// Set up databases.
+		log.info("Initializing database(s)...");
+		DatabaseConfig dbc = new DatabaseConfImpl(this.host.getDatabaseConfigFile());
+		log.finer("Loaded Configs: " + dbc.getNumDiscreteConfigs());
+		this.dbManager.configure(dbc);
+		
+		// Now that the database(s) is(/are) set up, we can init the services themselves.
+		log.info("Initializing services...");
+		this.serviceManager.initializeServices();
+		
+		log.info("Doing final cleanup and things...");
+		
+		// TODO Move these elsewhere.
+		this.identManager.setArtifactService(this.serviceManager.getService(ArtifactService.class));
+		this.identManager.setPlayerService(this.serviceManager.getService(PlayerService.class));
+		
+		// This is OK
 		this.host.getScheduler().invokeAsync(new Worker(this.tasks, NeocoreAPI.getLogger()));
 		
 		// Announce.
