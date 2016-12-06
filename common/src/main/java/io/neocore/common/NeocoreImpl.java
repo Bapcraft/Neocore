@@ -51,7 +51,7 @@ import io.neocore.common.tasks.Worker;
 public class NeocoreImpl implements Neocore {
 	
 	private final FullHostPlugin host;
-	private boolean active = false;
+	private volatile boolean active = false;
 	
 	private CommonPlayerManager playerManager;
 	private PlayerManagerWrapperImpl playerManWrapper;
@@ -218,7 +218,7 @@ public class NeocoreImpl implements Neocore {
 
 	@Override
 	public boolean isInited() {
-		return true; // FIXME
+		return this.active;
 	}
 	
 }
