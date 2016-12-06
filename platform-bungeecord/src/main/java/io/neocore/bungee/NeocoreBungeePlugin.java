@@ -18,6 +18,7 @@ import io.neocore.api.infrastructure.InfrastructureService;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bungee.broadcast.BungeeBroadcastService;
+import io.neocore.bungee.cmd.CommandWrapper;
 import io.neocore.bungee.events.EventForwarder;
 import io.neocore.bungee.events.ProxyForwarder;
 import io.neocore.bungee.network.BungeeNetworkMapService;
@@ -39,16 +40,20 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	private List<EventForwarder> forwarders = new ArrayList<>();
 	private ProxyForwarder proxyForwarder;
 	
+	private BungeeScheduler scheduler;
+	
 	@Override
 	public void onEnable() {
 		
 		inst = this;
-		
-		NeocoreInstaller.applyLogger(null);
-		Neocore neo = new NeocoreImpl(this);
-		
+
 		BungeeNeocoreConfig.verifyConfig(this.getConfigFile(), this);
 		this.config = new BungeeNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
+		
+		NeocoreInstaller.applyLogger(this.getProxy().getLogger());
+		Neocore neo = new NeocoreImpl(this);
+		
+		this.scheduler = new BungeeScheduler(this, this.getProxy().getScheduler());
 		
 		// Support classes
 		this.proxyForwarder = new ProxyForwarder();
@@ -104,22 +109,22 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	public File getDatabaseConfigFile() {
 		return new File(this.getDataFolder(), "databases.conf");
 	}
-
+	
 	@Override
 	public HostContext getPrimaryContext() {
 		return this.config.getPrimaryContext();
 	}
-
+	
 	@Override
 	public List<Context> getContexts() {
 		return this.config.getContexts();
 	}
-
+	
 	@Override
 	public String getName() {
 		return "Neocore";
 	}
-
+	
 	@Override
 	public String getVersion() {
 		return "0.0-DEVELOPMENT";
@@ -127,18 +132,17 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	
 	@Override
 	public void registerCommand(AbstractCommand cmd) {
-		// TODO
+		this.getProxy().getPluginManager().registerCommand(this, new CommandWrapper(cmd));
 	}
-
+	
 	@Override
 	public boolean isFrontServer() {
 		return true;
 	}
-
+	
 	@Override
 	public Scheduler getScheduler() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.scheduler;
 	}
 	
 }
