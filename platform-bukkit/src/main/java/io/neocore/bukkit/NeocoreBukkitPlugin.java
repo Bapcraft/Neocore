@@ -85,6 +85,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		// Initialize and install Neocore
 		NeocoreInstaller.applyLogger(Bukkit.getLogger());
 		NeocoreImpl neo = new NeocoreImpl(this);
+		NeocoreInstaller.install(neo);
 		
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
@@ -137,8 +138,8 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 			@Override
 			public void run() {
 				
-				neo.getEventManager().broadcast(ServerInitializedEvent.class, new BukkitServerInitializedEvent());
-				NeocoreAPI.announceCompletion();
+				neo.init();
+				neo.getEventManager().broadcast(new BukkitServerInitializedEvent());
 				
 			}
 			
