@@ -16,12 +16,14 @@ import io.neocore.api.host.Scheduler;
 import io.neocore.api.infrastructure.InfrastructureService;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
-import io.neocore.bungee.broadcast.BungeeBroadcastService;
 import io.neocore.bungee.cmd.CommandWrapper;
 import io.neocore.bungee.events.EventForwarder;
-import io.neocore.bungee.events.ProxyForwarder;
+import io.neocore.bungee.events.PlayerConnectionForwarder;
 import io.neocore.bungee.network.BungeeNetworkMapService;
 import io.neocore.bungee.network.BungeeProxyService;
+import io.neocore.bungee.services.BungeeBroadcastService;
+import io.neocore.bungee.services.BungeeLoginService;
+import io.neocore.bungee.services.BungeePermissionService;
 import io.neocore.common.FullHostPlugin;
 import io.neocore.common.NeocoreImpl;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -33,12 +35,14 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	
 	private BungeeNeocoreConfig config;
 	
+	private BungeeLoginService loginService;
 	private BungeeProxyService proxyService;
+	private BungeePermissionService permsService;
 	private BungeeBroadcastService broadcastService;
 	private BungeeNetworkMapService netMapService;
 	
 	private List<EventForwarder> forwarders = new ArrayList<>();
-	private ProxyForwarder proxyForwarder;
+	private PlayerConnectionForwarder loginForwarder;
 	
 	private BungeeScheduler scheduler;
 	
@@ -58,20 +62,21 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		this.scheduler = new BungeeScheduler(this, this.getProxy().getScheduler());
 		
 		// Support classes
-		this.proxyForwarder = new ProxyForwarder();
-		this.forwarders.add(this.proxyForwarder);
+		this.loginForwarder = new PlayerConnectionForwarder(neo);
+		this.forwarders.add(this.loginForwarder);
 		
 		// Services
-		this.proxyService = new BungeeProxyService();
+		this.loginService = new BungeeLoginService(this.loginForwarder);
+		this.proxyService = new BungeeProxyService(this.loginForwarder);
+		this.permsService = new BungeePermissionService();
 		this.broadcastService = new BungeeBroadcastService(this.getProxy());
 		this.netMapService = new BungeeNetworkMapService(this.getNeocoreConfig().getServerName(), this.getProxy());
 		
 		// Actually register the services.
-		// TODO Login
-		// TODO Session
+		neo.registerServiceProvider(HostService.LOGIN, this.loginService, this);
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
+		neo.registerServiceProvider(HostService.PERMISSIONS, this.permsService, this);
 		neo.registerServiceProvider(InfrastructureService.PROXY, this.proxyService, this);
-		// TODO Permissions
 		neo.registerServiceProvider(InfrastructureService.NETWORKMAP, this.netMapService, this);
 		
 		// Set up a broadcast for server initialization.

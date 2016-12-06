@@ -1,5 +1,7 @@
 package io.neocore.bungee.events;
 
+import io.neocore.api.host.login.LoginAcceptor;
+import io.neocore.api.infrastructure.ProxyAcceptor;
 import io.neocore.common.NeocoreImpl;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.event.EventHandler;
@@ -7,6 +9,9 @@ import net.md_5.bungee.event.EventHandler;
 public class PlayerConnectionForwarder extends EventForwarder {
 	
 	private NeocoreImpl neocore;
+	
+	public LoginAcceptor loginAcceptor;
+	public ProxyAcceptor proxyAcceptor;
 	
 	public PlayerConnectionForwarder(NeocoreImpl neo) {
 		this.neocore = neo;

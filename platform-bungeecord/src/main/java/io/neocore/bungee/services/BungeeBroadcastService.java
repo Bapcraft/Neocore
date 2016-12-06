@@ -1,4 +1,4 @@
-package io.neocore.bungee.broadcast;
+package io.neocore.bungee.services;
 
 import io.neocore.api.host.broadcast.BroadcastService;
 import net.md_5.bungee.api.ChatColor;
@@ -17,5 +17,5 @@ public class BungeeBroadcastService implements BroadcastService {
 	public void broadcast(String message) {
 		this.bungee.broadcast(new TextComponent(ChatColor.translateAlternateColorCodes('&', message)));
 	}
-
+	
 }

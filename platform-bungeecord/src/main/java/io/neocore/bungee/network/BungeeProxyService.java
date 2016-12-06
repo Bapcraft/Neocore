@@ -2,23 +2,24 @@ package io.neocore.bungee.network;
 
 import io.neocore.api.infrastructure.ProxyAcceptor;
 import io.neocore.api.infrastructure.ProxyService;
+import io.neocore.bungee.events.PlayerConnectionForwarder;
 
 public class BungeeProxyService implements ProxyService {
 	
-	private ProxyAcceptor acceptor;
+	private PlayerConnectionForwarder forwarder;
 	
-	public BungeeProxyService() {
-		// Not needed?
+	public BungeeProxyService(PlayerConnectionForwarder fwdr) {
+		this.forwarder = fwdr;
 	}
-
+	
 	@Override
 	public void setAcceptor(ProxyAcceptor acc) {
-		this.acceptor = acc;
+		this.forwarder.proxyAcceptor = acc;
 	}
 
 	@Override
 	public ProxyAcceptor getAcceptor() {
-		return this.acceptor;
+		return this.forwarder.proxyAcceptor;
 	}
-	
+
 }
