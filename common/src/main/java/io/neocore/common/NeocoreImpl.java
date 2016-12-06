@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import io.neocore.api.Neocore;
-import io.neocore.api.NeocoreInstaller;
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceProvider;
 import io.neocore.api.ServiceType;
@@ -71,8 +71,6 @@ public class NeocoreImpl implements Neocore {
 		
 		this.host = host;
 		
-		NeocoreInstaller.install(this);
-		
 		// Define various managers.
 		this.serviceManager = new ServiceManagerImpl();
 		this.eventManager = new CommonEventManager();
@@ -86,17 +84,21 @@ public class NeocoreImpl implements Neocore {
 		
 		// Set up acceptors
 		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, this.identManager, host.getContexts());
-		
-		// Set up the service manager with the listeners we want
 		this.serviceManager.registerRegistrationHandler(LoginService.class, new LoginServiceRegHandler(this.loginAcceptor));
 		
 		// Set up the task queue.
 		this.tasks = new TaskQueue();
 		this.taskDelegator = new NeocoreTaskDelegator();
-		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, host, this.dbManager));
+		
+	}
+	
+	public void init() {
+		
+		// Add simple initializer tasks.
+		this.tasks.enqueue(new DatabaseInitializerTask(this.taskDelegator, this.host, this.dbManager));
 		this.tasks.enqueue(new ServiceInitializationTask(this.taskDelegator, this.serviceManager));
 		
-		// Register commands.
+		// Register ALL these commands.
 		this.host.registerCommand(new CommandActiveUserManager(this.playerManWrapper));
 		this.host.registerCommand(new CommandArtifactManager(this.serviceManager));
 		this.host.registerCommand(new CommandBroadcast(this.serviceManager));
@@ -115,11 +117,18 @@ public class NeocoreImpl implements Neocore {
 		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "warn", ArtifactTypes.ADMIN_WARNING, "neocore.cmd.warn"));
 		
 		// Register the host right now.
-		this.moduleManager.registerModule(host);
+		this.moduleManager.registerModule(this.host);
 		
 		// Enable things
 		this.moduleManager.enableMicromodules();
 		
+		// Announce.
+		NeocoreAPI.announceCompletion();
+		
+	}
+	
+	public void shutdown() {
+		// TODO
 	}
 	
 	@Override
