@@ -34,13 +34,19 @@ public class CommandWrapper extends Command {
 			this.command.onExecute(wrapper, args);
 			
 		} catch (SuccessSignal s) {
-			// idk
+			return; // idk.
 		} catch (ErrorSignal s) {
-			// idk
+			return; // idk.
 		} catch (InsufficientPermissionsSignal s) {
+			
 			sender.sendMessage(new TextComponent(ChatColor.RED + "Insufficient permissions."));
+			return;
+			
 		} catch (InvalidUsageSignal s) {
+			
 			sender.sendMessage(new TextComponent(ChatColor.RED + "Insufficient permissions."));
+			return;
+			
 		}
 		
 		NeocoreAPI.getLogger().warning("Command " + this.getName() + " finished execution but no explicit resolution was announced!");
