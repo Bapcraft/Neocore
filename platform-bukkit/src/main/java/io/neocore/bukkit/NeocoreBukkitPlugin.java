@@ -19,7 +19,6 @@ import io.neocore.api.host.Context;
 import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.Scheduler;
-import io.neocore.api.host.ServerInitializedEvent;
 import io.neocore.api.infrastructure.InfrastructureService;
 import io.neocore.api.infrastructure.NetworkMapService;
 import io.neocore.api.player.PlayerManager;
@@ -40,11 +39,11 @@ import io.neocore.bukkit.services.permissions.BukkitPermsService;
 import io.neocore.bukkit.shced.NeoBukkitScheduler;
 import io.neocore.common.FullHostPlugin;
 import io.neocore.common.NeocoreImpl;
-import io.neocore.common.tasks.Worker;
 
 public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	
 	public static NeocoreBukkitPlugin inst;
+	private NeocoreImpl neocore;
 	
 	// Metadata
 	private BukkitNeocoreConfig config;
@@ -68,7 +67,6 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	private CommandInjector cmdInjector;
 	private NeoBukkitScheduler scheduler;
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void onEnable() {
 		
@@ -80,17 +78,18 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 
 		// Set up command injector.
 		this.cmdInjector = new CommandInjector_19r2(); // FIXME Make this figure out the details automatically.
-		this.scheduler = new NeoBukkitScheduler(this, Bukkit.getScheduler());
+		this.scheduler = new NeoBukkitScheduler(this, this.getServer().getScheduler());
 		
 		// Initialize and install Neocore
 		NeocoreInstaller.applyLogger(Bukkit.getLogger());
 		NeocoreImpl neo = new NeocoreImpl(this);
 		NeocoreInstaller.install(neo);
+		this.neocore = neo; // Alias because we use it a lot here.
 		
 		// Support classes
 		this.chatForwarder = new ChatEventForwarder();
 		this.forwarders.add(this.chatForwarder);
-		this.connectionForwarder = new PlayerConnectionForwarder(neo.getPlayerManager(), neo.getPlayerAssembler(), neo.getPermissionManager());
+		this.connectionForwarder = new PlayerConnectionForwarder(neo);
 		this.forwarders.add(this.connectionForwarder);
 		
 		// Services
@@ -99,7 +98,6 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		this.permsService = new BukkitPermsService(this);
 		this.chatService = new BukkitChatService(this.chatForwarder);
 		
-		// FIXME Make these register *before* we load the micromodules, somehow.
 		// Register services properly with Neocore.
 		neo.registerServiceProvider(HostService.LOGIN, this.loginService, this);
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
@@ -137,16 +135,23 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 			
 			@Override
 			public void run() {
-				
-				neo.init();
 				neo.getEventManager().broadcast(new BukkitServerInitializedEvent());
-				
 			}
 			
 		});
-		
-		// This is deprecated because "the name is misleading".
-		Bukkit.getScheduler().scheduleAsyncDelayedTask(this, new Worker(neo.getTaskQueue(), NeocoreAPI.getLogger()));
+
+		// Queue up a thing to initialize Neocore.
+		this.getServer().getScheduler().runTask(this, () -> {
+			
+			/*
+			 * If a player connects before this actually gets invoked then the
+			 * prelogin event handler will initialze neocore from that thread,
+			 * then once this is allowed to enter it will exit it pretty
+			 * quickly because it's already inited.
+			 */
+			neo.init();
+			
+		});
 		
 	}
 	
@@ -165,6 +170,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		this.chatForwarder = null;
 		
 		// Everything else gets done automatically.
+		this.neocore.shutdown();
 		
 	}
 	

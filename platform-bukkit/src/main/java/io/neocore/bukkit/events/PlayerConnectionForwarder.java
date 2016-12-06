@@ -17,29 +17,21 @@ import io.neocore.api.database.session.SessionState;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.player.NeoPlayer;
-import io.neocore.api.player.PlayerManager;
-import io.neocore.api.player.permission.PermissionManager;
 import io.neocore.bukkit.events.wrappers.BukkitInitialLoginEvent;
 import io.neocore.bukkit.events.wrappers.BukkitPostJoinEvent;
 import io.neocore.bukkit.events.wrappers.BukkitQuitEvent;
 import io.neocore.bukkit.events.wrappers.BukkitServerPingEvent;
-import io.neocore.common.player.CommonPlayerManager;
+import io.neocore.common.NeocoreImpl;
 import io.neocore.common.player.LoadType;
 
 public class PlayerConnectionForwarder extends EventForwarder {
 	
+	private NeocoreImpl neocore;
+	
 	public LoginAcceptor acceptor;
 	
-	private PlayerManager managerWrapper;
-	private CommonPlayerManager manager;
-	private PermissionManager permissions;
-	
-	public PlayerConnectionForwarder(PlayerManager wrap, CommonPlayerManager man, PermissionManager perms) {
-		
-		this.managerWrapper = wrap;
-		this.manager = man;
-		this.permissions = perms;
-		
+	public PlayerConnectionForwarder(NeocoreImpl neo) {
+		this.neocore = neo;
 	}
 	
 	@EventHandler
@@ -53,6 +45,15 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		
+		/*
+		 * If a player connects before the task that initializes Neocore
+		 * quickly after starting the server then we need to initialize it
+		 * ourselves.  If it's already being inited when when this call
+		 * actually enters it will return immediately.
+		 */
+		this.neocore.init();
+		
+		// Now we actually do the Neocore logic.
 		if (this.acceptor == null || !NeocoreAPI.getAgent().isInited()) {
 			
 			event.disallow(Result.KICK_OTHER, "Server still starting.  Try again.");
@@ -74,7 +75,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		UUID uuid = player.getUniqueId();
 		
 		// Initialize the player themselves.
-		NeoPlayer np = this.manager.assemblePlayer(uuid, LoadType.FULL, loaded -> {
+		NeoPlayer np = this.neocore.getPlayerAssembler().assemblePlayer(uuid, LoadType.FULL, loaded -> {
 			
 			/*
 			 * First we increase the login count and update the last login, and
@@ -128,7 +129,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 			 */
 			
 			if (loaded.hasIdentity(DatabasePlayer.class) && loaded.hasIdentity(PermissedPlayer.class)) {
-				this.permissions.assignPermissions(loaded);
+				this.neocore.getPermissionManager().assignPermissions(loaded);
 			}
 			
 		});
@@ -143,7 +144,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		
 		if (this.acceptor == null) return;
 		
-		NeoPlayer np = this.managerWrapper.getPlayer(event.getPlayer().getUniqueId());
+		NeoPlayer np = this.neocore.getPlayerManager().getPlayer(event.getPlayer().getUniqueId());
 		
 		// Set the session state to disconnected.
 		if (NeocoreAPI.isFrontend()) {
