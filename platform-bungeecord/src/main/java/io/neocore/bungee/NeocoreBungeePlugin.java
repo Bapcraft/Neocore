@@ -61,7 +61,7 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		
 		this.scheduler = new BungeeScheduler(this, this.getProxy().getScheduler());
 		
-		// Support classes
+		// Event forwarders
 		this.loginForwarder = new PlayerConnectionForwarder(neo);
 		this.forwarders.add(this.loginForwarder);
 		
