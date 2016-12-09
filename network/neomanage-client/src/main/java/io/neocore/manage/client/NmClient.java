@@ -8,8 +8,8 @@ import java.net.SocketTimeoutException;
 import java.util.UUID;
 
 import io.neocore.api.Neocore;
-import io.neocore.manage.proto.NeomanageProtocol.RegisterClient;
-import io.neocore.manage.proto.NeomanageProtocol.RegisterClient.ClientType;
+import io.neocore.manage.proto.NeomanageProtocol.ClientHandshake;
+import io.neocore.manage.proto.NeomanageProtocol.ClientHandshake.ClientType;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerRole;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerType;
@@ -42,31 +42,32 @@ public class NmClient {
 		
 		// Write the handshake.
 		OutputStream os = socket.getOutputStream();
-		os.write(this.getHandshake().toByteArray());
+		this.getHandshake().writeDelimitedTo(os);
+		os.flush();
 		
 		// Return the newly-created server.
 		return new NmServer(socket, msgTimeout);
 		
 	}
 	
-	public RegisterClient getHandshake() {
+	public ClientHandshake getHandshake() {
 		
 		// Builders.
-		RegisterClient.Builder rcb = RegisterClient.newBuilder();
+		ClientHandshake.Builder hsb = ClientHandshake.newBuilder();
 		ServerClient.Builder scb = ServerClient.newBuilder();
 		
 		// Set up the handshake information itself.
-		rcb.setAgentId(this.agent.getAgentId().toString());
-		rcb.setClientType(ClientType.SERVER);
+		hsb.setAgentId(this.agent.getAgentId().toString());
+		hsb.setClientType(ClientType.SERVER);
 		
 		// The server client metadata.
 		scb.setServerName(this.name);
 		if (this.network != null) scb.setNetworkName(this.network);
 		scb.setServerType(this.type);
 		scb.setServerRole(this.role);
-		rcb.setServerClient(scb.build());
+		hsb.setServerClient(scb.build());
 		
-		return rcb.build();
+		return hsb.build();
 		
 	}
 	

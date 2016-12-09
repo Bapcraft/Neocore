@@ -44,7 +44,7 @@ public class MessageQueueRunner implements Runnable {
 				
 				msg = this.queue.take();
 				
-				this.stream.write(msg.toByteArray());
+				msg.writeDelimitedTo(this.stream);
 				this.stream.flush();
 				
 			} catch (IOException e) {

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import io.neocore.manage.proto.NeomanageProtocol.RegisterClient;
-import io.neocore.manage.proto.NeomanageProtocol.RegisterClient.ClientType;
+import io.neocore.manage.proto.NeomanageProtocol.ClientHandshake;
+import io.neocore.manage.proto.NeomanageProtocol.ClientHandshake.ClientType;
 import io.neocore.manage.server.ClientAcceptWorker;
 import io.neocore.manage.server.Nmd;
 import io.neocore.manage.server.Scheduler;
@@ -66,7 +66,8 @@ public class DaemonServer {
 				
 				try {
 					
-					RegisterClient reg = RegisterClient.parseFrom(socket.getInputStream());
+					Nmd.logger.fine("Awaiting handshake for " + socket.getInetAddress().getHostAddress() + "...");
+					ClientHandshake reg = ClientHandshake.parseDelimitedFrom(socket.getInputStream());
 					
 					ClientType type = reg.getClientType();
 					
@@ -78,7 +79,10 @@ public class DaemonServer {
 						builder.withName(cli.getServerName());
 						builder.withNetwork(cli.getNetworkName());
 						
-						this.register(builder.build());
+						NmClient nmc = builder.build();
+						this.register(nmc);
+						
+						Nmd.logger.info("New client " + nmc.name + " connected from " + nmc.socket.getInetAddress().getHostAddress() + ".");
 						
 					}
 					

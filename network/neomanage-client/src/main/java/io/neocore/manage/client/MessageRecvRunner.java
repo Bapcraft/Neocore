@@ -37,7 +37,7 @@ public class MessageRecvRunner implements Runnable {
 			
 			try {
 				
-				ClientMessage msg = ClientMessage.parseFrom(stream);
+				ClientMessage msg = ClientMessage.parseDelimitedFrom(this.stream);
 				NeocoreAPI.getLogger().finer("Got message ID:" + Long.toHexString(msg.getMessageId()) + " from " + this.daemonName + " of type " + msg.getPayloadCase().name() + ".");
 				this.recvCallback.accept(msg);
 				

@@ -97,7 +97,7 @@ public class NmServer implements Closeable {
 			
 			// Actually send it.
 			OutputStream os = this.socket.getOutputStream();
-			os.write(b.build().toByteArray());
+			b.build().writeDelimitedTo(os);
 			os.flush();
 			
 			// Actually close the socket.

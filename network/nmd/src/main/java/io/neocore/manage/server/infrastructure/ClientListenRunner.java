@@ -1,7 +1,7 @@
 package io.neocore.manage.server.infrastructure;
 
-import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
@@ -14,7 +14,7 @@ public class ClientListenRunner extends HandlerRunner {
 	private DaemonServer server;
 	private NmClient client;
 	
-	private DataInputStream inputStream;
+	private InputStream inputStream;
 	
 	public ClientListenRunner(NmClient cli, DaemonServer serv) {
 		
@@ -22,7 +22,7 @@ public class ClientListenRunner extends HandlerRunner {
 		this.server = serv;
 		
 		try {
-			this.inputStream = new DataInputStream(client.socket.getInputStream());
+			this.inputStream = this.client.socket.getInputStream();
 		} catch (IOException e) {
 			
 			Nmd.logger.log(
@@ -46,7 +46,8 @@ public class ClientListenRunner extends HandlerRunner {
 		
 		try {
 			
-			ClientMessage message = ClientMessage.parseFrom(this.inputStream);
+			// Get message, then just pass it along to the handlers.
+			ClientMessage message = ClientMessage.parseDelimitedFrom(this.inputStream);
 			this.client.update(); // Update timeout info.
 			Nmd.logger.fine("Recieved from " + this.client.name + " ID:" + message.getMessageId() + " of type " + message.getPayloadCase() + ".");
 			
