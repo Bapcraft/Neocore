@@ -56,7 +56,7 @@ public class NmdLockCoordinator extends LockCoordinator {
 		slsb.setState(state);
 		b.setSetLockState(slsb);
 		
-		this.network.queueMessage(b.build());
+		this.network.getActiveServer().queueMessage(b.build());
 		
 	}
 	

@@ -16,7 +16,6 @@ public class UnregisterMessageHandler extends MessageHandler {
 		Nmd.logger.fine("Disconnecting client " + client.getIdentString() + " for reason " + unreg.getReasonStr() + "...");
 		server.unregister(client);
 		
-		
 	}
 
 }

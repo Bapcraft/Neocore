@@ -37,6 +37,7 @@ public class Nmd {
 		this.daemonExecId = UUID.randomUUID();
 		
 		this.log = log;
+		log.setLevel(Level.ALL);
 		
 		// Set up the logger.
 		try {

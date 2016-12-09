@@ -47,14 +47,19 @@ public class ClientListenRunner extends HandlerRunner {
 		try {
 			
 			ClientMessage message = ClientMessage.parseFrom(this.inputStream);
-			this.client.update();
+			this.client.update(); // Update timeout info.
+			Nmd.logger.fine("Recieved from " + this.client.name + " ID:" + message.getMessageId() + " of type " + message.getPayloadCase() + ".");
 			
 			// Now just find the message and forward the handling.
 			MessageHandler h = this.server.getMessageManager().getHandle(message.getPayloadCase());
 			h.handle(this.server, this.client, message);
 			
 		} catch (IOException e) {
-			Nmd.logger.log(Level.WARNING, "Problem parsing message from " + this.client.getIdentString() + ".", e);
+			
+			Nmd.logger.log(Level.SEVERE, "Problem parsing message from " + this.client.getIdentString() + ".", e);
+			this.client.forceDisconnect();
+			this.disable();
+			
 		}
 		
 	}

@@ -34,7 +34,7 @@ public class NmClient {
 		
 	}
 	
-	public NmServer connect(InetSocketAddress addr, int timeout) throws IOException, SocketTimeoutException {
+	public NmServer connect(InetSocketAddress addr, int timeout, long msgTimeout) throws IOException, SocketTimeoutException {
 		
 		// Create the socket and connect.
 		Socket socket = new Socket();
@@ -45,7 +45,7 @@ public class NmClient {
 		os.write(this.getHandshake().toByteArray());
 		
 		// Return the newly-created server.
-		return new NmServer(socket);
+		return new NmServer(socket, msgTimeout);
 		
 	}
 	

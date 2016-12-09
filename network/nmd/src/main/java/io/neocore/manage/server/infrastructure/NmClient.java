@@ -21,6 +21,7 @@ public class NmClient {
 	protected String network;
 	protected String name;
 	
+	private ClientListenRunner listenerRunner;
 	private Thread listenerThread;
 	private Set<UUID> subscriptions = new HashSet<>();
 	
@@ -66,7 +67,8 @@ public class NmClient {
 		
 		if (this.listenerThread != null) throw new IllegalStateException("Already listening!");
 		
-		this.listenerThread = new Thread(new ClientListenRunner(this, serv), "ClientListenThread-" + this.getIdentString());
+		this.listenerRunner = new ClientListenRunner(this, serv);
+		this.listenerThread = new Thread(this.listenerRunner, "ClientListenThread-" + this.getIdentString());
 		this.listenerThread.start();
 		
 	}
@@ -80,6 +82,18 @@ public class NmClient {
 			
 		} catch (IOException e) {
 			Nmd.logger.log(Level.WARNING, "Problem closing connection to " + this.getIdentString() + "!", e);
+		}
+		
+	}
+	
+	public void disconnect() {
+		
+		this.listenerRunner.disable();
+		
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			Nmd.logger.log(Level.WARNING, "Problem when closing connection.", e);
 		}
 		
 	}

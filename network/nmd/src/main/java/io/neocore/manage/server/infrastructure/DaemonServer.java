@@ -109,7 +109,7 @@ public class DaemonServer {
 		
 		if (this.clients.contains(client)) {
 			
-			client.forceDisconnect();
+			client.disconnect();
 			this.clients.remove(client);
 			Nmd.logger.info("Client " + client.getIdentString() + " from " + client.getAddressString() + " disconnected.");
 			

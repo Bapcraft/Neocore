@@ -27,7 +27,7 @@ public class NmdNetworkSync extends NetworkSync {
 		ClientMessage.Builder b = ClientMessageUtils.newBuilder(NeocoreAPI.getAgent().getAgentId());
 		b.setSubUpdate(PlayerSubscriptionUpdate.newBuilder().setUuid(uuid.toString()).setState(state));
 		
-		this.network.queueMessage(b.build());
+		this.network.getActiveServer().queueMessage(b.build());
 		
 	}
 	
@@ -40,7 +40,7 @@ public class NmdNetworkSync extends NetworkSync {
 		uuids.forEach(id -> uuidStrs.add(id.toString()));
 		b.setPlayerListUpdate(PlayerListUpdate.newBuilder().addAllUuids(uuidStrs));
 		
-		this.network.queueMessage(b.build());
+		this.network.getActiveServer().queueMessage(b.build());
 		
 	}
 	

@@ -32,7 +32,7 @@ public class NmdNetworkChannelService implements NetworkChannelService {
 		ClientMessage.Builder b = ClientMessageUtils.newBuilder(this.neocore.getAgentId());
 		b.setChannelBroadcast(ChannelBroadcast.newBuilder().setChannel(channel).setPayload(message));
 		
-		this.network.queueMessage(b.build());
+		this.network.getActiveServer().queueMessage(b.build());
 		
 	}
 

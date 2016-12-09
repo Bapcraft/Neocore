@@ -10,11 +10,11 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
 
 public class MessageQueueRunner implements Runnable {
+
+	private volatile boolean running = true;
 	
 	private BlockingDeque<ClientMessage> queue;
 	private OutputStream stream;
-	
-	private volatile boolean running = true;
 	
 	private Consumer<BlockingDeque<ClientMessage>> deathCallback;
 	
@@ -53,7 +53,7 @@ public class MessageQueueRunner implements Runnable {
 				if (msg != null) this.queue.addFirst(msg);
 				
 				this.stop();
-				this.deathCallback.accept(this.queue);
+				if (this.deathCallback != null) this.deathCallback.accept(this.queue);
 				
 			} catch (InterruptedException e) {
 				NeocoreAPI.getLogger().warning("Interrupted while dequeueing send message.");

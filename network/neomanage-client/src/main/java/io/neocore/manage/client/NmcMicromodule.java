@@ -100,7 +100,7 @@ public class NmcMicromodule extends JavaMicromodule {
 			log.info("Connecting to " + addr.toString() + " for Neomanage...");
 			try {
 				
-				NmServer server = this.client.connect(addr, 10000);
+				NmServer server = this.client.connect(addr, 10000, 120 * 1000L);
 				this.network.servers.add(server);
 				
 			} catch (SocketTimeoutException e) {
@@ -127,8 +127,11 @@ public class NmcMicromodule extends JavaMicromodule {
 	@Override
 	public void onDisable() {
 		
-		// Security?  It doesn't hurt (too much), at least.
+		// Security?  It doesn't hurt, at least.
 		this.cryptoConf = null;
+		
+		this.network.shutdownConnections();
+		
 		System.gc();
 		
 	}
