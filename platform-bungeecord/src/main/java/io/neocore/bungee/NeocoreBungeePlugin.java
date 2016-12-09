@@ -10,7 +10,6 @@ import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.host.Context;
-import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.infrastructure.InfrastructureService;
@@ -132,7 +131,7 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	}
 	
 	@Override
-	public HostContext getPrimaryContext() {
+	public Context getPrimaryContext() {
 		return this.config.getPrimaryContext();
 	}
 	
