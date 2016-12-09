@@ -14,29 +14,29 @@ import com.typesafe.config.Config;
 
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.host.Context;
-import io.neocore.api.host.HostContext;
 import io.neocore.api.host.LesserContext;
 
 public class BukkitNeocoreConfig implements NeocoreConfig {
 	
 	public static final String CONFIG_FILE_NAME = "neocore.conf";
 	
-	private String serverName;
+	private String serverName, networkName;
 	
 	private boolean enforceBans;
 	private boolean networked;
 	
-	private HostContext primaryContext;
+	private Context primaryContext;
 	private List<Context> contexts;
 	
 	public BukkitNeocoreConfig(Config conf) {
 		
 		this.serverName = conf.getString("server.name");
+		this.networkName = conf.getString("server.proxy");
 		
 		this.enforceBans = conf.getBoolean("server.enforceBans");
 		this.networked = conf.getBoolean("server.isBungeecord");
 		
-		this.primaryContext = new BukkitHostContext(conf.getString("context.proxy"), conf.getString("context.primary"));
+		this.primaryContext = new LesserContext(conf.getString("context.primary"));
 		this.contexts = new ArrayList<>();
 		this.contexts.add(this.primaryContext);
 		
@@ -53,6 +53,11 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 	}
 	
 	@Override
+	public String getNetworkName() {
+		return this.isNetworked() ? this.networkName : null;
+	}
+
+	@Override
 	public boolean isEnforcingBans() {
 		return this.enforceBans;
 	}
@@ -60,6 +65,16 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 	@Override
 	public boolean isNetworked() {
 		return this.networked;
+	}
+	
+	@Override
+	public Context getPrimaryContext() {
+		return this.primaryContext;
+	}
+
+	@Override
+	public List<Context> getContexts() {
+		return this.contexts;
 	}
 	
 	@SuppressWarnings("resource")
@@ -90,16 +105,6 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 			
 		}
 		
-	}
-
-	@Override
-	public HostContext getPrimaryContext() {
-		return this.primaryContext;
-	}
-
-	@Override
-	public List<Context> getContexts() {
-		return this.contexts;
 	}
 	
 }

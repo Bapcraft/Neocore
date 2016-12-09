@@ -16,7 +16,6 @@ import io.neocore.api.NeocoreConfig;
 import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.host.Context;
-import io.neocore.api.host.HostContext;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.infrastructure.InfrastructureService;
@@ -28,8 +27,8 @@ import io.neocore.bukkit.cmd.CommandInjector;
 import io.neocore.bukkit.cmd.CommandInjector_19r2;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
-import io.neocore.bukkit.events.PluginModuleAutloader;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
+import io.neocore.bukkit.events.PluginModuleAutloader;
 import io.neocore.bukkit.events.wrappers.BukkitServerInitializedEvent;
 import io.neocore.bukkit.services.BukkitBroadcastService;
 import io.neocore.bukkit.services.BukkitChatService;
@@ -203,7 +202,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	}
 	
 	@Override
-	public HostContext getPrimaryContext() {
+	public Context getPrimaryContext() {
 		return this.config.getPrimaryContext();
 	}
 
