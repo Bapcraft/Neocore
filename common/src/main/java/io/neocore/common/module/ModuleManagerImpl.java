@@ -65,7 +65,7 @@ public class ModuleManagerImpl implements ModuleManager {
 			
 			if (m instanceof Micromodule) {
 				
-				this.container.invoke(String.format("MicromoduleConfigure(%s)", m.getName()), () -> {
+				this.container.invoke("MicromoduleConfigure(" + m.getName() + ")", () -> {
 					
 					File f = new File(m.getName() + ".conf");
 					
@@ -94,13 +94,25 @@ public class ModuleManagerImpl implements ModuleManager {
 			
 			log.finer("Enabling " + m.getName() + " v" + m.getVersion() + "...");
 			
-			this.container.invoke(String.format("MicromoduleEnable(%s)", m.getName()), () -> {
+			this.container.invoke("MicromoduleEnable(" + m.getName() + ")", () -> {
 				m.onEnable();
 			});
 			
 			log.finer("Micromodule " + m.getName() + " enabled!");
 			
 		});
+		
+	}
+	
+	public void disableMicromodules() {
+		
+		for (Module m : this.modules) {
+			
+			if (m instanceof Micromodule) {
+				this.container.invoke("MicromoduleDisable(" + m.getName() + ")", ((Micromodule) m)::onDisable);
+			}
+			
+		}
 		
 	}
 	

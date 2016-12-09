@@ -158,7 +158,11 @@ public class NeocoreImpl implements Neocore {
 		// Sanity check.
 		if (!this.active) return;
 		
-		// TODO
+		Logger log = NeocoreAPI.getLogger();
+		
+		// Disable micromodules...
+		log.info("Disabling micromodules...");
+		this.moduleManager.disableMicromodules();
 		
 		this.active = false;
 		
