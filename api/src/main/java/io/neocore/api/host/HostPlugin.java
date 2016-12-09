@@ -38,7 +38,7 @@ public interface HostPlugin extends Module {
 	/**
 	 * @return The primary context of this server.
 	 */
-	public HostContext getPrimaryContext();
+	public Context getPrimaryContext();
 	
 	/**
 	 * @return The total list of contexts present on this server.

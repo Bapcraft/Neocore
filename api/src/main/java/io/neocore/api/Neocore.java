@@ -22,9 +22,35 @@ import io.neocore.api.task.TaskQueue;
 public interface Neocore {
 	
 	/**
+	 * @return The UUID of the Neocore instance which changes on restart.
+	 */
+	public UUID getAgentId();
+	
+	/**
 	 * @return A reference to the host plugin for the server we're running on top of.
 	 */
 	public HostPlugin getHost();
+
+	/**
+	 * @return If the server is part of a larger network.
+	 */
+	public default boolean isNetworked() {
+		return this.getHost().getNeocoreConfig().isNetworked();
+	}
+	
+	/**
+	 * @return The name of the server on the network.
+	 */
+	public default String getServerName() {
+		return this.getHost().getNeocoreConfig().getServerName();
+	}
+	
+	/**
+	 * @return The name of the network the server is on, if on a network.
+	 */
+	public default String getNetworkName() {
+		return this.isNetworked() ? this.getHost().getNeocoreConfig().getNetworkName() : null;
+	}
 	
 	/**
 	 * @return The player manager used by Neocore.

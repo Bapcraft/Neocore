@@ -114,6 +114,15 @@ public class NeocoreAPI {
 	}
 	
 	/**
+	 * Convenience method.
+	 * 
+	 * @return The server's network.
+	 */
+	public static String getNetworkName() {
+		return getAgent().getHost().getNeocoreConfig().getNetworkName();
+	}
+	
+	/**
 	 * Gets a NeoPlayer based on their UUID.
 	 * 
 	 * @param uuid The player's UUID.

@@ -3,7 +3,6 @@ package io.neocore.api;
 import java.util.List;
 
 import io.neocore.api.host.Context;
-import io.neocore.api.host.HostContext;
 
 public interface NeocoreConfig {
 	
@@ -11,6 +10,11 @@ public interface NeocoreConfig {
 	 * @return The name of the server not only on the network, but in the database as well.
 	 */
 	public String getServerName();
+	
+	/**
+	 * @return The name of the network the server is on, <code>null</code> if standalone.
+	 */
+	public String getNetworkName();
 	
 	/**
 	 * @return If we should check for bans and kick people as applicable.
@@ -25,7 +29,7 @@ public interface NeocoreConfig {
 	/**
 	 * @return The "primary" context of the host.
 	 */
-	public HostContext getPrimaryContext();
+	public Context getPrimaryContext();
 	
 	/**
 	 * @return A list of all host contexts, including the primary one.
