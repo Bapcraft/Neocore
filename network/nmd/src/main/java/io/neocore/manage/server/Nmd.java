@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import com.typesafe.config.Config;
 
 import io.neocore.manage.server.infrastructure.DaemonServer;
+import io.neocore.manage.server.infrastructure.NmClient;
 
 public class Nmd {
 	
@@ -139,6 +140,7 @@ public class Nmd {
 		
 		Nmd nmd = new Nmd(logger, conf);
 		
+		instance = nmd;
 		nmd.start();
 		
 		Scanner in = new Scanner(System.in);
@@ -159,6 +161,23 @@ public class Nmd {
 				
 				logger.info("Terminating...");
 				ok = false;
+				continue;
+				
+			}
+			
+			if (line.equals("clients")) {
+				
+				logger.info("==============================");
+				logger.info("Connected clients:");
+				for (NmClient nmc : instance.server.getClients()) {
+					
+					logger.info(" - " + nmc.getIdentString());
+					logger.info("    - " + nmc.getAddress().getHostAddress() + ":" + nmc.getPort() + " (" + nmc.getAddress().getHostName() + ")");
+					logger.info("    - Last updated " + (System.currentTimeMillis() - nmc.getLastUpdated()) + " ms ago");
+					
+				}
+				logger.info("==============================");
+				
 				continue;
 				
 			}
