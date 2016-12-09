@@ -76,9 +76,11 @@ public class ServiceManagerImpl implements ServiceManager {
 		Class<? extends ServiceProvider> clazz = service.getClass();
 		if (!typeClazz.isAssignableFrom(clazz)) throw new ClassCastException("The class " + clazz + " is not an instance of " + typeClazz + "!");
 		
-		if (this.getService(type) != null) throw new IllegalStateException("A provider already exists for type " + type.getName() + " when registering " + service + "!");
-		
+		// Create the registration.
 		RegisteredServiceImpl rs = new RegisteredServiceImpl(mod, type, service);
+		
+		// Remove the old one, add the new one.
+		this.services.removeIf(r -> r.getType().equals(type));
 		this.services.add(rs);
 		
 		// Then we go notify people
