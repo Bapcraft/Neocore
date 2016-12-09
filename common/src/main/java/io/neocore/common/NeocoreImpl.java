@@ -48,11 +48,11 @@ import io.neocore.common.player.LoginAcceptorImpl;
 import io.neocore.common.player.PlayerManagerWrapperImpl;
 import io.neocore.common.service.LoginServiceRegHandler;
 import io.neocore.common.service.ServiceManagerImpl;
-import io.neocore.common.tasks.NeocoreTaskDelegator;
 import io.neocore.common.tasks.Worker;
 
 public class NeocoreImpl implements Neocore {
 	
+	private final UUID agentId;
 	private final FullHostPlugin host;
 	private volatile boolean active = false;
 	
@@ -73,6 +73,7 @@ public class NeocoreImpl implements Neocore {
 	
 	public NeocoreImpl(FullHostPlugin host) {
 		
+		this.agentId = UUID.randomUUID();
 		this.host = host;
 		
 		// Define various managers.
@@ -163,6 +164,11 @@ public class NeocoreImpl implements Neocore {
 		
 	}
 	
+	@Override
+	public UUID getAgentId() {
+		return this.agentId;
+	}
+
 	@Override
 	public HostPlugin getHost() {
 		return this.host;
