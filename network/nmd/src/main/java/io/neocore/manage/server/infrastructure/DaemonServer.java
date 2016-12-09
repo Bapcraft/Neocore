@@ -73,10 +73,10 @@ public class DaemonServer {
 					// FIXME Use inheritance.
 					if (type == ClientType.SERVER) {
 						
-						ServerClient cli = reg.getClientServer();
+						ServerClient cli = reg.getServerClient();
 						
 						builder.withName(cli.getServerName());
-						builder.withNetwork(cli.getProxyName());
+						builder.withNetwork(cli.getNetworkName());
 						
 						this.register(builder.build());
 						

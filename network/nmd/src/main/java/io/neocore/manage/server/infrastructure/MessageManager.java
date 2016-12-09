@@ -2,14 +2,14 @@ package io.neocore.manage.server.infrastructure;
 
 import java.util.HashMap;
 
-import io.neocore.manage.proto.NeomanageProtocol.ClientMessage.MessageCase;
+import io.neocore.manage.proto.NeomanageProtocol.ClientMessage.PayloadCase;
 import io.neocore.manage.server.handling.MessageHandler;
 import io.neocore.manage.server.handling.UnregisterMessageHandler;
 import io.neocore.manage.server.handling.UnsupportedHandler;
 
 public class MessageManager {
 	
-	private HashMap<MessageCase, MessageHandler> handlers;
+	private HashMap<PayloadCase, MessageHandler> handlers;
 	private UnsupportedHandler fallback;
 	
 	public MessageManager() {
@@ -17,11 +17,11 @@ public class MessageManager {
 		this.handlers = new HashMap<>();
 		this.fallback = new UnsupportedHandler();
 		
-		this.handlers.put(MessageCase.UNREGMESSAGE, new UnregisterMessageHandler());
+		this.handlers.put(PayloadCase.UNREGCLIENT, new UnregisterMessageHandler());
 		
 	}
 	
-	public MessageHandler getHandle(MessageCase c) {
+	public MessageHandler getHandle(PayloadCase c) {
 		return this.handlers.getOrDefault(c, this.fallback);
 	}
 	

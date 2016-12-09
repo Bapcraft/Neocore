@@ -1,6 +1,8 @@
 package io.neocore.manage.client;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketTimeoutException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -11,6 +13,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueType;
@@ -21,12 +24,15 @@ import io.neocore.api.module.JavaMicromodule;
 import io.neocore.common.NeocoreImpl;
 import io.neocore.common.player.NetworkSync;
 import io.neocore.manage.client.network.DaemonNetworkMapService;
+import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerRole;
+import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerType;
 
 public class NmcMicromodule extends JavaMicromodule {
 	
 	// Identity information.
 	private EncryptionConfig cryptoConf;
 	private List<InetSocketAddress> remotes = new ArrayList<>();
+	private NmClient client;
 	private NmNetwork network;
 	
 	// Services.
@@ -82,15 +88,31 @@ public class NmcMicromodule extends JavaMicromodule {
 	public void onEnable() {
 		
 		// Set up our view of the network.
+		// FIXME Network name.
+		this.client = new NmClient(NeocoreAPI.getAgent(), NeocoreAPI.getServerName(), "", ServerType.UNDEFINED, NeocoreAPI.isFrontend() ? ServerRole.FRONTEND : ServerRole.ENDPOINT);
 		List<NmServer> servers = new ArrayList<>();
-		this.remotes.forEach(a -> servers.add(new NmServer(a)));
 		this.network = new NmNetwork(servers);
 		
 		// Set up connections.
-		// TODO Connection.
+		Logger log = NeocoreAPI.getLogger();
+		for (InetSocketAddress addr : this.remotes) {
+			
+			log.info("Connecting to " + addr.toString() + " for Neomanage...");
+			try {
+				
+				NmServer server = this.client.connect(addr, 10000);
+				this.network.servers.add(server);
+				
+			} catch (SocketTimeoutException e) {
+				log.log(Level.SEVERE, "Could not connect to server!", e);
+			} catch (IOException e) {
+				log.log(Level.SEVERE, "Problem completing handshake!", e);
+			}
+			
+		}
 		
 		// Set up services.
-		this.netMapService = new DaemonNetworkMapService(NeocoreAPI.getServerName());
+		this.netMapService = new DaemonNetworkMapService(NeocoreAPI.getServerName()); // FIXME Network name.
 		
 		// Register them.
 		this.registerService(InfrastructureService.NETWORKMAP, this.netMapService);

@@ -1,22 +1,37 @@
 package io.neocore.manage.client;
 
-import java.net.InetSocketAddress;
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.logging.Level;
 
-public class NmServer {
+import io.neocore.api.NeocoreAPI;
+
+public class NmServer implements Closeable {
 	
-	private boolean isOnline;
-	private InetSocketAddress address;
+	private Socket socket;
 	
-	public NmServer(InetSocketAddress addr) {
-		this.address = addr;
+	public NmServer(Socket socket) {
+		this.socket = socket;
+	}
+	
+	@Override
+	public synchronized void close() {
+		
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			NeocoreAPI.getLogger().log(Level.SEVERE, "Problem when closing socket.", e);
+		}
+		
 	}
 	
 	public boolean isOnline() {
-		return this.isOnline;
+		return !this.socket.isClosed();
 	}
 	
-	public InetSocketAddress getRemoteSocket() {
-		return this.address;
+	public void write(byte[] data) throws IOException {
+		this.socket.getOutputStream().write(data);
 	}
 	
 }

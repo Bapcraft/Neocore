@@ -1,14 +1,16 @@
 package io.neocore.manage.client;
 
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import io.neocore.manage.proto.NeomanageProtocol;
+import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
 
 public class NmNetwork {
 	
 	public List<NmServer> servers;
+	
+	private Queue<ClientMessage> sendQueue = new LinkedBlockingQueue<>();
 	
 	public NmNetwork(List<NmServer> servs) {
 		this.servers = servs;
@@ -24,16 +26,8 @@ public class NmNetwork {
 		
 	}
 	
-	public void broadcastLockChange(UUID uuid, NeomanageProtocol.SetLockState.LockType lockType, boolean state) {
-		// TODO
-	}
-	
-	public void broadcastUpdateSubscriptionState(UUID uuid, boolean state) {
-		// TODO
-	}
-	
-	public void broadcastUpdatePlayerList(Set<UUID> uuids) {
-		// TODO
+	public void queueMessage(ClientMessage message) {
+		this.sendQueue.add(message);
 	}
 	
 }

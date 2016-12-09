@@ -1,8 +1,34 @@
 package io.neocore.manage.proto;
 
+message ClientMessage {
+	
+	required int64 messageId = 1; // Randomly generated, used to ignored duplicates.
+	
+	optional string senderId = 2;
+	optional string recvId = 3;
+	
+	oneof payload {
+		
+		Ping ping = 10;
+		UnregisterClient unregClient = 11;
+		
+		ChannelBroadcast channelBroadcast = 12;
+		SetLockState setLockState = 13;
+		
+		PlayerSubscriptionUpdate subUpdate = 14;
+		PlayerListUpdate playerListUpdate = 15;
+		
+	}
+	
+}
+
+message Ping {
+	// Nothing?
+}
+
 message RegisterClient {
 	
-	required string name = 1;
+	required string agentId = 1;
 	
 	enum ClientType {
 		
@@ -15,7 +41,7 @@ message RegisterClient {
 	
 	required ClientType clientType = 2;
 	
-	optional ServerClient clientServer = 3;
+	optional ServerClient serverClient = 3;
 	
 }
 
@@ -33,46 +59,19 @@ message ServerClient {
 	enum ServerRole {
 		
 		FRONTEND = 1;
-		HIDDEN_GAME = 2;
+		ENDPOINT = 2;
 		
 	}
 	
 	required ServerType serverType = 1;
 	required ServerRole serverRole = 2;
 	
-	optional string serverName = 3;
-	optional string proxyName = 4;
+	required string serverName = 3;
+	optional string networkName = 4;
 	
 }
 
-message ClientMessage {
-	
-	oneof message {
-		
-		SetLockState lockStateMessage = 1;
-		UnregisterServer unregMessage = 2;
-		
-	}
-	
-}
-
-message SetLockState {
-	
-	enum LockType {
-		
-		PLAYER = 1;
-		SESSION = 2;
-		
-	}
-	
-	required string uuid = 1;
-	required LockType type = 2;
-	
-	required bool state = 3;
-	
-}
-
-message UnregisterServer {
+message UnregisterClient {
 	
 	enum UnregisterReason {
 		
@@ -85,6 +84,20 @@ message UnregisterServer {
 	
 	required UnregisterReason reason = 1;
 	optional string reasonStr = 2;
+	
+}
+
+message ChannelBroadcast {
+	
+	optional string channel = 1;
+	required string payload = 2;
+	
+}
+
+message SetLockState {
+	
+	required string uuid = 1;
+	required bool state = 3;
 	
 }
 

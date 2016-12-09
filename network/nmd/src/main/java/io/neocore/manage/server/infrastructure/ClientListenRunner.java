@@ -47,9 +47,10 @@ public class ClientListenRunner extends HandlerRunner {
 		try {
 			
 			ClientMessage message = ClientMessage.parseFrom(this.inputStream);
+			this.client.update();
 			
 			// Now just find the message and forward the handling.
-			MessageHandler h = this.server.getMessageManager().getHandle(message.getMessageCase());
+			MessageHandler h = this.server.getMessageManager().getHandle(message.getPayloadCase());
 			h.handle(this.server, this.client, message);
 			
 		} catch (IOException e) {

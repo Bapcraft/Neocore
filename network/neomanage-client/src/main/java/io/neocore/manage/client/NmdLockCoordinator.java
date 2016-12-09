@@ -5,13 +5,20 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import io.neocore.common.player.LockCoordinator;
+import io.neocore.manage.proto.ClientMessageUtils;
+import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
+import io.neocore.manage.proto.NeomanageProtocol.SetLockState;
 
 public class NmdLockCoordinator extends LockCoordinator {
+	
+	private UUID agentId;
 	
 	private NmNetwork network;
 	private LockManager locker;
 	
-	public NmdLockCoordinator(NmNetwork net) {
+	public NmdLockCoordinator(UUID agentId, NmNetwork net) {
+		
+		this.agentId = agentId;
 		
 		this.network = net;
 		this.locker = new LockManager();
@@ -25,7 +32,7 @@ public class NmdLockCoordinator extends LockCoordinator {
 	@Override
 	public int lock(UUID uuid) {
 		
-		this.network.broadcastLockChange(uuid, LockType.PLAYER, true);
+		this.sendLockUpdate(uuid, true);
 		this.locker.lock(uuid);
 		
 		return 0;
@@ -35,8 +42,21 @@ public class NmdLockCoordinator extends LockCoordinator {
 	@Override
 	public void unlock(UUID uuid) {
 		
-		this.network.broadcastLockChange(uuid, LockType.PLAYER, false);
+		this.sendLockUpdate(uuid, false);
 		this.locker.release(uuid);
+		
+	}
+	
+	private void sendLockUpdate(UUID uuid, boolean state) {
+
+		ClientMessage.Builder b = ClientMessageUtils.newBuilder(this.agentId);
+		SetLockState.Builder slsb = SetLockState.newBuilder();
+		
+		slsb.setUuid(uuid.toString());
+		slsb.setState(state);
+		b.setSetLockState(slsb);
+		
+		this.network.queueMessage(b.build());
 		
 	}
 	

@@ -4,27 +4,33 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
+import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
 import io.neocore.manage.server.Nmd;
 
 public class NmClient {
 	
 	protected Socket socket;
+	private Queue<ClientMessage> sendQueue = new LinkedBlockingQueue<>();
 	
 	protected String network;
 	protected String name;
 	
 	private Thread listenerThread;
-	private Set<UUID> subscriptions;
+	private Set<UUID> subscriptions = new HashSet<>();
+	
+	private long lastMessageTime;
 	
 	public NmClient(Socket socket) {
 		
 		this.socket = socket;
 		
-		this.subscriptions = new HashSet<>();
+		this.lastMessageTime = System.currentTimeMillis();
 		
 	}
 	
@@ -76,6 +82,18 @@ public class NmClient {
 			Nmd.logger.log(Level.WARNING, "Problem closing connection to " + this.getIdentString() + "!", e);
 		}
 		
+	}
+	
+	public void update() {
+		this.lastMessageTime = System.currentTimeMillis();
+	}
+	
+	public long getLastUpdated() {
+		return this.lastMessageTime;
+	}
+	
+	public void queueMessage(ClientMessage msg) {
+		this.sendQueue.add(msg);
 	}
 	
 }
