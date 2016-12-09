@@ -22,6 +22,7 @@
 			<groupId>io.neocore</groupId>
 			<artifactId>neocore-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		
 		<!-- Let's use undocumented code because we're 2edgy. -->
@@ -29,9 +30,43 @@
 			<groupId>io.neocore</groupId>
 			<artifactId>neocore-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		
 	</dependencies>
+	
+	<build>
+		
+		
+		<plugins>
+			
+			<plugin>
+				
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.3</version>
+				
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+				
+			</plugin>
+			
+			<plugin>
+				
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				
+			</plugin>
+			
+		</plugins>
+		
+		
+	</build>
 	
 </project>
 
