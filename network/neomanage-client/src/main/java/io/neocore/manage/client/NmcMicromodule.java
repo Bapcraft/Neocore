@@ -89,7 +89,7 @@ public class NmcMicromodule extends JavaMicromodule {
 		
 		// Set up our view of the network.
 		// FIXME Network name.
-		this.client = new NmClient(NeocoreAPI.getAgent(), NeocoreAPI.getServerName(), "", ServerType.UNDEFINED, NeocoreAPI.isFrontend() ? ServerRole.FRONTEND : ServerRole.ENDPOINT);
+		this.client = new NmClient(NeocoreAPI.getAgent(), NeocoreAPI.getServerName(), NeocoreAPI.getNetworkName(), ServerType.UNDEFINED, NeocoreAPI.isFrontend() ? ServerRole.FRONTEND : ServerRole.ENDPOINT);
 		List<NmServer> servers = new ArrayList<>();
 		this.network = new NmNetwork(servers);
 		
