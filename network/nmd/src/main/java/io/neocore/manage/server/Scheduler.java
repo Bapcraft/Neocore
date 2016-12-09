@@ -1,5 +1,6 @@
 package io.neocore.manage.server;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -8,7 +9,7 @@ import com.treyzania.jzania.ExoContainer;
 public class Scheduler {
 	
 	private ExoContainer container;
-	private List<Thread> activeThreads;
+	private List<Thread> activeThreads = new ArrayList<>();
 	
 	public Scheduler(Logger log) {
 		

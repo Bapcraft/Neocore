@@ -13,7 +13,10 @@ public class ClientAcceptWorker implements Runnable {
 	private Consumer<Socket> connectionCallback;
 	
 	public ClientAcceptWorker(ServerSocket sock, Consumer<Socket> callback) {
+		
 		this.socket = sock;
+		this.connectionCallback = callback;
+		
 	}
 	
 	/**

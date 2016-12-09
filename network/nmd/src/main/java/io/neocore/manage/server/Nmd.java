@@ -1,5 +1,6 @@
 package io.neocore.manage.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.text.SimpleDateFormat;
@@ -43,7 +44,16 @@ public class Nmd {
 			this.log.setUseParentHandlers(false);
 			Formatter formatter = new NmdLogFormatter();
 			
-			FileHandler fileHandler = new FileHandler("logs/" + this.getLogFileName(), false);
+			File logFile = new File(new File("logs"), this.getLogFileName());
+			
+			if (!logFile.exists()) {
+				
+				logFile.getParentFile().mkdirs();
+				logFile.createNewFile();
+				
+			}
+			
+			FileHandler fileHandler = new FileHandler(logFile.getAbsolutePath(), false);
 			fileHandler.setFormatter(formatter);
 			this.log.addHandler(fileHandler);
 			

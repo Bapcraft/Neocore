@@ -45,10 +45,10 @@ public class NmcMicromodule extends JavaMicromodule {
 	public void configure(Config config) {
 		
 		// Check for traffic encryption settings.
-		if (config.getBoolean("useCrypto")) {
+		if (config.getBoolean("use-crypto")) {
 			
-			String pub = config.getString("serverPrivateKey");
-			String priv = config.getString("localPublicKey");
+			String pub = config.getString("crypto.server-private-key");
+			String priv = config.getString("crypto.local-public-key");
 			
 			try {
 				
