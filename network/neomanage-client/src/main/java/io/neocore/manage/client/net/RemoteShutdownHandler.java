@@ -8,8 +8,8 @@ public class RemoteShutdownHandler extends MessageHandler {
 	@Override
 	public void handle(NmServer sender, ClientMessage message) {
 		
-		NeocoreAPI.getLogger().fine("Got message that remote server " + sender.getLabel() + " is shutting down...");
-		sender.close();
+		NeocoreAPI.getLogger().info("Got message that remote server " + sender.getLabel() + " is shutting down...");
+		sender.forceClose();
 		
 	}
 

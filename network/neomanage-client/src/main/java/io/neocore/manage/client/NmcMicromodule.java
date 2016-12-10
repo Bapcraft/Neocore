@@ -95,6 +95,7 @@ public class NmcMicromodule extends JavaMicromodule {
 		// Configure handlers.
 		this.handlerManager = new HandlerManager();
 		
+		
 		// Set up our view of the network.
 		this.client = new NmClient(NeocoreAPI.getAgent(), this.handlerManager, ServerType.UNDEFINED, NeocoreAPI.isFrontend() ? ServerRole.FRONTEND : ServerRole.ENDPOINT);
 		List<NmServer> servers = new ArrayList<>();

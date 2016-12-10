@@ -88,7 +88,7 @@ public class NmServer implements Closeable {
 			this.queueThread.interrupt();
 			this.recvRunner.stop();
 			this.recvThread.interrupt();
-
+			
 			// Disconnect message.
 			ClientMessage.Builder b = ClientMessageUtils.newBuilder(NeocoreAPI.getAgent().getAgentId());
 			b.setUnregClient(
@@ -103,11 +103,30 @@ public class NmServer implements Closeable {
 			b.build().writeDelimitedTo(os);
 			os.flush();
 			
-			// Actually close the socket.
+			// Actually close it.
 			this.socket.close();
 			
 		} catch (IOException e) {
 			NeocoreAPI.getLogger().log(Level.SEVERE, "Problem when closing socket.", e);
+		}
+		
+	}
+	
+	public synchronized void forceClose() {
+
+		// Stop workers.
+		this.queueRunner.stop();
+		this.queueThread.interrupt();
+		this.recvRunner.stop();
+		this.recvThread.interrupt();
+		
+		try {
+			
+			// Just close it.
+			this.socket.close();
+			
+		} catch (IOException e) {
+			// ehh fuck it
 		}
 		
 	}
