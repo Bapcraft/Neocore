@@ -31,7 +31,7 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 	public BukkitNeocoreConfig(Config conf) {
 		
 		this.serverName = conf.getString("server.name");
-		this.networkName = conf.getString("server.proxy");
+		this.networkName = conf.getString("server.network");
 		
 		this.enforceBans = conf.getBoolean("server.enforceBans");
 		this.networked = conf.getBoolean("server.isBungeecord");
