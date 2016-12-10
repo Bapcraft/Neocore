@@ -21,6 +21,8 @@ public class NmServer implements Closeable {
 	
 	private BlockingDeque<ClientMessage> queue = new LinkedBlockingDeque<>();
 	
+	private HandlerManager handlers;
+	
 	private MessageQueueRunner queueRunner;
 	private Thread queueThread;
 	private MessageRecvRunner recvRunner;
@@ -28,10 +30,12 @@ public class NmServer implements Closeable {
 	
 	private long lastMessageTime = System.currentTimeMillis(); 
 	
-	public NmServer(Socket socket, long timeout) throws IOException {
+	public NmServer(Socket socket, long timeout, HandlerManager man) throws IOException {
 		
 		this.socket = socket;
 		this.timeout = timeout;
+		
+		this.handlers = man;
 		
 		this.queueRunner = new MessageQueueRunner(this.queue, this.socket.getOutputStream());
 		this.recvRunner = new MessageRecvRunner(this.getLabel(), this.socket.getInputStream(), m -> this.recvMessage(m));
@@ -64,8 +68,7 @@ public class NmServer implements Closeable {
 	private void recvMessage(ClientMessage message) {
 		
 		this.update();
-		
-		// TODO
+		this.handlers.handleMessage(this, message);
 		
 	}
 	

@@ -23,6 +23,7 @@ import io.neocore.api.infrastructure.InfrastructureService;
 import io.neocore.api.module.JavaMicromodule;
 import io.neocore.common.NeocoreImpl;
 import io.neocore.common.player.NetworkSync;
+import io.neocore.manage.client.net.HandlerManager;
 import io.neocore.manage.client.net.NmClient;
 import io.neocore.manage.client.net.NmNetwork;
 import io.neocore.manage.client.net.NmServer;
@@ -35,6 +36,7 @@ public class NmcMicromodule extends JavaMicromodule {
 	// Identity information.
 	private EncryptionConfig cryptoConf;
 	private List<InetSocketAddress> remotes = new ArrayList<>();
+	private HandlerManager handlerManager;
 	private NmClient client;
 	private NmNetwork network;
 	
@@ -90,9 +92,11 @@ public class NmcMicromodule extends JavaMicromodule {
 	@Override
 	public void onEnable() {
 		
+		// Configure handlers.
+		this.handlerManager = new HandlerManager();
+		
 		// Set up our view of the network.
-		// FIXME Network name.
-		this.client = new NmClient(NeocoreAPI.getAgent(), NeocoreAPI.getServerName(), NeocoreAPI.getNetworkName(), ServerType.UNDEFINED, NeocoreAPI.isFrontend() ? ServerRole.FRONTEND : ServerRole.ENDPOINT);
+		this.client = new NmClient(NeocoreAPI.getAgent(), this.handlerManager, ServerType.UNDEFINED, NeocoreAPI.isFrontend() ? ServerRole.FRONTEND : ServerRole.ENDPOINT);
 		List<NmServer> servers = new ArrayList<>();
 		this.network = new NmNetwork(servers);
 		

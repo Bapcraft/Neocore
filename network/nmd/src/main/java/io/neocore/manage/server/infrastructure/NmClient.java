@@ -48,7 +48,7 @@ public class NmClient {
 	}
 	
 	public String getIdentString() {
-		return (this.network != null ? this.network + "#" : "") + this.name;
+		return (this.network != null ? this.network + "." : "") + this.name;
 	}
 	
 	public void subscribe(UUID uuid) {
