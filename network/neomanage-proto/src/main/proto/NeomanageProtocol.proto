@@ -11,12 +11,13 @@ message ClientMessage {
 		
 		Ping ping = 10;
 		UnregisterClient unregClient = 11;
+		DaemonShutdown daemonShutdown = 12;
 		
-		ChannelBroadcast channelBroadcast = 12;
-		SetLockState setLockState = 13;
+		ChannelBroadcast channelBroadcast = 13;
+		SetLockState setLockState = 14;
 		
-		PlayerSubscriptionUpdate subUpdate = 14;
-		PlayerListUpdate playerListUpdate = 15;
+		PlayerSubscriptionUpdate subUpdate = 15;
+		PlayerListUpdate playerListUpdate = 16;
 		
 	}
 	

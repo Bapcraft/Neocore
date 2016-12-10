@@ -161,6 +161,14 @@ public class Nmd {
 				
 				logger.info("Terminating...");
 				ok = false;
+				
+				for (NmClient cli : instance.server.getClients()) {
+					
+					logger.info("Disconnecting " + cli.getIdentString() + "...");
+					cli.disconnect();
+					
+				}
+				
 				continue;
 				
 			}

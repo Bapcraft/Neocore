@@ -1,6 +1,7 @@
 package io.neocore.manage.server.infrastructure;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashSet;
@@ -10,7 +11,9 @@ import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
+import io.neocore.manage.proto.ClientMessageUtils;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
+import io.neocore.manage.proto.NeomanageProtocol.DaemonShutdown;
 import io.neocore.manage.server.Nmd;
 
 public class NmClient {
@@ -91,7 +94,20 @@ public class NmClient {
 		this.listenerRunner.disable();
 		
 		try {
+			
+			OutputStream os = this.socket.getOutputStream();
+			ClientMessage.Builder b = ClientMessageUtils.newBuilder(new UUID(0, 0));
+			b
+				.setDaemonShutdown(
+						DaemonShutdown
+						.newBuilder()
+						.setReason("tell treyzania to fix this"))
+				.build()
+				.writeDelimitedTo(os);
+			os.flush();
+			
 			this.socket.close();
+			
 		} catch (IOException e) {
 			Nmd.logger.log(Level.WARNING, "Problem when closing connection.", e);
 		}
