@@ -8,6 +8,7 @@ import java.util.UUID;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.common.player.LockCoordinator;
 import io.neocore.common.player.NetworkSync;
+import io.neocore.manage.client.net.NmNetwork;
 import io.neocore.manage.proto.ClientMessageUtils;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
 import io.neocore.manage.proto.NeomanageProtocol.PlayerListUpdate;

@@ -1,4 +1,4 @@
-package io.neocore.manage.client;
+package io.neocore.manage.client.net;
 
 import java.io.IOException;
 import java.io.OutputStream;

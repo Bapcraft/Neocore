@@ -1,4 +1,4 @@
-package io.neocore.manage.client;
+package io.neocore.manage.client.net;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,13 +38,21 @@ public class MessageRecvRunner implements Runnable {
 			try {
 				
 				ClientMessage msg = ClientMessage.parseDelimitedFrom(this.stream);
+				if (msg == null) continue; // wtf?
+				
 				NeocoreAPI.getLogger().finer("Got message ID:" + Long.toHexString(msg.getMessageId()) + " from " + this.daemonName + " of type " + msg.getPayloadCase().name() + ".");
 				this.recvCallback.accept(msg);
 				
 			} catch (IOException e) {
 				
-				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem parsing message from " + this.daemonName + "!", e);
-				this.stop();
+				if (this.running) {
+					
+					NeocoreAPI.getLogger().log(Level.SEVERE, "Problem parsing message from " + this.daemonName + "!", e);
+					this.stop();
+					
+				} else {
+					NeocoreAPI.getLogger().warning("Problem reading from socket to NMD, but we are marked as not running, so the connection is probably closed anyways.");
+				}
 				
 			}
 			

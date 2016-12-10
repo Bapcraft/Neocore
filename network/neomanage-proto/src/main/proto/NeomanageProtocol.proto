@@ -26,6 +26,10 @@ message Ping {
 	// Nothing?
 }
 
+message DaemonShutdown {
+	optional string reason = 1;
+}
+
 message ClientHandshake {
 	
 	required string agentId = 1;

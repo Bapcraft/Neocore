@@ -1,4 +1,4 @@
-package io.neocore.manage.client;
+package io.neocore.manage.client.net;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,17 +17,15 @@ import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerType;
 public class NmClient {
 	
 	private Neocore agent;
-	private String name, network;
+	private HandlerManager handlers;
 	
 	private ServerType type;
 	private ServerRole role;
 	
-	public NmClient(Neocore agent, String name, String network, ServerType type, ServerRole role) {
+	public NmClient(Neocore agent, HandlerManager hanMan, ServerType type, ServerRole role) {
 		
 		this.agent = agent;
-		
-		this.name = name;
-		this.network = network;
+		this.handlers = hanMan;
 		
 		this.type = type;
 		this.role = role;
@@ -46,7 +44,7 @@ public class NmClient {
 		os.flush();
 		
 		// Return the newly-created server.
-		return new NmServer(socket, msgTimeout);
+		return new NmServer(socket, msgTimeout, this.handlers);
 		
 	}
 	
@@ -61,8 +59,8 @@ public class NmClient {
 		hsb.setClientType(ClientType.SERVER);
 		
 		// The server client metadata.
-		scb.setServerName(this.name);
-		if (this.network != null) scb.setNetworkName(this.network);
+		scb.setServerName(this.agent.getServerName());
+		if (this.getNetworkName() != null) scb.setNetworkName(this.getNetworkName());
 		scb.setServerType(this.type);
 		scb.setServerRole(this.role);
 		hsb.setServerClient(scb.build());
@@ -76,11 +74,11 @@ public class NmClient {
 	}
 	
 	public String getServerName() {
-		return this.name;
+		return this.agent.getServerName();
 	}
 	
 	public String getNetworkName() {
-		return this.network;
+		return this.agent.getNetworkName();
 	}
 	
 	public ServerType getType() {

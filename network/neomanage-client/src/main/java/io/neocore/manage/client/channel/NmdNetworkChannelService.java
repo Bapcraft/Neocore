@@ -12,7 +12,7 @@ import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.infrastructure.NetMessage;
 import io.neocore.api.infrastructure.NetworkChannelService;
-import io.neocore.manage.client.NmNetwork;
+import io.neocore.manage.client.net.NmNetwork;
 import io.neocore.manage.proto.ClientMessageUtils;
 import io.neocore.manage.proto.NeomanageProtocol.ChannelBroadcast;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
