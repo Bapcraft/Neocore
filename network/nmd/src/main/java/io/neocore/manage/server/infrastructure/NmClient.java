@@ -18,6 +18,8 @@ import io.neocore.manage.server.Nmd;
 
 public class NmClient {
 	
+	private DaemonServer server;
+	
 	protected Socket socket;
 	private Queue<ClientMessage> sendQueue = new LinkedBlockingQueue<>();
 	
@@ -30,9 +32,10 @@ public class NmClient {
 	
 	private long lastMessageTime;
 	
-	public NmClient(Socket socket) {
+	public NmClient(Socket socket, DaemonServer server) {
 		
 		this.socket = socket;
+		this.server = server;
 		
 		this.lastMessageTime = System.currentTimeMillis();
 		
@@ -89,6 +92,8 @@ public class NmClient {
 			Nmd.logger.log(Level.WARNING, "Problem closing connection to " + this.getIdentString() + "!", e);
 		}
 		
+		this.server.remove(this);
+		
 	}
 	
 	public synchronized void disconnect() {
@@ -115,6 +120,8 @@ public class NmClient {
 		} catch (IOException e) {
 			Nmd.logger.log(Level.WARNING, "Problem when closing connection.", e);
 		}
+		
+		this.server.remove(this);
 		
 	}
 	

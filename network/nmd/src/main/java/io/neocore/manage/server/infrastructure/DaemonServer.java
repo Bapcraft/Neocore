@@ -9,9 +9,11 @@ import java.util.logging.Level;
 
 import io.neocore.manage.proto.NeomanageProtocol.ClientHandshake;
 import io.neocore.manage.proto.NeomanageProtocol.ClientHandshake.ClientType;
+import io.neocore.manage.proto.NeomanageProtocol.ClientMessage.PayloadCase;
 import io.neocore.manage.server.ClientAcceptWorker;
 import io.neocore.manage.server.Nmd;
 import io.neocore.manage.server.Scheduler;
+import io.neocore.manage.server.handling.ClientDisconnectHandler;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient;
 
 public class DaemonServer {
@@ -47,6 +49,7 @@ public class DaemonServer {
 		}
 		
 		this.messageManager = new MessageManager();
+		this.messageManager.registerHandler(PayloadCase.UNREGCLIENT, new ClientDisconnectHandler());
 		
 	}
 	
@@ -62,7 +65,7 @@ public class DaemonServer {
 			
 			() -> {
 				
-				ClientBuilder builder = new ClientBuilder(socket);
+				ClientBuilder builder = new ClientBuilder(this, socket);
 				
 				try {
 					
@@ -114,13 +117,17 @@ public class DaemonServer {
 		if (this.clients.contains(client)) {
 			
 			client.disconnect();
-			this.clients.remove(client);
+			this.remove(client);
 			Nmd.logger.info("Client " + client.getIdentString() + " from " + client.getAddressString() + " disconnected.");
 			
 		} else {
 			throw new IllegalArgumentException("Could not find client " + client.getIdentString() + ".  Is it already unregistered?");
 		}
 		
+	}
+	
+	public boolean remove(NmClient client) {
+		return this.clients.remove(client);
 	}
 	
 	public MessageManager getMessageManager() {

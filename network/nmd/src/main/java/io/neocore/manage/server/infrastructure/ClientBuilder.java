@@ -6,12 +6,16 @@ public class ClientBuilder {
 	
 	private boolean built;
 	
+	private DaemonServer server;
 	private Socket socket;
 	
 	private String toNetwork, toName;
 	
-	public ClientBuilder(Socket sock) {
+	public ClientBuilder(DaemonServer serv, Socket sock) {
+		
+		this.server = serv;
 		this.socket = sock;
+		
 	}
 	
 	public ClientBuilder withNetwork(String net) {
@@ -32,7 +36,7 @@ public class ClientBuilder {
 		
 		if (this.built) throw new IllegalStateException("Client already built!");
 		
-		NmClient cli = new NmClient(this.socket);
+		NmClient cli = new NmClient(this.socket, this.server);
 		
 		cli.network = this.toNetwork;
 		cli.name = this.toName;
