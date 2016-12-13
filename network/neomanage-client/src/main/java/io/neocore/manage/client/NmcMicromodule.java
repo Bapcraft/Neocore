@@ -27,7 +27,9 @@ import io.neocore.manage.client.net.HandlerManager;
 import io.neocore.manage.client.net.NmClient;
 import io.neocore.manage.client.net.NmNetwork;
 import io.neocore.manage.client.net.NmServer;
+import io.neocore.manage.client.net.RemoteShutdownHandler;
 import io.neocore.manage.client.network.DaemonNetworkMapService;
+import io.neocore.manage.proto.NeomanageProtocol.ClientMessage.PayloadCase;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerRole;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerType;
 
@@ -94,7 +96,7 @@ public class NmcMicromodule extends JavaMicromodule {
 		
 		// Configure handlers.
 		this.handlerManager = new HandlerManager();
-		
+		this.handlerManager.setHandler(PayloadCase.DAEMONSHUTDOWN, new RemoteShutdownHandler());
 		
 		// Set up our view of the network.
 		this.client = new NmClient(NeocoreAPI.getAgent(), this.handlerManager, ServerType.UNDEFINED, NeocoreAPI.isFrontend() ? ServerRole.FRONTEND : ServerRole.ENDPOINT);

@@ -57,9 +57,13 @@ public class ClientListenRunner extends HandlerRunner {
 			
 		} catch (IOException e) {
 			
-			Nmd.logger.log(Level.SEVERE, "Problem parsing message from " + this.client.getIdentString() + ".", e);
-			this.client.forceDisconnect();
-			this.disable();
+			if (this.client.isConnected()) {
+				
+				Nmd.logger.log(Level.SEVERE, "Problem parsing message from " + this.client.getIdentString() + ".", e);
+				this.client.forceDisconnect();
+				this.disable();
+				
+			}
 			
 		}
 		

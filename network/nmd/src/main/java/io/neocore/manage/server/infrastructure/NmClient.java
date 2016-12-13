@@ -76,7 +76,9 @@ public class NmClient {
 		
 	}
 	
-	protected void forceDisconnect() {
+	protected synchronized void forceDisconnect() {
+		
+		if (this.socket.isClosed()) return;
 		
 		try {
 			
@@ -89,7 +91,9 @@ public class NmClient {
 		
 	}
 	
-	public void disconnect() {
+	public synchronized void disconnect() {
+		
+		if (this.socket.isClosed()) return;
 		
 		this.listenerRunner.disable();
 		
@@ -124,6 +128,10 @@ public class NmClient {
 	
 	public void queueMessage(ClientMessage msg) {
 		this.sendQueue.add(msg);
+	}
+
+	public boolean isConnected() {
+		return !this.socket.isClosed();
 	}
 	
 }

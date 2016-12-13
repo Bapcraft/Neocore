@@ -50,8 +50,6 @@ public class MessageRecvRunner implements Runnable {
 					NeocoreAPI.getLogger().log(Level.SEVERE, "Problem parsing message from " + this.daemonName + "!", e);
 					this.stop();
 					
-				} else {
-					NeocoreAPI.getLogger().warning("Problem reading from socket to NMD, but we are marked as not running, so the connection is probably closed anyways.");
 				}
 				
 			}

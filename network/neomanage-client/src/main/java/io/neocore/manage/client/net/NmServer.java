@@ -79,6 +79,8 @@ public class NmServer implements Closeable {
 	@Override
 	public synchronized void close() {
 		
+		if (this.socket.isClosed()) return;
+		
 		try {
 			
 			NeocoreAPI.getLogger().info("Closing Neomanage connection to " + this.getLabel() + "...");
@@ -113,7 +115,7 @@ public class NmServer implements Closeable {
 	}
 	
 	public synchronized void forceClose() {
-
+		
 		// Stop workers.
 		this.queueRunner.stop();
 		this.queueThread.interrupt();
