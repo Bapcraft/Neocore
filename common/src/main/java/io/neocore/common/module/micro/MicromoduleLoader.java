@@ -99,6 +99,7 @@ public class MicromoduleLoader {
 			Map<String, Object> injections = new HashMap<>();
 			injections.put("name", name);
 			injections.put("version", version);
+			injections.put("neocore", NeocoreAPI.getAgent()); // FIXME Encapsulation.
 			
 			// Iterate through the field names and inject the values into the relevant actual fields.
 			for (Entry<String, Object> entry : injections.entrySet()) {
