@@ -5,10 +5,10 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashSet;
-import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
 
 import io.neocore.manage.proto.ClientMessageUtils;
@@ -21,13 +21,16 @@ public class NmClient {
 	private DaemonServer server;
 	
 	protected Socket socket;
-	private Queue<ClientMessage> sendQueue = new LinkedBlockingQueue<>();
+	private BlockingDeque<ClientMessage> sendQueue = new LinkedBlockingDeque<>();
 	
 	protected String network;
 	protected String name;
 	
-	private ClientListenRunner listenerRunner;
+	private ClientRecvRunner listenerRunner;
 	private Thread listenerThread;
+	private ClientSendRunner sendRunner;
+	private Thread sendThread;
+	
 	private Set<UUID> subscriptions = new HashSet<>();
 	
 	private long lastMessageTime;
@@ -69,13 +72,30 @@ public class NmClient {
 		return this.subscriptions.contains(uuid);
 	}
 	
-	public synchronized void startListenerThread(DaemonServer serv) {
+	public synchronized void startIoThreads() {
 		
-		if (this.listenerThread != null) throw new IllegalStateException("Already listening!");
+		if (this.listenerThread.isAlive() || this.sendThread.isAlive()) {
+			
+			Nmd.logger.warning("IO threads for " + this.getIdentString() + " already started, but someone tried to start them again!");
+			return;
+			
+		}
 		
-		this.listenerRunner = new ClientListenRunner(this, serv);
-		this.listenerThread = new Thread(this.listenerRunner, "ClientListenThread-" + this.getIdentString());
-		this.listenerThread.start();
+		try {
+			
+			// Set up threads.
+			this.listenerRunner = new ClientRecvRunner(this, this.server, this.socket.getInputStream());
+			this.listenerThread = new Thread(this.listenerRunner, "ClientListenThread-" + this.getIdentString());
+			this.sendRunner = new ClientSendRunner(this.sendQueue, this.socket.getOutputStream());
+			this.sendThread = new Thread(this.sendRunner, "ClientSendThread-" + this.getIdentString());
+			
+			// Actually start them.
+			this.listenerThread.start();
+			this.sendThread.start();
+			
+		} catch (IOException e) {
+			Nmd.logger.log(Level.SEVERE, "Problem setting up IO threads for " + this.getIdentString() + ".", e);
+		}
 		
 	}
 	

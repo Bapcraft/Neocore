@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 import io.neocore.manage.proto.NeomanageProtocol.ClientHandshake;
 import io.neocore.manage.proto.NeomanageProtocol.ClientHandshake.ClientType;
+import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage.PayloadCase;
 import io.neocore.manage.server.ClientAcceptWorker;
 import io.neocore.manage.server.Nmd;
@@ -108,7 +109,7 @@ public class DaemonServer {
 		if (this.clients.contains(client)) throw new IllegalArgumentException("Already have this client registered!");
 		
 		this.clients.add(client);
-		client.startListenerThread(this);
+		client.startIoThreads();
 		
 	}
 	
@@ -130,8 +131,20 @@ public class DaemonServer {
 		return this.clients.remove(client);
 	}
 	
+	public void removeDeadConnections() {
+		this.clients.removeIf(c -> !c.isConnected());
+	}
+	
 	public MessageManager getMessageManager() {
 		return this.messageManager;
+	}
+	
+	public void queueToAll(ClientMessage message) {
+		
+		for (NmClient cli : this.clients) {
+			cli.queueMessage(message);
+		}
+		
 	}
 	
 }

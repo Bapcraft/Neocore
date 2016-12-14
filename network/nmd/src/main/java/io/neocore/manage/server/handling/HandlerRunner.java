@@ -8,6 +8,10 @@ public abstract class HandlerRunner implements Runnable {
 		this.running = false;
 	}
 	
+	public boolean isActive() {
+		return this.running;
+	}
+	
 	@Override
 	public void run() {
 		
