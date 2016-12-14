@@ -122,14 +122,14 @@ public class NmcMicromodule extends JavaMicromodule {
 		}
 		
 		// Set up services.
-		this.netMapService = new DaemonNetworkMapService(NeocoreAPI.getServerName()); // FIXME Network name.
+		this.netMapService = new DaemonNetworkMapService(NeocoreAPI.getNetworkName()); // FIXME Network name.
 		
 		// Register them.
 		this.registerService(InfrastructureService.NETWORKMAP, this.netMapService);
 		
 		// Set up sync.
 		this.networkSync = new NmdNetworkSync(this.network);
-		NeocoreImpl impl = (NeocoreImpl) NeocoreAPI.getAgent();
+		NeocoreImpl impl = (NeocoreImpl) this.getAgent();
 		impl.getPlayerAssembler().overrideNetworkSync(this.networkSync);
 		
 	}

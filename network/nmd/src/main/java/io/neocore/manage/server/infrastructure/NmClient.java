@@ -74,7 +74,7 @@ public class NmClient {
 	
 	public synchronized void startIoThreads() {
 		
-		if (this.listenerThread.isAlive() || this.sendThread.isAlive()) {
+		if ((this.listenerThread != null && this.listenerThread.isAlive()) || (this.sendThread != null && this.sendThread.isAlive())) {
 			
 			Nmd.logger.warning("IO threads for " + this.getIdentString() + " already started, but someone tried to start them again!");
 			return;
