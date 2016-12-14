@@ -19,6 +19,7 @@ import com.treyzania.jzania.ExoContainer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.module.JavaMicromodule;
 import io.neocore.api.module.Micromodule;
@@ -27,6 +28,7 @@ import io.neocore.common.module.ModuleManagerImpl;
 
 public class MicromoduleLoader {
 	
+	private Neocore neocore;
 	private ExoContainer container;
 	
 	private final ModuleManagerImpl moduleManager;
@@ -35,8 +37,9 @@ public class MicromoduleLoader {
 	private Map<File, MicromoduleClassLoader> loaders;
 	private List<JavaMicromodule> modules;
 	
-	public MicromoduleLoader(ModuleManagerImpl man, File dir) {
+	public MicromoduleLoader(Neocore agent, ModuleManagerImpl man, File dir) {
 		
+		this.neocore = agent;
 		this.moduleManager = man;
 		this.micromoduleDirectory = dir;
 		
@@ -99,7 +102,7 @@ public class MicromoduleLoader {
 			Map<String, Object> injections = new HashMap<>();
 			injections.put("name", name);
 			injections.put("version", version);
-			injections.put("neocore", NeocoreAPI.getAgent()); // FIXME Encapsulation.
+			injections.put("neocore", this.neocore);
 			
 			// Iterate through the field names and inject the values into the relevant actual fields.
 			for (Entry<String, Object> entry : injections.entrySet()) {

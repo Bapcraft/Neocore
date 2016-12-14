@@ -10,6 +10,7 @@ import com.treyzania.jzania.data.MemberReferenceSet;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+import io.neocore.api.Neocore;
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.module.Micromodule;
 import io.neocore.api.module.Module;
@@ -26,14 +27,14 @@ public class ModuleManagerImpl implements ModuleManager {
 	@SuppressWarnings("unused")
 	private MicromoduleLoader micromoduleLoader;
 	
-	public ModuleManagerImpl(File micromoduleDir) {
+	public ModuleManagerImpl(Neocore neo, File micromoduleDir) {
 		
 		this.modules = new MemberReferenceSet<Module>(m -> m.getName().hashCode());
 		
 		// Validate the micromodule dir, first
 		if (!micromoduleDir.exists()) micromoduleDir.mkdirs();
 		
-		this.micromoduleLoader = new MicromoduleLoader(this, micromoduleDir);
+		this.micromoduleLoader = new MicromoduleLoader(neo, this, micromoduleDir);
 		
 		this.container = new ExoContainer(NeocoreAPI.getLogger());
 		
