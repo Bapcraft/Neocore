@@ -2,6 +2,7 @@ package io.neocore.manage.server.infrastructure;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.logging.Level;
 
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
@@ -36,8 +37,8 @@ public class ClientRecvRunner extends HandlerRunner {
 			Nmd.logger.fine("Recieved from " + this.client.name + " ID:" + message.getMessageId() + " of type " + message.getPayloadCase() + ".");
 			
 			// Now just find the message and forward the handling.
-			MessageHandler h = this.server.getMessageManager().getHandle(message.getPayloadCase());
-			h.handle(this.server, this.client, message);
+			List<MessageHandler> hs = this.server.getMessageManager().getHandlers(message.getPayloadCase());
+			hs.forEach(h -> h.handle(this.server, this.client, message));
 			
 		} catch (IOException e) {
 			

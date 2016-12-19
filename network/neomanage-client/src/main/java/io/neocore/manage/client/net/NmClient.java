@@ -60,7 +60,7 @@ public class NmClient {
 		
 		// The server client metadata.
 		scb.setServerName(this.agent.getServerName());
-		if (this.getNetworkName() != null) scb.setNetworkName(this.getNetworkName());
+		scb.setNetworkName(this.agent.isNetworked() ? this.getNetworkName() : "~");
 		scb.setServerType(this.type);
 		scb.setServerRole(this.role);
 		hsb.setServerClient(scb.build());
