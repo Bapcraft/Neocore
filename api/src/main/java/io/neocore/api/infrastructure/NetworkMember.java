@@ -3,10 +3,22 @@ package io.neocore.api.infrastructure;
 public interface NetworkMember {
 	
 	/**
-	 * Returns the name of the network this member belongs to.
+	 * Returns the name of the network this member belongs to.  If this value
+	 * is either <code>null</code> or an empty string, then the client is
+	 * assumed to not be part of a network.
 	 * 
-	 * @return The network's name.
+	 * @return The network's name
 	 */
 	public String getNetworkName();
+	
+	/**
+	 * Returns <code>true</code> if this "thing" is part of a network, returns
+	 * <code>false</code> otherwise.
+	 * 
+	 * @return The state of this object's membership in a network
+	 */
+	public default boolean isNetworked() {
+		return this.getNetworkName() != null && !this.getNetworkName().isEmpty();
+	}
 	
 }

@@ -19,12 +19,7 @@ import io.neocore.api.task.TaskQueue;
  * 
  * @author treyzania
  */
-public interface Neocore {
-	
-	/**
-	 * @return The UUID of the Neocore instance which changes on restart.
-	 */
-	public UUID getAgentId();
+public interface Neocore extends AgentIdentity {
 	
 	/**
 	 * @return A reference to the host plugin for the server we're running on top of.
@@ -34,6 +29,7 @@ public interface Neocore {
 	/**
 	 * @return If the server is part of a larger network.
 	 */
+	@Override
 	public default boolean isNetworked() {
 		return this.getHost().getNeocoreConfig().isNetworked();
 	}
