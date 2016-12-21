@@ -22,11 +22,12 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.infrastructure.InfrastructureService;
 import io.neocore.api.module.JavaMicromodule;
 import io.neocore.common.NeocoreImpl;
-import io.neocore.common.player.NetworkSync;
 import io.neocore.manage.client.net.HandlerManager;
 import io.neocore.manage.client.net.NmClient;
 import io.neocore.manage.client.net.NmNetwork;
 import io.neocore.manage.client.net.NmServer;
+import io.neocore.manage.client.net.PingHandler;
+import io.neocore.manage.client.net.PlayerUpdateHandler;
 import io.neocore.manage.client.net.RemoteShutdownHandler;
 import io.neocore.manage.client.network.DaemonNetworkMapService;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage.PayloadCase;
@@ -46,7 +47,7 @@ public class NmcMicromodule extends JavaMicromodule {
 	private DaemonNetworkMapService netMapService;
 	
 	// Sync utils.
-	private NetworkSync networkSync;
+	private NmdNetworkSync networkSync;
 	
 	@Override
 	public void configure(Config config) {
@@ -94,14 +95,14 @@ public class NmcMicromodule extends JavaMicromodule {
 	@Override
 	public void onEnable() {
 		
-		// Configure handlers.
+		// Setup.
+		NeocoreImpl impl = (NeocoreImpl) this.getAgent();
 		this.handlerManager = new HandlerManager();
-		this.handlerManager.setHandler(PayloadCase.DAEMONSHUTDOWN, new RemoteShutdownHandler());
 		
 		// Set up our view of the network.
 		this.client = new NmClient(NeocoreAPI.getAgent(), this.handlerManager, ServerType.UNDEFINED, NeocoreAPI.isFrontend() ? ServerRole.FRONTEND : ServerRole.ENDPOINT);
 		List<NmServer> servers = new ArrayList<>();
-		this.network = new NmNetwork(servers);
+		this.network = new NmNetwork(impl.getAgentId(), servers, 15000L);
 		
 		// Set up connections.
 		Logger log = NeocoreAPI.getLogger();
@@ -127,10 +128,14 @@ public class NmcMicromodule extends JavaMicromodule {
 		// Register them.
 		this.registerService(InfrastructureService.NETWORKMAP, this.netMapService);
 		
-		// Set up sync.
-		this.networkSync = new NmdNetworkSync(this.network);
-		NeocoreImpl impl = (NeocoreImpl) this.getAgent();
+		// Setup network sync.
+		this.networkSync = new NmdNetworkSync(impl.getAgentId(), this.network);
 		impl.getPlayerAssembler().overrideNetworkSync(this.networkSync);
+		
+		// Configure handler manager.
+		this.handlerManager.setHandler(PayloadCase.DAEMONSHUTDOWN, new RemoteShutdownHandler(this.network));
+		this.handlerManager.setHandler(PayloadCase.PING, new PingHandler());
+		this.handlerManager.setHandler(PayloadCase.PLAYERUPDATE, new PlayerUpdateHandler(this.networkSync));
 		
 	}
 	

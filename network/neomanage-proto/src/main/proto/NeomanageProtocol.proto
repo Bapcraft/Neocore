@@ -19,6 +19,8 @@ message ClientMessage {
 		PlayerSubscriptionUpdate subUpdate = 15;
 		PlayerListUpdate playerListUpdate = 16;
 		
+		PlayerUpdateNotification playerUpdate = 17;
+		
 	}
 	
 }
@@ -116,6 +118,12 @@ message PlayerSubscriptionUpdate {
 message PlayerListUpdate {
 	
 	repeated string uuids = 1;
+	
+}
+
+message PlayerUpdateNotification {
+	
+	required string playerId = 1;	
 	
 }
 

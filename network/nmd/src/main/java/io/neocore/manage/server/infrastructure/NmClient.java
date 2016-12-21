@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -70,6 +71,13 @@ public class NmClient {
 	
 	public boolean isSubscribed(UUID uuid) {
 		return this.subscriptions.contains(uuid);
+	}
+	
+	public void updateSubscriptions(Collection<UUID> uuids) {
+		
+		this.subscriptions.clear();
+		this.subscriptions.addAll(uuids);
+		
 	}
 	
 	public synchronized void startIoThreads() {
