@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 import io.neocore.api.LoadAsync;
 import io.neocore.api.NeocoreAPI;
@@ -63,6 +64,8 @@ public class CommonPlayerManager {
 	
 	public void overrideNetworkSync(NetworkSync override) {
 		
+		NeocoreAPI.getLogger().fine("Got new NetworkSync to work with.");
+		
 		// Cleanup the old one.
 		this.networkSync.updatePlayerList(new HashSet<>()); // Close out any inbound connections.
 		this.networkSync.setInvalidationCallback(null);
@@ -77,7 +80,16 @@ public class CommonPlayerManager {
 	
 	private void processInvalidation(UUID uuid) {
 		
-		this.reloadPlayer(uuid, ReloadReason.INVALIDATION, null);
+		Logger log = NeocoreAPI.getLogger();
+		
+		NeoPlayer player = this.findPlayer(uuid);
+		log.finer("Processing invalidation for " + uuid + " ( " + (player != null ? player.getUsername() : "[undefined]") + " )...");
+		
+		if (player != null) {
+			this.reloadPlayer(uuid, ReloadReason.INVALIDATION, null);
+		} else {
+			log.warning("We don't have player " + uuid + " online, ignoring invalidation!");
+		}
 		
 	}
 	
@@ -343,6 +355,8 @@ public class CommonPlayerManager {
 	
 	public synchronized void reloadPlayer(UUID uuid, ReloadReason reason, Consumer<NeoPlayer> callback) {
 		
+		NeocoreAPI.getLogger().fine("Performing revalidation for " + uuid + "...");
+		
 		this.eventManager.broadcast(new PreReloadPlayerEvent(reason, uuid));
 		
 		LoadType type = this.loadStates.get(uuid);
@@ -351,6 +365,7 @@ public class CommonPlayerManager {
 			
 			this.assemblePlayer(uuid, type, np -> {
 				
+				NeocoreAPI.getLogger().fine("Revalidation for " + uuid + " complete.");
 				this.eventManager.broadcast(new PostReloadPlayerEvent(reason, np));
 				if (callback != null) callback.accept(np);
 				
