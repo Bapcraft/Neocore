@@ -169,6 +169,11 @@ public class NeocoreImpl implements Neocore {
 	}
 	
 	@Override
+	public String getAgentName() {
+		return this.getServerName();
+	}
+
+	@Override
 	public UUID getAgentId() {
 		return this.agentId;
 	}
