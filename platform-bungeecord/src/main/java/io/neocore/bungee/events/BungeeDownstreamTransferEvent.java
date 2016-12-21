@@ -33,7 +33,7 @@ public class BungeeDownstreamTransferEvent implements DownstreamTransferEvent {
 		
 		if (!NeocoreAPI.getServerName().equals(dest.getNetworkName())) throw new IllegalArgumentException("Tried to set an endpoint outside this network.");
 		
-		ServerInfo destInfo = ProxyServer.getInstance().getServerInfo(dest.getEndpointName());
+		ServerInfo destInfo = ProxyServer.getInstance().getServerInfo(dest.getAgentName());
 		if (destInfo != null) {
 			NeocoreAPI.getLogger().warning("Tried to set a destination for a player that isn't real.");
 		} else {
@@ -50,7 +50,7 @@ public class BungeeDownstreamTransferEvent implements DownstreamTransferEvent {
 		NetworkMapService nmServ = NeocoreAPI.getAgent().getServiceManager().getService(NetworkMapService.class);
 		Set<NetworkEndpoint> eps = nmServ.getLocalNetworkMap().getEndpoints();
 		for (NetworkEndpoint ne : eps) {
-			if (ne.getEndpointName().equals(name)) return ne;
+			if (ne.getAgentName().equals(name)) return ne;
 		}
 		
 		throw new IllegalStateException("Somehow we are going to an unregistered endpoint!");

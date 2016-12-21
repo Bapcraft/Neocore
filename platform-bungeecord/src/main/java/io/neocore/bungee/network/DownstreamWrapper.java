@@ -3,6 +3,7 @@ package io.neocore.bungee.network;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -30,7 +31,7 @@ public class DownstreamWrapper {
 		
 		Set<BungeeDownstreamEndpoint> eps = new HashSet<>();
 		for (Map.Entry<String, ServerInfo> entry : this.bungee.getServers().entrySet()) {
-			eps.add(new BungeeDownstreamEndpoint(entry.getKey(), entry.getValue()));
+			eps.add(new BungeeDownstreamEndpoint(UUID.randomUUID(), entry.getKey(), entry.getValue()));
 		}
 		
 		return eps;
@@ -47,7 +48,7 @@ public class DownstreamWrapper {
 	public BungeeDownstreamEndpoint getEndpoint(String name) {
 		
 		for (BungeeDownstreamEndpoint ep : this.getEndpoints()) {
-			if (ep.getEndpointName().equals(name)) return ep;
+			if (ep.getAgentName().equals(name)) return ep;
 		}
 		
 		return null;
