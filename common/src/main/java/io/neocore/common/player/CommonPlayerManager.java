@@ -63,10 +63,21 @@ public class CommonPlayerManager {
 	
 	public void overrideNetworkSync(NetworkSync override) {
 		
+		// Cleanup the old one.
 		this.networkSync.updatePlayerList(new HashSet<>()); // Close out any inbound connections.
+		this.networkSync.setInvalidationCallback(null);
+		
+		// Configure the new one.
 		this.networkSync = override;
+		this.networkSync.setInvalidationCallback(this::processInvalidation);
 		
 		this.updateContainerLockCoordinators();
+		
+	}
+	
+	private void processInvalidation(UUID uuid) {
+		
+		this.reloadPlayer(uuid, ReloadReason.INVALIDATION, null);
 		
 	}
 	
@@ -265,7 +276,8 @@ public class CommonPlayerManager {
 			// Mark the player as clean.
 			np.setDirty(false);
 			
-			// Broadcast the event.
+			// Broadcast the event in all the relevant channels.
+			this.networkSync.announceInvalidation(uuid);
 			this.eventManager.broadcast(new PostFlushPlayerEvent(FlushReason.OTHER, np)); // FIXME Reason.
 			
 			// Run the callback.
@@ -329,9 +341,9 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public synchronized void reloadPlayer(UUID uuid, Consumer<NeoPlayer> callback) {
+	public synchronized void reloadPlayer(UUID uuid, ReloadReason reason, Consumer<NeoPlayer> callback) {
 		
-		this.eventManager.broadcast(new PreReloadPlayerEvent(ReloadReason.OTHER, uuid));
+		this.eventManager.broadcast(new PreReloadPlayerEvent(reason, uuid));
 		
 		LoadType type = this.loadStates.get(uuid);
 		
@@ -339,7 +351,7 @@ public class CommonPlayerManager {
 			
 			this.assemblePlayer(uuid, type, np -> {
 				
-				this.eventManager.broadcast(new PostReloadPlayerEvent(ReloadReason.OTHER, np));
+				this.eventManager.broadcast(new PostReloadPlayerEvent(reason, np));
 				if (callback != null) callback.accept(np);
 				
 			});
