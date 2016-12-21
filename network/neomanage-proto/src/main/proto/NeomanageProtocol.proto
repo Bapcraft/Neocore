@@ -19,7 +19,7 @@ message ClientMessage {
 		PlayerSubscriptionUpdate subUpdate = 15;
 		PlayerListUpdate playerListUpdate = 16;
 		
-		PlayerUpdateNotification playerUpdate = 17;
+		PlayerUpdateNotification updateNotification = 17;
 		
 	}
 	

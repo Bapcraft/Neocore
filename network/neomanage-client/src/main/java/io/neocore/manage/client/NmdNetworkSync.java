@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.common.player.LockCoordinator;
 import io.neocore.common.player.NetworkSync;
 import io.neocore.manage.client.net.NmNetwork;
@@ -55,8 +56,10 @@ public class NmdNetworkSync extends NetworkSync {
 	@Override
 	public void announceInvalidation(UUID uuid) {
 		
+		NeocoreAPI.getLogger().fine("Announcing invalidation of " + uuid + "...");
+		
 		ClientMessage.Builder b = ClientMessageUtils.newBuilder(this.agentId);
-		b.setPlayerUpdate(
+		b.setUpdateNotification(
 			PlayerUpdateNotification.newBuilder()
 				.setPlayerId(uuid.toString())
 				.build());
@@ -67,7 +70,10 @@ public class NmdNetworkSync extends NetworkSync {
 	
 	@Override
 	public void setInvalidationCallback(Consumer<UUID> callback) {
+		
+		NeocoreAPI.getLogger().fine("Invalidation callback installed.");
 		this.invalidationCallback = callback;
+		
 	}
 	
 	public void handleInvalidation(UUID uuid) {

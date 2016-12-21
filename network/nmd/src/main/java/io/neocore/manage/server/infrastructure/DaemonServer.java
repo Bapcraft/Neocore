@@ -17,6 +17,7 @@ import io.neocore.manage.server.Scheduler;
 import io.neocore.manage.server.handling.ClientDisconnectHandler;
 import io.neocore.manage.server.handling.PingHandler;
 import io.neocore.manage.server.handling.PlayerListUpdateHandler;
+import io.neocore.manage.server.handling.PlayerUpdateHandler;
 import io.neocore.manage.server.handling.RebroadcastHandler;
 import io.neocore.manage.server.handling.SubUpdateHandler;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient;
@@ -60,6 +61,7 @@ public class DaemonServer {
 		this.messageManager.registerHandler(PayloadCase.SUBUPDATE, new SubUpdateHandler());
 		this.messageManager.registerHandler(PayloadCase.PLAYERLISTUPDATE, new RebroadcastHandler());
 		this.messageManager.registerHandler(PayloadCase.PLAYERLISTUPDATE, new PlayerListUpdateHandler());
+		this.messageManager.registerHandler(PayloadCase.UPDATENOTIFICATION, new PlayerUpdateHandler());
 		
 	}
 	

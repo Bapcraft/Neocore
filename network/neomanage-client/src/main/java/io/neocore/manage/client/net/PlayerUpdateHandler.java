@@ -18,10 +18,10 @@ public class PlayerUpdateHandler extends MessageHandler {
 	@Override
 	public void handle(NmServer sender, ClientMessage message) {
 		
-		PlayerUpdateNotification pun = message.getPlayerUpdate();
+		PlayerUpdateNotification pun = message.getUpdateNotification();
 		UUID uuid = UUID.fromString(pun.getPlayerId());
 		
-		NeocoreAPI.getLogger().info("Got invalidation notification from " + message.getSenderId() + " for player " + uuid + ".");
+		NeocoreAPI.getLogger().finer("Got invalidation notification from " + message.getSenderId() + " for player " + uuid + ".");
 		this.sync.handleInvalidation(uuid);
 		
 	}

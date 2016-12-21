@@ -29,6 +29,7 @@ import io.neocore.manage.client.net.NmServer;
 import io.neocore.manage.client.net.PingHandler;
 import io.neocore.manage.client.net.PlayerUpdateHandler;
 import io.neocore.manage.client.net.RemoteShutdownHandler;
+import io.neocore.manage.client.net.SubUpdateHandler;
 import io.neocore.manage.client.network.DaemonNetworkMapService;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage.PayloadCase;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerRole;
@@ -135,7 +136,8 @@ public class NmcMicromodule extends JavaMicromodule {
 		// Configure handler manager.
 		this.handlerManager.setHandler(PayloadCase.DAEMONSHUTDOWN, new RemoteShutdownHandler(this.network));
 		this.handlerManager.setHandler(PayloadCase.PING, new PingHandler());
-		this.handlerManager.setHandler(PayloadCase.PLAYERUPDATE, new PlayerUpdateHandler(this.networkSync));
+		this.handlerManager.setHandler(PayloadCase.UPDATENOTIFICATION, new PlayerUpdateHandler(this.networkSync));
+		this.handlerManager.setHandler(PayloadCase.SUBUPDATE, new SubUpdateHandler(this.netMapService));
 		
 	}
 	
@@ -147,6 +149,7 @@ public class NmcMicromodule extends JavaMicromodule {
 		
 		this.network.shutdownConnections();
 		
+		// Ehh?
 		System.gc();
 		
 	}
