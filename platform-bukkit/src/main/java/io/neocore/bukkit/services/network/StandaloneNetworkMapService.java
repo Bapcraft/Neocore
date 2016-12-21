@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.neocore.api.Neocore;
 import io.neocore.api.infrastructure.NetworkMap;
 import io.neocore.api.infrastructure.NetworkMapService;
 
@@ -12,9 +13,9 @@ public class StandaloneNetworkMapService implements NetworkMapService {
 	private StandaloneNetworkMember self;
 	private StandaloneNetworkMap map;
 	
-	public StandaloneNetworkMapService(String fakeName) {
+	public StandaloneNetworkMapService(Neocore neo) {
 		
-		this.self = new StandaloneNetworkMember(fakeName);
+		this.self = new StandaloneNetworkMember(neo);
 		this.map = new StandaloneNetworkMap(this.self);
 		
 	}

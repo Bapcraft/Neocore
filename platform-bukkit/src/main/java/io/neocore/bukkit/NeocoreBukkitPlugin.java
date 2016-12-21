@@ -115,7 +115,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 			NeocoreAPI.getLogger().warning("It is strongly suggested that you run Neocore in standalone mode if you do not have a sync daemon.");
 		} else {
 			
-			this.netMapService = new StandaloneNetworkMapService(this.getNeocoreConfig().getServerName());
+			this.netMapService = new StandaloneNetworkMapService(this.neocore);
 			neo.registerServiceProvider(InfrastructureService.NETWORKMAP, this.netMapService, this);
 			
 		}
