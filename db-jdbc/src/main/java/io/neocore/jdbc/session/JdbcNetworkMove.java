@@ -16,19 +16,27 @@ public class JdbcNetworkMove extends AbstractPersistentRecord implements Endpoin
 	private JdbcSession session;
 	
 	@DatabaseField(canBeNull = false)
-	private Date time;
+	private Date time = new Date();
 	
 	@DatabaseField(canBeNull = false)
-	private String destination;
+	private String destination = "[undefined]";
 	
-	@Override
-	public void setDirty(boolean val) {
-		
-		super.setDirty(val);
-		this.session.setDirty(val);
+	protected JdbcNetworkMove() {
 		
 	}
 	
+	public JdbcNetworkMove(JdbcSession session) {
+		this.session = session;
+	}
+	
+	@Override
+	public void dirty() {
+		
+		super.dirty();
+		this.session.dirty();
+		
+	}
+
 	@Override
 	public boolean isDirty() {
 		return super.isDirty() || this.session.isDirty();
