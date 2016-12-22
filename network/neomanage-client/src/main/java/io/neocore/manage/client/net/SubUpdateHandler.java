@@ -19,7 +19,7 @@ public class SubUpdateHandler extends MessageHandler {
 		
 		PlayerSubscriptionUpdate psu = message.getSubUpdate();
 		
-		UUID senderId = UUID.fromString(message.getSenderId());
+		UUID senderAgentId = UUID.fromString(message.getSenderId());
 		UUID playerId = UUID.fromString(psu.getUuid());
 		
 		// TODO

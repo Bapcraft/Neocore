@@ -2,6 +2,7 @@ package io.neocore.manage.client.net;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -41,7 +42,12 @@ public class MessageRecvRunner implements Runnable {
 				if (msg == null) continue; // wtf?
 				
 				NeocoreAPI.getLogger().finer("Got message ID:" + Long.toHexString(msg.getMessageId()) + " from " + this.daemonName + " of type " + msg.getPayloadCase().name() + ".");
-				this.recvCallback.accept(msg);
+				
+				if (!msg.hasSenderId() || !UUID.fromString(msg.getSenderId()).equals(NeocoreAPI.getAgent().getAgentId())) {
+					this.recvCallback.accept(msg);
+				} else {
+					NeocoreAPI.getLogger().warning("Got message from self of type " + msg.getPayloadCase() + ", ignoring.");
+				}
 				
 			} catch (IOException e) {
 				

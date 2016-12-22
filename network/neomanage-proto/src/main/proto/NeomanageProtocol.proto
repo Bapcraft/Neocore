@@ -58,12 +58,14 @@ message ServerClient {
 		
 		UNDEFINED = 0;
 		
-		GAME = 1;
+		GAMEPLAY = 1;
 		PROXY = 2;
 		
 	}
 	
 	enum ServerRole {
+		
+		STANDALONE = 0;
 		
 		FRONTEND = 1;
 		ENDPOINT = 2;

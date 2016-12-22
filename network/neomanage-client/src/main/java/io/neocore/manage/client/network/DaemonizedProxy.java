@@ -1,18 +1,13 @@
 package io.neocore.manage.client.network;
 
+import java.util.UUID;
+
 import io.neocore.api.infrastructure.ConnectionFrontend;
 
-public class DaemonizedProxy implements DaemonizedNetworkComponent, ConnectionFrontend {
+public class DaemonizedProxy extends RemoteAgent implements ConnectionFrontend {
 	
-	private String name;
-	
-	public DaemonizedProxy(String name) {
-		this.name = name;
+	public DaemonizedProxy(UUID id, String name, String network) {
+		super(id, name, network);
 	}
 	
-	@Override
-	public String getNetworkName() {
-		return this.name;
-	}
-
 }
