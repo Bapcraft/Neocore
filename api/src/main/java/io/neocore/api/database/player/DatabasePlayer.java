@@ -9,6 +9,7 @@ import io.neocore.api.eco.Account;
 import io.neocore.api.player.PlayerIdentity;
 import io.neocore.api.player.extension.Extension;
 import io.neocore.api.player.extension.ExtensionType;
+import io.neocore.api.player.group.Flair;
 import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
 
@@ -181,5 +182,17 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	 * @return Gets the player's restriction level.
 	 */
 	public int getRestrictionLevel();
+	
+	/**
+	 * Sets the player's current flair.
+	 * 
+	 * @param flair Their new flair
+	 */
+	public void setCurrentFlair(Flair flair);
+	
+	/**
+	 * @return The player's current flair
+	 */
+	public Flair getCurrentFlair();
 	
 }
