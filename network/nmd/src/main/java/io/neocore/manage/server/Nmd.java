@@ -81,7 +81,9 @@ public class Nmd {
 		// Now set up the socket and server itself.
 		try {
 			
-			ServerSocket socket = new ServerSocket(10000);
+			int port = Integer.parseInt(System.getProperty("io.neocore.neomanage.server.PortNumber", "10000"));
+			
+			ServerSocket socket = new ServerSocket(port);
 			this.server = new DaemonServer(this.scheduler, socket, 1);
 			
 		} catch (IOException e) {
