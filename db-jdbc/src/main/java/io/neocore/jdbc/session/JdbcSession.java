@@ -2,16 +2,19 @@ package io.neocore.jdbc.session;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.session.EndpointMove;
 import io.neocore.api.database.session.ProxiedSession;
@@ -142,6 +145,10 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 		return this.frontend;
 	}
 	
+	protected void setNetworked(boolean net) {
+		this.networked = net;
+	}
+	
 	@Override
 	public boolean isNetworked() {
 		return this.networked;
@@ -191,6 +198,11 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 	public void addEndpointMove(EndpointMove move) {
 		
 		this.moves.add((JdbcNetworkMove) move); // FIXME Casting.
+		try {
+			this.moves.update((JdbcNetworkMove) move); // FIXME Casting.
+		} catch (SQLException e) {
+			NeocoreAPI.getLogger().log(Level.SEVERE, "Problem adding endpoint move.", e);
+		}
 		this.dirty();
 		
 	}

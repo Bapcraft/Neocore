@@ -18,8 +18,10 @@ import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.eco.Account;
 import io.neocore.api.player.extension.Extension;
+import io.neocore.api.player.group.Flair;
 import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
+import io.neocore.jdbc.group.JdbcFlair;
 
 @DatabaseTable(tableName = "players")
 public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePlayer, Comparable<DatabasePlayer> {
@@ -50,6 +52,12 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	
 	@DatabaseField
 	private int restrictionLevel;
+	
+	@DatabaseField
+	private String currentFlairPrefix;
+	
+	@DatabaseField
+	private String currentFlairSuffix;
 	
 	public JdbcDbPlayer() {
 		// ORMLite.
@@ -258,6 +266,19 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	@Override
 	public int getRestrictionLevel() {
 		return this.restrictionLevel;
+	}
+
+	@Override
+	public void setCurrentFlair(Flair flair) {
+		
+		this.currentFlairPrefix = flair.getPrefix();
+		this.currentFlairSuffix = flair.getSuffix();
+		
+	}
+
+	@Override
+	public Flair getCurrentFlair() {
+		return new JdbcFlair(this.currentFlairPrefix, this.currentFlairSuffix); // Probably shouldn't be instantiating it like that.
 	}
 	
 }
