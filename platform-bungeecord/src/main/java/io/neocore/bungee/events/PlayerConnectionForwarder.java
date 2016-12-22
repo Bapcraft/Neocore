@@ -7,6 +7,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
+import io.neocore.api.event.database.LoadReason;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.infrastructure.ProxyAcceptor;
@@ -65,7 +66,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		UUID uuid = player.getUniqueId();
 		
 		CommonPlayerManager cpm = this.neocore.getPlayerAssembler();
-		NeoPlayer np = cpm.assemblePlayer(uuid, LoadType.FULL, loaded -> {
+		NeoPlayer np = cpm.assemblePlayer(uuid, LoadReason.JOIN, LoadType.FULL, loaded -> {
 			
 
 			/*
@@ -147,8 +148,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 			
 		}
 		
-		if (this.loginAcceptor == null) return;
-		this.loginAcceptor.onDisconnectEvent(new BungeeQuitEvent(np));
+		if (this.loginAcceptor != null) this.loginAcceptor.onDisconnectEvent(new BungeeQuitEvent(np));
 		
 	}
 	

@@ -13,6 +13,7 @@ import io.neocore.api.host.Context;
 import io.neocore.api.host.HostService;
 import io.neocore.api.host.Scheduler;
 import io.neocore.api.infrastructure.InfrastructureService;
+import io.neocore.api.player.PlayerManager;
 import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bungee.cmd.CommandWrapper;
@@ -50,15 +51,16 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		
 		inst = this;
 		
+		// Basic prep.
 		BungeeNeocoreConfig.verifyConfig(this.getConfigFile(), this);
 		this.config = new BungeeNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
+		this.scheduler = new BungeeScheduler(this, this.getProxy().getScheduler());
 		
+		// Actual setup.
 		NeocoreInstaller.applyLogger(this.getProxy().getLogger());
 		NeocoreImpl neo = new NeocoreImpl(this);
 		NeocoreInstaller.install(neo);
 		this.neocore = neo; // Alias because we use it a lot here.
-		
-		this.scheduler = new BungeeScheduler(this, this.getProxy().getScheduler());
 		
 		// Event forwarders
 		this.loginForwarder = new PlayerConnectionForwarder(neo);
@@ -78,6 +80,16 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 		neo.registerServiceProvider(InfrastructureService.PROXY, this.proxyService, this);
 		neo.registerServiceProvider(InfrastructureService.NETWORKMAP, this.netMapService, this);
 		
+		// Set up player manager services that we can provide here.
+		PlayerManager pm = neo.getPlayerManager();
+		pm.addService(HostService.LOGIN);
+		pm.addService(HostService.PERMISSIONS);
+		
+		// Event forwarder registration
+		for (EventForwarder fwdr : this.forwarders) {
+			this.getProxy().getPluginManager().registerListener(this, fwdr);
+		}
+		
 		// Set up a broadcast for server initialization.
 		neo.getTaskQueue().enqueue(new Task(new DumbTaskDelegator("Neocore-Init")) {
 			
@@ -93,7 +105,7 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 			
 			/*
 			 * If a player connects before this actually gets invoked then the
-			 * prelogin event handler will initialze neocore from that thread,
+			 * prelogin event handler will initialize Neocore from that thread,
 			 * then once this is allowed to enter it will exit it pretty
 			 * quickly because it's already inited.
 			 */
