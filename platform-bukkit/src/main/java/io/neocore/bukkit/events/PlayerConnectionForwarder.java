@@ -14,6 +14,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
+import io.neocore.api.event.database.LoadReason;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.player.NeoPlayer;
@@ -75,7 +76,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		UUID uuid = player.getUniqueId();
 		
 		// Initialize the player themselves.
-		NeoPlayer np = this.neocore.getPlayerAssembler().assemblePlayer(uuid, LoadType.FULL, loaded -> {
+		NeoPlayer np = this.neocore.getPlayerAssembler().assemblePlayer(uuid, LoadReason.JOIN, LoadType.FULL, loaded -> {
 			
 			/*
 			 * First we increase the login count and update the last login, and
@@ -144,7 +145,17 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		
 		if (this.acceptor == null) return;
 		
-		NeoPlayer np = this.neocore.getPlayerManager().getPlayer(event.getPlayer().getUniqueId());
+		Player p = event.getPlayer();
+		NeocoreAPI.getLogger().fine("Got quit event for player " + p.getName() + ", UUID " + p.getUniqueId() + ".");
+		
+		NeoPlayer np = this.neocore.getPlayerManager().getPlayer(p.getUniqueId());
+		
+		if (np == null) {
+			
+			NeocoreAPI.getLogger().severe("Unloading player " + p.getName() + " (" + p.getUniqueId() + ") not possible, no NeoPlayer found!");
+			return;
+			
+		}
 		
 		// Set the session state to disconnected.
 		if (NeocoreAPI.isFrontend()) {
