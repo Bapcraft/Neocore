@@ -70,21 +70,21 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	 * @return The session of this player, or <code>null</code> if the player is not connected.
 	 */
 	public Session getSession() {
-		return this.getIdentity(Session.class);
+		return this.hasIdentity(Session.class) ? this.getIdentity(Session.class) : null;
 	}
 	
 	/**
 	 * @return The username of the player.
 	 */
 	public String getUsername() {
-		return this.getIdentity(ServerPlayer.class).getName();
+		return this.hasIdentity(ServerPlayer.class) ? this.getIdentity(ServerPlayer.class).getName() : "[undefined]";
 	}
 	
 	/**
 	 * @return The name of the player that should actually be displayed in chat and such.
 	 */
 	public String getDisplayName() {
-		return this.getIdentity(ChattablePlayer.class).getDisplayName();
+		return this.hasIdentity(ChattablePlayer.class) ? this.getIdentity(ChattablePlayer.class).getDisplayName() : this.getUsername();
 	}
 	
 	/**
@@ -170,7 +170,11 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	 * supposed to can cause unexpected behavior.
 	 */
 	public void setPopulated() {
+		
+		if (this.isPopulated()) NeocoreAPI.getLogger().warning("NeoPlayer " + this.getUniqueId() + " (" + this.getUsername() + ") already marked as popualated, but we're marking it as populated anyways.");
 		this.isPopulated = true;
+		NeocoreAPI.getLogger().finer("NeoPlayer " + this.getUniqueId() + " (" + this.getUsername() + ") marked as populated.");
+		
 	}
 	
 	/**

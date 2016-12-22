@@ -13,7 +13,7 @@ public interface NetworkMember {
 	
 	/**
 	 * Returns <code>true</code> if this "thing" is part of a network, returns
-	 * <code>false</code> otherwise.
+	 * <code>false</code> if it is a standalone.
 	 * 
 	 * @return The state of this object's membership in a network
 	 */

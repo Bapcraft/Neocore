@@ -47,6 +47,7 @@ public class NeocoreAPI {
 		logger.info("Host Class: " + agent.getHost().getClass().getName());
 		logger.info("Host Version: " + agent.getHost().getVersion());
 		logger.info("Host Server Name: " + agent.getHost().getNeocoreConfig().getServerName());
+		logger.info("Agent ID: " + agent.getAgentId());
 		
 		// Display contexts listed
 		logger.info("Host Contexts:");

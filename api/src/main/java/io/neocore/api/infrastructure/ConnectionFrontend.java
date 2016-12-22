@@ -1,5 +1,7 @@
 package io.neocore.api.infrastructure;
 
+import io.neocore.api.AgentIdentity;
+
 /**
  * Represents something that players connect to that sends them gameplay
  * packets directly.  This is typically a BungeeCord server in networks, but
@@ -7,6 +9,6 @@ package io.neocore.api.infrastructure;
  * 
  * @author treyzania
  */
-public interface ConnectionFrontend extends NetworkMember {
+public interface ConnectionFrontend extends AgentIdentity, NetworkMember {
 	
 }
