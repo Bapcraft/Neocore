@@ -9,6 +9,7 @@ import io.neocore.api.database.artifact.IdentifierManager;
 import io.neocore.api.database.ban.BanEntry;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
+import io.neocore.api.event.database.FlushReason;
 import io.neocore.api.event.database.PostUnloadPlayerEvent;
 import io.neocore.api.event.database.UnloadReason;
 import io.neocore.api.host.Context;
@@ -138,7 +139,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		// Setup the unload and broadcast.
 		Runnable unloadAndBroadcast = () -> {
 			
-			this.players.unloadPlayer(np.getUniqueId(), () -> {
+			this.players.unloadPlayer(np.getUniqueId(), UnloadReason.DISCONNECT, () -> {
 				this.events.broadcast(new PostUnloadPlayerEvent(UnloadReason.DISCONNECT, np.getUniqueId()));
 			});
 			
@@ -148,7 +149,7 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		if (np.isDirty()) {
 			
 			// Either do the unload after a flush...
-			this.players.flushPlayer(np.getUniqueId(), unloadAndBroadcast);
+			this.players.flushPlayer(np.getUniqueId(), FlushReason.UNLOAD, unloadAndBroadcast);
 			
 		} else {
 			

@@ -86,7 +86,33 @@ public class CommonPlayerManager {
 		log.finer("Processing invalidation for " + uuid + " ( " + (player != null ? player.getUsername() : "[undefined]") + " )...");
 		
 		if (player != null) {
-			this.reloadPlayer(uuid, ReloadReason.INVALIDATION, null);
+			
+			player.invalidate();
+			
+			if (player.isPopulated()) {
+				
+				this.reloadPlayer(uuid, ReloadReason.INVALIDATION, np -> {
+					NeocoreAPI.getLogger().finer("Player revalidation totally complete now for player " + uuid + ".");
+				});
+				
+			} else {
+				
+				log.warning("Player hasn't finished being populated, but we tried to revalidate it.  Queueing delayed thread to do it.");
+				this.scheduler.invokeAsync(() -> {
+					
+					try {
+						Thread.sleep(100L); // TODO Make this configurable.
+					} catch (InterruptedException e) {
+						// ehh?
+					}
+					
+					log.finer("Trying revalidation of player " + uuid + " again...");
+					this.processInvalidation(uuid);
+					
+				});
+				
+			}
+			
 		} else {
 			log.warning("We don't have player " + uuid + " online, ignoring invalidation!");
 		}
@@ -173,21 +199,35 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadType type, Consumer<NeoPlayer> callback) {
+	private void addCachedPlayer(NeoPlayer np) {
+		
+		NeocoreAPI.getLogger().finest("Caching NeoPlayer " + np.getUniqueId() + " (hashcode: " + np.hashCode() + ").");
+		this.playerCache.add(np);
+		
+	}
+	
+	private void removeCachedPlayer(NeoPlayer np) {
+		
+		NeocoreAPI.getLogger().finest("Removing NeoPlayer " + np.getUniqueId() + " (hashcode: " + np.hashCode() + ") from cache.");
+		if (!this.playerCache.remove(np)) NeocoreAPI.getLogger().warning("Tried to remove NeoPlayer " + np.getUniqueId() + " (hc" + np.hashCode() + ") from cache, but it wasn't in the cache!");
+		
+	}
+	
+	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadReason reason, LoadType type, Consumer<NeoPlayer> callback) {
 		
 		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
 		this.eventManager.broadcast(new PreLoadPlayerEvent(LoadReason.OTHER, uuid)); // FIXME Reason.
 		
-		this.networkSync.updateSubscriptionState(uuid, true);
+		if (reason == LoadReason.JOIN || reason == LoadReason.OTHER) this.networkSync.updateSubscriptionState(uuid, true);
 		
-		// Check to see if we're actually going to be converting it to a fulll form.
+		// Check to see if we're actually going to be converting it to a full form.
 		if (this.getLoadType(uuid) == LoadType.PRELOAD && type == LoadType.FULL) {
 			
 			/*
 			 * We're removing our local copy because we're going to be loading
 			 * from the provider caches for the full version anyways.
 			 */
-			this.playerCache.remove(uuid);
+			this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid)); // THIS IS REALLY IMPORTANT.
 			
 		}
 		
@@ -206,8 +246,9 @@ public class CommonPlayerManager {
 			
 			NeocoreAPI.getLogger().finer(
 				String.format(
-					"Provision result for %s on %s was %s.",
+					"Provision result for %s (hashcode: %s) on %s was %s.",
 					np.getUniqueId(),
+					np.hashCode(),
 					container.getProvider().getClass().getSimpleName(),
 					result.name()
 				)
@@ -234,23 +275,25 @@ public class CommonPlayerManager {
 		
 		// Set up caches.
 		this.loadStates.put(uuid, type);
-		this.playerCache.add(np);
+		this.addCachedPlayer(np);
 		
 		// Configure the flushing procedure.
-		np.setFlushProcedure(() -> this.flushPlayer(uuid, () -> {}));
+		np.setFlushProcedure(() -> {
+			this.flushPlayer(uuid, np.isDirty() ? FlushReason.DIRTY_CLEAN : FlushReason.EXPLICIT, () -> {});
+		});
 		
 		// Now return the container while it gets populated in some other thread.
 		return np;
 		
 	}
 	
-	public synchronized void flushPlayer(UUID uuid, Runnable callback) {
+	public synchronized void flushPlayer(UUID uuid, FlushReason reason, Runnable callback) {
 		
 		NeocoreAPI.getLogger().fine("Flushing player " + uuid + " to database...");
 		NeoPlayer np = this.findPlayer(uuid);
 		
 		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
-		this.eventManager.broadcast(new PreFlushPlayerEvent(FlushReason.OTHER, np)); // FIXME Reason.
+		this.eventManager.broadcast(new PreFlushPlayerEvent(reason, np));
 		
 		CountDownLatch latch = new CountDownLatch(this.providerContainers.size());
 		
@@ -290,7 +333,7 @@ public class CommonPlayerManager {
 			
 			// Broadcast the event in all the relevant channels.
 			this.networkSync.announceInvalidation(uuid);
-			this.eventManager.broadcast(new PostFlushPlayerEvent(FlushReason.OTHER, np)); // FIXME Reason.
+			this.eventManager.broadcast(new PostFlushPlayerEvent(reason, np));
 			
 			// Run the callback.
 			if (callback != null) callback.run();
@@ -299,13 +342,15 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public synchronized void unloadPlayer(UUID uuid, Runnable callback) {
+	public synchronized void unloadPlayer(UUID uuid, UnloadReason reason, Runnable callback) {
 		
 		NeocoreAPI.getLogger().fine("Unloading player " + uuid + "...");
 		NeoPlayer np = this.findPlayer(uuid);
 		
 		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
-		this.eventManager.broadcast(new PreUnloadPlayerEvent(UnloadReason.OTHER, np)); // FIXME Reason.
+		this.eventManager.broadcast(new PreUnloadPlayerEvent(reason, np)); // FIXME Reason.
+		this.removeCachedPlayer(np);
+		this.loadStates.remove(uuid);
 		
 		CountDownLatch latch = new CountDownLatch(this.providerContainers.size());
 		
@@ -340,14 +385,10 @@ public class CommonPlayerManager {
 				NeocoreAPI.getLogger().warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
 			}
 			
-			this.networkSync.updateSubscriptionState(uuid, false);
-			this.eventManager.broadcast(new PostUnloadPlayerEvent(UnloadReason.OTHER, uuid)); // FIXME Reason.
+			if (reason == UnloadReason.DISCONNECT) this.networkSync.updateSubscriptionState(uuid, false);
+			this.eventManager.broadcast(new PostUnloadPlayerEvent(reason, uuid));
 			
 			if (callback != null) callback.run();
-			
-			// Actually purge from the cache.
-			this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid));
-			this.loadStates.remove(uuid);
 			
 		});
 		
@@ -361,9 +402,11 @@ public class CommonPlayerManager {
 		
 		LoadType type = this.loadStates.get(uuid);
 		
-		this.unloadPlayer(uuid, () -> {
+		this.unloadPlayer(uuid, UnloadReason.OTHER, () -> {
 			
-			this.assemblePlayer(uuid, type, np -> {
+			NeocoreAPI.getLogger().finer("Unload for " + uuid + " complete, reassembling...");
+			
+			this.assemblePlayer(uuid, LoadReason.REVALIDATE, type, np -> {
 				
 				NeocoreAPI.getLogger().fine("Revalidation for " + uuid + " complete.");
 				this.eventManager.broadcast(new PostReloadPlayerEvent(reason, np));

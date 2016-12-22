@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceType;
+import io.neocore.api.event.database.LoadReason;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerManager;
 
@@ -35,7 +36,7 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 	
 	@Override
 	public void preload(UUID uuid, Consumer<NeoPlayer> callback) {
-		this.playerManager.assemblePlayer(uuid, LoadType.PRELOAD, callback);
+		this.playerManager.assemblePlayer(uuid, LoadReason.OTHER, LoadType.PRELOAD, callback);
 	}
 	
 	@Override
