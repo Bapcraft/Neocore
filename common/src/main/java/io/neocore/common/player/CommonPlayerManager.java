@@ -201,7 +201,12 @@ public class CommonPlayerManager {
 	
 	private void addCachedPlayer(NeoPlayer np) {
 		
-		NeocoreAPI.getLogger().finest("Caching NeoPlayer " + np.getUniqueId() + " (hashcode: " + np.hashCode() + ").");
+		if (np != null) {
+			NeocoreAPI.getLogger().finest("Caching NeoPlayer " + np.getUniqueId() + " (hashcode: " + np.hashCode() + ").");
+		} else {
+			NeocoreAPI.getLogger().warning("Tried to cache a null NeoPlayer!");
+		}
+		
 		this.playerCache.add(np);
 		
 	}
@@ -279,7 +284,11 @@ public class CommonPlayerManager {
 		
 		// Configure the flushing procedure.
 		np.setFlushProcedure(() -> {
-			this.flushPlayer(uuid, np.isDirty() ? FlushReason.DIRTY_CLEAN : FlushReason.EXPLICIT, () -> {});
+			
+			this.flushPlayer(uuid, np.isDirty() ? FlushReason.DIRTY_CLEAN : FlushReason.EXPLICIT, () -> {
+				NeocoreAPI.getLogger().finest("NeoPlayer " + uuid + " successfully flushed.");
+			});
+			
 		});
 		
 		// Now return the container while it gets populated in some other thread.
