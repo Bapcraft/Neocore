@@ -5,7 +5,7 @@ public class AbstractPersistentRecord implements Persistent {
 	// Involved in network stuffs.
 	protected transient volatile boolean dirty, invalid;
 	
-	private Runnable flushCallback;
+	private Runnable flushCallback = () -> {};
 	
 	@Override
 	public void setDirty(boolean val) {
