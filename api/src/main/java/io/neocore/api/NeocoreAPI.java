@@ -108,6 +108,15 @@ public class NeocoreAPI {
 	/**
 	 * Convenience method.
 	 * 
+	 * @return If we're part of a network.
+	 */
+	public static boolean isNetworked() {
+		return getAgent().isNetworked();
+	}
+	
+	/**
+	 * Convenience method.
+	 * 
 	 * @return The server's name.
 	 */
 	public static String getServerName() {
