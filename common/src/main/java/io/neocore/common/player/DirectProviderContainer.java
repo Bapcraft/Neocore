@@ -25,12 +25,16 @@ public class DirectProviderContainer extends ProviderContainer {
 			
 			PlayerIdentity ident = this.getProvider().load(player.getUniqueId());
 			
-			// Call outward to the container.
-			if (ident instanceof Persistent) {
-				((Persistent) ident).setFlushProcedure(() -> player.flush());
+			if (ident != null) {
+				
+				// Call outward to the container.
+				if (ident instanceof Persistent) {
+					((Persistent) ident).setFlushProcedure(() -> player.flush());
+				}
+				
+				player.addIdentity(ident);
+				
 			}
-			
-			player.addIdentity(ident);
 			
 		});
 		

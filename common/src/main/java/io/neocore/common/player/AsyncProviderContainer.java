@@ -44,12 +44,16 @@ public class AsyncProviderContainer extends ProviderContainer implements Lockabl
 				
 				PlayerIdentity ident = this.loadIdentity(player.getUniqueId());
 				
-				// Call outward to the container.
-				if (ident instanceof Persistent) {
-					((Persistent) ident).setFlushProcedure(() -> player.flush());
+				if (ident != null) {
+					
+					// Call outward to the container.
+					if (ident instanceof Persistent) {
+						((Persistent) ident).setFlushProcedure(() -> player.flush());
+					}
+					
+					player.addIdentity(ident);
+					
 				}
-				
-				player.addIdentity(ident);
 				
 			});
 			
