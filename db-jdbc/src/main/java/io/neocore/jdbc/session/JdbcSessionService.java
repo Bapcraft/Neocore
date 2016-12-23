@@ -86,23 +86,47 @@ public class JdbcSessionService extends AbstractJdbcService implements SessionSe
 				qb.orderBy("start", false); // Get the latest at the top.
 				
 				// Execute.
-				List<JdbcSession> matches = this.sessionDao.query(qb.prepare());
+				List<JdbcSession> matches = null;
 				
-				if (matches.size() == 0) {
+				if (NeocoreAPI.isNetworked() && !NeocoreAPI.isFrontend()) {
 					
-					// Initialize a new session, then.
-					session = new JdbcSession(uuid);
-					this.cache.add(session);
-					this.playerIdToSessionIdMap.put(uuid, session.getSessionId());
+					int tries = 100; // TODO Make configurable.
 					
-					this.flush(uuid);
-					return session;
+					// If we're an endpoint then we're not supposed to be creating any sessions.
+					while (--tries > 0) {
+						
+						matches = this.sessionDao.query(qb.prepare());
+						
+						if (matches.size() > 0) {
+							
+							session = matches.remove(0);
+							break;
+							
+						}
+						
+						try {
+							Thread.sleep(10L); // TODO Make configurable.
+						} catch (InterruptedException e) {
+							NeocoreAPI.getLogger().warning("Interrupted while waiting for proxy to flush session.");
+						}
+						
+					}
+					
+					if (tries <= 0) NeocoreAPI.getLogger().warning("Could not query session before retry limit, returning null.");
 					
 				} else {
 					
-					// Grab it directly.
-					session = matches.remove(0);
-					this.playerIdToSessionIdMap.put(uuid, session.getSessionId());
+					// If we're a standalone or a frontend then we can create sessions if we have to.
+					matches = this.sessionDao.query(qb.prepare());
+					
+					if (matches.size() == 0) {
+						
+						session = new JdbcSession(uuid);
+						this.sessionDao.create(session);
+						
+					} else {
+						session = matches.remove(0);
+					}
 					
 				}
 				
@@ -150,7 +174,7 @@ public class JdbcSessionService extends AbstractJdbcService implements SessionSe
 			
 		}
 		
-		this.cache.add(session);
+		if (session != null) this.cache.add(session);
 		return session;
 		
 	}

@@ -105,21 +105,38 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 		
 		try {
 			
-			p = this.playerDao.queryForId(uuid);
-			
-			// Create the player if we don't have it.
-			if (p == null) {
+			if (NeocoreAPI.isNetworked() && !NeocoreAPI.isFrontend()) {
 				
-				NeocoreAPI.getLogger().info("Creating new database player entry for " + uuid + "...");
+				int tries = 100; // TODO Make configurable.
 				
-				// Not the best option, but it works.
-				this.playerDao.create(new JdbcDbPlayer(uuid));
-				return this.load(uuid);
+				while (--tries > 0) {
+					
+					p = this.playerDao.queryForId(uuid);
+					
+					if (p != null) break;
+					
+					try {
+						Thread.sleep(10L); // TODO Make configurable.
+					} catch (InterruptedException e) {
+						NeocoreAPI.getLogger().warning("Interrupted while delaying to requery from database.");
+					}
+					
+				}
+				
+				if (tries <= 0) NeocoreAPI.getLogger().warning("Could not query player data before retry limit, returning null.");
+				
+			} else {
+				
+				p = this.playerDao.queryForId(uuid);
+				
+				if (p == null) {
+					
+					p = new JdbcDbPlayer(uuid);
+					this.playerDao.create(p);
+					
+				}
 				
 			}
-			
-			this.cache.add(p);
-			return p;
 			
 		} catch (SQLException e) {
 			
@@ -127,6 +144,9 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 			return null;
 			
 		}
+		
+		if (p != null) this.cache.add(p);
+		return p;
 		
 	}
 	
