@@ -7,6 +7,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.cmd.AbstractServiceCommand;
 import io.neocore.api.cmd.CmdSender;
+import io.neocore.api.database.artifact.Artifact;
 import io.neocore.api.database.artifact.ArtifactService;
 import io.neocore.api.database.artifact.ArtifactTypes;
 import io.neocore.api.host.broadcast.BroadcastService;
@@ -32,7 +33,9 @@ public class CommandBroadcast extends AbstractServiceCommand {
 		try {
 			
 			ArtifactService am = this.getService(ArtifactService.class);
-			prefix = am.getSingletonArtifact(ArtifactTypes.BCAST_DEFAULT_PREFIX).getData();
+			Artifact prefixArt = am.getSingletonArtifact(ArtifactTypes.BCAST_DEFAULT_PREFIX);
+			
+			if (prefixArt != null) prefix = prefixArt.getData();
 			
 		} catch (UnsupportedOperationException e) {
 			NeocoreAPI.getLogger().warning("You should set a default broadcast prefix.");
