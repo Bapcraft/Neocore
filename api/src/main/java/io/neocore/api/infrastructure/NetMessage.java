@@ -7,7 +7,7 @@ public interface NetMessage {
 	 * 
 	 * @return The sender
 	 */
-	public NetworkMember getSender();
+	public Networkable getSender();
 	
 	/**
 	 * Gets the name of the channel in which the message was sent.

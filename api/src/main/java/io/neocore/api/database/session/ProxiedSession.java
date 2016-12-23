@@ -7,7 +7,7 @@ import io.neocore.api.infrastructure.NetworkEndpoint;
 public interface ProxiedSession extends Session {
 	
 	public List<EndpointMove> getEndpointMoves();
-	public void addEndpointMove(EndpointMove move);
+	public EndpointMove createEndpointMove();
 	
 	public default NetworkEndpoint getInitialEndpoint() {
 		return this.getEndpointMoves().get(0).getDestination();

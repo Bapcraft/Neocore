@@ -1,7 +1,7 @@
 package io.neocore.api.infrastructure;
 
-public interface NetworkMember {
-	
+public interface Networkable {
+
 	/**
 	 * Returns the name of the network this member belongs to.  If this value
 	 * is either <code>null</code> or an empty string, then the client is
@@ -9,8 +9,8 @@ public interface NetworkMember {
 	 * 
 	 * @return The network's name
 	 */
-	public String getNetworkName();
-	
+	String getNetworkName();
+
 	/**
 	 * Returns <code>true</code> if this "thing" is part of a network, returns
 	 * <code>false</code> if it is a standalone.

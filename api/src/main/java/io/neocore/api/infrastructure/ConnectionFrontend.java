@@ -9,6 +9,6 @@ import io.neocore.api.AgentIdentity;
  * 
  * @author treyzania
  */
-public interface ConnectionFrontend extends AgentIdentity, NetworkMember {
+public interface ConnectionFrontend extends AgentIdentity, NetworkHost {
 	
 }
