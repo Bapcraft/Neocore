@@ -3,15 +3,15 @@ package io.neocore.manage.client.net;
 import java.util.UUID;
 
 import io.neocore.api.NeocoreAPI;
-import io.neocore.manage.client.network.DaemonNetworkMapService;
+import io.neocore.manage.client.network.NmNetworkMapService;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
 import io.neocore.manage.proto.NeomanageProtocol.UnregisterClient;
 
 public class UnregisterClientAgentHandler extends MessageHandler {
 
-	private DaemonNetworkMapService service;
+	private NmNetworkMapService service;
 	
-	public UnregisterClientAgentHandler(DaemonNetworkMapService serv) {
+	public UnregisterClientAgentHandler(NmNetworkMapService serv) {
 		this.service = serv;
 	}
 	

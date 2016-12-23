@@ -3,15 +3,13 @@ package io.neocore.manage.client.network;
 import java.util.Set;
 import java.util.UUID;
 
-import io.neocore.api.infrastructure.ConnectionFrontend;
-import io.neocore.api.infrastructure.NetworkEndpoint;
 import io.neocore.api.infrastructure.NetworkPlayer;
 
-public class DaemonizedStandalone extends RemoteAgent implements ConnectionFrontend, NetworkEndpoint {
+public class NmStandalone extends RemoteAgent implements NmFrontend, NmEndpoint {
 	
 	private Set<NetworkPlayer> players;
 	
-	private DaemonizedStandalone(UUID id, String name) {
+	private NmStandalone(UUID id, String name) {
 		super(id, name);
 	}
 	

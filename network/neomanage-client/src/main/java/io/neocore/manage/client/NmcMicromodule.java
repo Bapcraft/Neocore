@@ -29,9 +29,8 @@ import io.neocore.manage.client.net.NmServer;
 import io.neocore.manage.client.net.PingHandler;
 import io.neocore.manage.client.net.PlayerUpdateHandler;
 import io.neocore.manage.client.net.RemoteShutdownHandler;
-import io.neocore.manage.client.net.SubUpdateHandler;
 import io.neocore.manage.client.net.UnregisterClientAgentHandler;
-import io.neocore.manage.client.network.DaemonNetworkMapService;
+import io.neocore.manage.client.network.NmNetworkMapService;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage.PayloadCase;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerRole;
 import io.neocore.manage.proto.NeomanageProtocol.ServerClient.ServerType;
@@ -46,7 +45,7 @@ public class NmcMicromodule extends JavaMicromodule {
 	private NmNetwork network;
 	
 	// Services.
-	private DaemonNetworkMapService netMapService;
+	private NmNetworkMapService netMapService;
 	
 	// Sync utils.
 	private NmdNetworkSync networkSync;
@@ -125,7 +124,7 @@ public class NmcMicromodule extends JavaMicromodule {
 		}
 		
 		// Set up services.
-		this.netMapService = new DaemonNetworkMapService(NeocoreAPI.getNetworkName()); // FIXME Network name.
+		this.netMapService = new NmNetworkMapService(NeocoreAPI.getNetworkName()); // FIXME Network name.
 		
 		// Register them.
 		this.registerService(InfrastructureService.NETWORKMAP, this.netMapService);
@@ -138,7 +137,7 @@ public class NmcMicromodule extends JavaMicromodule {
 		this.handlerManager.setHandler(PayloadCase.DAEMONSHUTDOWN, new RemoteShutdownHandler(this.network));
 		this.handlerManager.setHandler(PayloadCase.PING, new PingHandler());
 		this.handlerManager.setHandler(PayloadCase.UPDATENOTIFICATION, new PlayerUpdateHandler(this.networkSync));
-		this.handlerManager.setHandler(PayloadCase.SUBUPDATE, new SubUpdateHandler(this.netMapService));
+		//this.handlerManager.setHandler(PayloadCase.SUBUPDATE, new SubUpdateHandler(this.netMapService));
 		this.handlerManager.setHandler(PayloadCase.UNREGCLIENT, new UnregisterClientAgentHandler(this.netMapService));
 		
 	}

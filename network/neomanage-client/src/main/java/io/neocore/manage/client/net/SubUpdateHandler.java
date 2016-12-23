@@ -2,15 +2,17 @@ package io.neocore.manage.client.net;
 
 import java.util.UUID;
 
-import io.neocore.manage.client.network.DaemonNetworkMapService;
+import io.neocore.manage.client.network.NmNetworkMapService;
+import io.neocore.manage.client.network.NmNetworkComponent;
+import io.neocore.manage.client.network.NmNetworkMap;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;
 import io.neocore.manage.proto.NeomanageProtocol.PlayerSubscriptionUpdate;
 
 public class SubUpdateHandler extends MessageHandler {
 	
-	private DaemonNetworkMapService mapService;
+	private NmNetworkMapService mapService;
 	
-	public SubUpdateHandler(DaemonNetworkMapService service) {
+	public SubUpdateHandler(NmNetworkMapService service) {
 		this.mapService = service;
 	}
 	
@@ -21,9 +23,17 @@ public class SubUpdateHandler extends MessageHandler {
 		
 		UUID senderAgentId = UUID.fromString(message.getSenderId());
 		UUID playerId = UUID.fromString(psu.getUuid());
+		boolean state = psu.getState();
 		
-		// TODO
+		NmNetworkMap map = this.mapService.getNetworkByMemberId(senderAgentId);
+		NmNetworkComponent comp = this.mapService.getComponentById(senderAgentId);
+		
+		if (state) {
+			map.addPlayerTo(playerId, comp);
+		} else {
+			map.removePlayerFrom(playerId, comp);
+		}
 		
 	}
-
+	
 }
