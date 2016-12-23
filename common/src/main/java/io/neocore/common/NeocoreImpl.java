@@ -19,7 +19,7 @@ import io.neocore.api.database.player.PlayerService;
 import io.neocore.api.event.EventManager;
 import io.neocore.api.host.HostPlugin;
 import io.neocore.api.host.login.LoginAcceptor;
-import io.neocore.api.host.login.LoginService;
+import io.neocore.api.infrastructure.ProxyAcceptor;
 import io.neocore.api.module.Module;
 import io.neocore.api.module.ModuleManager;
 import io.neocore.api.player.NeoPlayer;
@@ -46,7 +46,7 @@ import io.neocore.common.permissions.PermissionManagerImpl;
 import io.neocore.common.player.CommonPlayerManager;
 import io.neocore.common.player.LoginAcceptorImpl;
 import io.neocore.common.player.PlayerManagerWrapperImpl;
-import io.neocore.common.service.LoginServiceRegHandler;
+import io.neocore.common.player.ProxyAcceptorImpl;
 import io.neocore.common.service.ServiceManagerImpl;
 import io.neocore.common.tasks.Worker;
 
@@ -67,7 +67,10 @@ public class NeocoreImpl implements Neocore {
 	private PermissionManagerImpl permManager;
 	private IdentifierManager identManager;
 	
+	@SuppressWarnings("unused")
 	private LoginAcceptor loginAcceptor;
+	@SuppressWarnings("unused")
+	private ProxyAcceptor proxyAcceptor;
 	
 	private TaskQueue tasks;
 	
@@ -87,9 +90,9 @@ public class NeocoreImpl implements Neocore {
 		this.playerManWrapper = new PlayerManagerWrapperImpl(this.playerManager);
 		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager);
 		
-		// Set up acceptors
+		// Set up acceptors.
 		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, this.identManager, host.getContexts());
-		this.serviceManager.registerRegistrationHandler(LoginService.class, new LoginServiceRegHandler(this.loginAcceptor));
+		this.proxyAcceptor = new ProxyAcceptorImpl(this.serviceManager);
 		
 		// Set up the task queue.
 		this.tasks = new TaskQueue();
