@@ -16,6 +16,7 @@ import io.neocore.api.host.Context;
 import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.host.login.InitialLoginEvent;
 import io.neocore.api.host.login.LoginAcceptor;
+import io.neocore.api.host.login.LoginService;
 import io.neocore.api.host.login.PostLoginEvent;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.common.event.CommonEventManager;
@@ -38,6 +39,8 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 		this.idents = idents;
 		
 		this.contexts = ctxs;
+		
+		this.services.registerRegistrationHandler(LoginService.class, r -> ((LoginService) r.getServiceProvider()).setLoginAcceptor(this));
 		
 	}
 	
