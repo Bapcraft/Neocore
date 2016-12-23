@@ -202,12 +202,13 @@ public class CommonPlayerManager {
 	private void addCachedPlayer(NeoPlayer np) {
 		
 		if (np != null) {
-			NeocoreAPI.getLogger().finest("Caching NeoPlayer " + np.getUniqueId() + " (hashcode: " + np.hashCode() + ").");
+			
+			this.playerCache.add(np);
+			NeocoreAPI.getLogger().finest("Cached NeoPlayer " + np.getUniqueId() + " (hashcode: " + np.hashCode() + ").");
+			
 		} else {
 			NeocoreAPI.getLogger().warning("Tried to cache a null NeoPlayer!");
 		}
-		
-		this.playerCache.add(np);
 		
 	}
 	
