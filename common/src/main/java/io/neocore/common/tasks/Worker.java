@@ -27,6 +27,8 @@ public class Worker implements Runnable {
 		this.container = new ExoContainer(NeocoreAPI.getLogger());
 		this.container.addHook(ct -> {
 			
+			if (ct.getThrown() instanceof InterruptedException) return;
+			
 			if (ct.getRan() instanceof Task) {
 				
 				Task t = (Task) ct.getRan();
