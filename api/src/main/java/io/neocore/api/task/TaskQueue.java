@@ -3,6 +3,8 @@ package io.neocore.api.task;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import io.neocore.api.NeocoreAPI;
+
 /**
  * A list of tasks to be run in a FIFO order.
  * 
@@ -26,11 +28,19 @@ public class TaskQueue {
 	 */
 	public Task dequeue() {
 		
-		try {
-			return this.queue.take();
-		} catch (InterruptedException e) {
-			throw new IllegalStateException("Somehow interrupted while dequeueing!");
+		Task t = null;
+		
+		while (t == null) {
+			
+			try {
+				t = this.queue.take();
+			} catch (InterruptedException e) {
+				NeocoreAPI.getLogger().warning("Interrupted while dequeueing.");
+			}
+			
 		}
+		
+		return t;
 		
 	}
 	
