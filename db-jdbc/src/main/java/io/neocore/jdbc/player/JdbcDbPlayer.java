@@ -53,11 +53,11 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	@DatabaseField
 	private int restrictionLevel;
 	
-	@DatabaseField
-	private String currentFlairPrefix;
+	@DatabaseField(canBeNull = false)
+	private String currentFlairPrefix = "";
 	
-	@DatabaseField
-	private String currentFlairSuffix;
+	@DatabaseField(canBeNull = false)
+	private String currentFlairSuffix = "";
 	
 	public JdbcDbPlayer() {
 		// ORMLite.
