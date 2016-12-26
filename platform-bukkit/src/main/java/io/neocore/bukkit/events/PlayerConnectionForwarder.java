@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.player.DatabasePlayer;
+import io.neocore.api.database.session.ProxiedSession;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
 import io.neocore.api.event.database.LoadReason;
@@ -118,6 +119,13 @@ public class PlayerConnectionForwarder extends EventForwarder {
 				// Update network info.
 				sess.setAddress(player.getAddress().getAddress());
 				sess.setHostString(player.getAddress().getHostName());
+				
+				if (NeocoreAPI.isNetworked()) {
+					
+					ProxiedSession ps = sess.getAsProxiedSession();
+					ps.setNetworked(true);
+					
+				}
 				
 				flush = true;
 				
