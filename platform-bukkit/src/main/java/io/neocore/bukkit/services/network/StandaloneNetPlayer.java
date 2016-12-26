@@ -44,5 +44,10 @@ public class StandaloneNetPlayer implements NetworkPlayer {
 	public int hashCode() {
 		return this.player.hashCode();
 	}
+
+	@Override
+	public boolean isOnline() {
+		return true;
+	}
 	
 }

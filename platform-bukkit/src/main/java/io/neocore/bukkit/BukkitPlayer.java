@@ -1,60 +1,52 @@
 package io.neocore.bukkit;
 
-import java.net.InetAddress;
 import java.util.Date;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-
+import org.bukkit.OfflinePlayer;
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.ServerPlayer;
+import net.md_5.bungee.api.ChatColor;
 
-public class BukkitPlayer implements ServerPlayer, ChattablePlayer {
+public class BukkitPlayer extends WrappedPlayer implements ServerPlayer, ChattablePlayer {
 	
-	private final Player player;
-	
-	public BukkitPlayer(Player player) {
-		this.player = player;
-	}
-	
-	@Override
-	public UUID getUniqueId() {
-		return this.player.getUniqueId();
-	}
-	
-	@Override
-	public InetAddress getAddress() {
-		return this.getAddress();
-	}
-
-	@Override
-	public void kick(String message) {
-		this.player.kickPlayer(message);
+	public BukkitPlayer(UUID uuid) {
+		super(uuid);
 	}
 	
 	@Override
 	public String getName() {
-		return this.player.getName();
+		
+		OfflinePlayer op = this.getOfflinePlayer();
+		return op.hasPlayedBefore() ? op.getName() : "[unknown]";
+		
 	}
 
 	@Override
 	public void setDisplayName(String name) {
-		this.player.setDisplayName(name);
+		this.getPlayerOrThrow().setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
 	}
 
 	@Override
 	public String getDisplayName() {
-		return this.player.getDisplayName();
+		return ChatColor.stripColor(this.getPlayerOrThrow().getDisplayName());
 	}
 
 	@Override
 	public void sendMessage(String message) {
-		this.player.sendMessage(message);
+		
+		try {
+			this.getPlayerOrThrow().sendMessage(message);
+		} catch (UnsupportedOperationException e) {
+			NeocoreAPI.getLogger().warning("Tried to send message to offline player.");
+		}
+		
 	}
 
 	@Override
 	public Date getLoginTime() {
-		return null;
+		return new Date(this.getOfflinePlayer().getLastPlayed()); // TODO Not what we want, should make a record when they log in and record that.
 	}
 	
 }

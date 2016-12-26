@@ -2,37 +2,13 @@ package io.neocore.bukkit.services.chat;
 
 import java.util.UUID;
 
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import io.neocore.api.host.chat.ChattablePlayer;
+import io.neocore.bukkit.BukkitPlayer;
 
-public class BukkitChattablePlayer implements ChattablePlayer {
+public class BukkitChattablePlayer extends BukkitPlayer implements ChattablePlayer {
 	
-	private Player player;
-	
-	public BukkitChattablePlayer(Player player) {
-		this.player = player;
+	public BukkitChattablePlayer(UUID uuid) {
+		super(uuid);
 	}
 	
-	@Override
-	public UUID getUniqueId() {
-		return this.player.getUniqueId();
-	}
-
-	@Override
-	public void setDisplayName(String name) {
-		this.player.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-	}
-
-	@Override
-	public String getDisplayName() {
-		return ChatColor.stripColor(this.player.getDisplayName()); // FIXME Untranslate chat colors.
-	}
-
-	@Override
-	public void sendMessage(String message) {
-		this.player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
-	}
-
 }
