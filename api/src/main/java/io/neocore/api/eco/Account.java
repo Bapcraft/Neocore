@@ -1,5 +1,7 @@
 package io.neocore.api.eco;
 
+import io.neocore.api.database.Persistent;
+
 /**
  * A bank account interface representing the amount of a specific currency in
  * one location.  This location is usually a player's personal, universal
@@ -7,7 +9,7 @@ package io.neocore.api.eco;
  * 
  * @author treyzania
  */
-public interface Account {
+public interface Account extends Persistent {
 	
 	/**
 	 * Sets the balance of the account's currency to the specified amount.
