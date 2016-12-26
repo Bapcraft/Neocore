@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -222,7 +223,7 @@ public class CommonPlayerManager {
 	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadReason reason, LoadType type, Consumer<NeoPlayer> callback) {
 		
 		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
-		this.eventManager.broadcast(new PreLoadPlayerEvent(LoadReason.OTHER, uuid)); // FIXME Reason.
+		this.eventManager.broadcast(new PreLoadPlayerEvent(reason, uuid));
 		
 		if (reason == LoadReason.JOIN || reason == LoadReason.OTHER) this.networkSync.updateSubscriptionState(uuid, true);
 		
@@ -271,7 +272,7 @@ public class CommonPlayerManager {
 				NeocoreAPI.getLogger().warning("Waiting for player assembly was interrupted, invoking callback anyways...");
 			}
 			
-			this.eventManager.broadcast(new PostLoadPlayerEvent(LoadReason.OTHER, np)); // FIXME Reason.
+			this.eventManager.broadcast(new PostLoadPlayerEvent(reason, np));
 			np.setPopulated();
 			
 			// Spawn a thread for the callback.
@@ -286,9 +287,20 @@ public class CommonPlayerManager {
 		// Configure the flushing procedure.
 		np.setFlushProcedure(() -> {
 			
+			CountDownLatch flushWaiter = new CountDownLatch(1);
+			
 			this.flushPlayer(uuid, np.isDirty() ? FlushReason.DIRTY_CLEAN : FlushReason.EXPLICIT, () -> {
+				
 				NeocoreAPI.getLogger().finest("NeoPlayer " + uuid + " successfully flushed.");
+				flushWaiter.countDown();
+				
 			});
+			
+			try {
+				flushWaiter.await(10000L, TimeUnit.MILLISECONDS); // FIXME Make configurable.
+			} catch (InterruptedException e) {
+				NeocoreAPI.getLogger().warning("Interrupted while waiting for ");
+			}
 			
 		});
 		
@@ -358,7 +370,7 @@ public class CommonPlayerManager {
 		NeoPlayer np = this.findPlayer(uuid);
 		
 		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
-		this.eventManager.broadcast(new PreUnloadPlayerEvent(reason, np)); // FIXME Reason.
+		this.eventManager.broadcast(new PreUnloadPlayerEvent(reason, np));
 		this.removeCachedPlayer(np);
 		this.loadStates.remove(uuid);
 		
