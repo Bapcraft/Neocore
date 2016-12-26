@@ -1,5 +1,6 @@
 package io.neocore.api.host.chat;
 
+import io.neocore.api.host.ConnectingPlayer;
 import io.neocore.api.player.PlayerIdentity;
 
 /**
@@ -7,7 +8,7 @@ import io.neocore.api.player.PlayerIdentity;
  * 
  * @author treyzania
  */
-public interface ChattablePlayer extends PlayerIdentity {
+public interface ChattablePlayer extends ConnectingPlayer {
 	
 	/**
 	 * Sets the name that should be used in chat messages in-game.

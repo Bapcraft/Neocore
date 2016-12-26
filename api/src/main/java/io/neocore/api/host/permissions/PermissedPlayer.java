@@ -2,14 +2,14 @@ package io.neocore.api.host.permissions;
 
 import java.util.List;
 
-import io.neocore.api.player.PlayerIdentity;
+import io.neocore.api.host.ConnectingPlayer;
 
 /**
  * Represents a player that can have permissions attached to them.
  * 
  * @author treyzania
  */
-public interface PermissedPlayer extends PlayerIdentity {
+public interface PermissedPlayer extends ConnectingPlayer {
 	
 	/**
 	 * @return <code>true</code> if the player is an "operator", <code>false</code> otherwise.
