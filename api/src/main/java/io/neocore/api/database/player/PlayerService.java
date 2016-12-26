@@ -11,11 +11,19 @@ import io.neocore.api.player.PlayerIdentity;
 public interface PlayerService extends DatabaseServiceProvider, IdentityLinkage<DatabasePlayer> {
 	
 	/**
-	 * @param id The UUID of the player who's last known username we're looking up.
-	 * @return The player's last known username, of <code>null</code> if unknown.
+	 * @param id The UUID of the player who's last known username we're looking up
+	 * @return The player's last known username, of <code>null</code> if unknown
 	 */
 	public String getLastUsername(UUID id);
-
+	
+	/**
+	 * Does a reverse-lookup of a player's UUID from their last-known username.  
+	 * 
+	 * @param name The player's last-known username
+	 * @return The player's UUID
+	 */
+	public UUID resolveUUID(String name);
+	
 	@Override
 	public default Class<? extends PlayerIdentity> getIdentityClass() {
 		return DatabasePlayer.class;
