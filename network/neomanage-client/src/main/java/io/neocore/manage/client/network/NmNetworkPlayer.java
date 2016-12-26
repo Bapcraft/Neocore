@@ -37,4 +37,10 @@ public class NmNetworkPlayer implements NetworkPlayer {
 		return null;
 	}
 
+	@Override
+	public boolean isOnline() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
