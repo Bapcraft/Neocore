@@ -36,10 +36,10 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	private String parentName;
 	
 	@ForeignCollectionField
-	private ForeignCollection<JdbcFlair> flairs;
+	protected ForeignCollection<JdbcFlair> flairs;
 	
 	@ForeignCollectionField
-	private ForeignCollection<JdbcPermissionEntry> perms;
+	protected ForeignCollection<JdbcPermissionEntry> perms;
 	
 	@DatabaseField
 	private int priority = 0;

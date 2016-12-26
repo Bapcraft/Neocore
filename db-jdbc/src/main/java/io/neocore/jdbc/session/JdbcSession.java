@@ -45,7 +45,7 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 	private boolean networked = false;
 	
 	@ForeignCollectionField
-	private ForeignCollection<JdbcNetworkMove> moves;
+	protected ForeignCollection<JdbcNetworkMove> moves;
 	
 	@DatabaseField(canBeNull = false)
 	private Date start = new Date();
@@ -141,8 +141,12 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 		return this.frontend;
 	}
 	
-	protected void setNetworked(boolean net) {
-		this.networked = net;
+	@Override
+	public void setNetworked(boolean nw) {
+		
+		this.networked = nw;
+		this.dirty();
+		
 	}
 	
 	@Override

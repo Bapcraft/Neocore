@@ -1,6 +1,7 @@
 package io.neocore.jdbc.player;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -73,7 +74,14 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 		if (dbp != null) {
 			
 			try {
+				
+				// FIXME Slower than we might want.
+				dbp.groupMemberships.updateAll();
+				dbp.extensions.updateAll();
+				dbp.accounts.updateAll();
+				
 				this.playerDao.createOrUpdate(dbp);
+				
 			} catch (SQLException e) {
 				NeocoreAPI.getLogger().log(Level.WARNING, "Problem flushing player to database! (" + uuid + ")", e);
 			}
@@ -179,6 +187,24 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 			return String.format("ERROR(%s)", id);
 			
 		}
+		
+	}
+
+	@Override
+	public UUID resolveUUID(String name) {
+		
+		try {
+			
+			List<JdbcDbPlayer> dbp = this.playerDao.queryForEq("lastUsername", name); // FIXME Field name.
+			
+			if (dbp.size() > 0) NeocoreAPI.getLogger().warning("Found multiple matching accounts for username " + name + ", picking first...");
+			if (!dbp.isEmpty()) return dbp.get(0).getUniqueId();
+			
+		} catch (SQLException e) {
+			NeocoreAPI.getLogger().log(Level.SEVERE, "Couldn't get player UUID.", e);
+		}
+		
+		return null;
 		
 	}
 	

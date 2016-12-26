@@ -33,13 +33,13 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	private String lastUsername = "[undefined]";
 	
 	@ForeignCollectionField
-	private ForeignCollection<JdbcPlayerAccount> accounts;
+	protected ForeignCollection<JdbcPlayerAccount> accounts;
 	
 	@ForeignCollectionField
-	private ForeignCollection<JdbcGroupMembership> groupMemberships;
+	protected ForeignCollection<JdbcGroupMembership> groupMemberships;
 	
 	@ForeignCollectionField
-	private ForeignCollection<JdbcExtensionRecord> extensions;
+	protected ForeignCollection<JdbcExtensionRecord> extensions;
 	
 	@DatabaseField(canBeNull = false)
 	private Date firstLogin = new Date();
