@@ -6,23 +6,16 @@ import java.util.UUID;
 
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.host.permissions.PermissionCollection;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class BungeePermPlayer implements PermissedPlayer {
+public class BungeePermPlayer extends WrappedPlayer implements PermissedPlayer {
 	
-	private ProxiedPlayer player;
 	private UglyPermissionCollection perms;
 	
-	public BungeePermPlayer(ProxiedPlayer pp) {
+	public BungeePermPlayer(UUID uuid) {
 		
-		this.player = pp;
-		this.perms = new UglyPermissionCollection(pp);
+		super(uuid);
+		this.perms = new UglyPermissionCollection(this);
 		
-	}
-	
-	@Override
-	public UUID getUniqueId() {
-		return this.player.getUniqueId();
 	}
 	
 	@Override
@@ -32,7 +25,7 @@ public class BungeePermPlayer implements PermissedPlayer {
 	
 	@Override
 	public boolean hasPermission(String perm) {
-		return this.player.hasPermission(perm);
+		return this.getPlayerOrThrow().hasPermission(perm);
 	}
 	
 	@Override

@@ -1,45 +1,26 @@
 package io.neocore.bungee.services;
 
-import java.net.InetAddress;
 import java.util.Date;
 import java.util.UUID;
 
 import io.neocore.api.host.login.ServerPlayer;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class BungeePlayer implements ServerPlayer {
+public class BungeePlayer extends WrappedPlayer implements ServerPlayer {
 	
-	private ProxiedPlayer player;
+	private Date contructionTime = new Date(); // Set to now on creation.
 	
-	public BungeePlayer(ProxiedPlayer pp) {
-		this.player = pp;
-	}
-	
-	@Override
-	public InetAddress getAddress() {
-		return this.player.getAddress().getAddress();
-	}
-	
-	@Override
-	public void kick(String message) {
-		this.player.disconnect(new TextComponent(ChatColor.translateAlternateColorCodes('&', message)));
-	}
-	
-	@Override
-	public UUID getUniqueId() {
-		return this.player.getUniqueId();
+	public BungeePlayer(UUID uuid) {
+		super(uuid);
 	}
 	
 	@Override
 	public String getName() {
-		return this.player.getName();
+		return this.getPlayerOrThrow().getName();
 	}
 	
 	@Override
 	public Date getLoginTime() {
-		return null; // FIXME
+		return this.contructionTime;
 	}
 	
 }

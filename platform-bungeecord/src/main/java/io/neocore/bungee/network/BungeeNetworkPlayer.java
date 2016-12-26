@@ -40,4 +40,9 @@ public class BungeeNetworkPlayer implements NetworkPlayer {
 		return this.downstream.getEndpoint(player.getServer().getInfo().getName());
 	}
 
+	@Override
+	public boolean isOnline() {
+		return this.player.isConnected();
+	}
+
 }

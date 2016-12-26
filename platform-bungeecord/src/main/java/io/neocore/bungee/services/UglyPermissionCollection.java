@@ -4,26 +4,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.neocore.api.host.permissions.PermissionCollection;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class UglyPermissionCollection implements PermissionCollection {
 	
-	private ProxiedPlayer player;
+	private BungeePermPlayer wrapper;
 	
 	private Set<String> tags = new HashSet<>();
 	
-	public UglyPermissionCollection(ProxiedPlayer pp) {
-		this.player = pp;
+	public UglyPermissionCollection(BungeePermPlayer wrapper) {
+		this.wrapper = wrapper;
 	}
 	
 	@Override
 	public boolean isPermissionSet(String perm) {
-		return this.player.hasPermission(perm);
+		return this.wrapper.getPlayerOrThrow().hasPermission(perm);
 	}
 
 	@Override
 	public void setPermission(String perm, boolean value) {
-		this.player.setPermission(perm, value);
+		this.wrapper.getPlayerOrThrow().setPermission(perm, value);
 	}
 
 	@Override
@@ -43,8 +42,7 @@ public class UglyPermissionCollection implements PermissionCollection {
 
 	@Override
 	public Set<String> getTags() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.tags;
 	}
 
 }
