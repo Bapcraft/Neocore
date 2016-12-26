@@ -22,6 +22,7 @@ public interface Session extends PersistentPlayerIdentity {
 	public void setFrontend(String frontend);
 	public String getFrontend();
 	
+	public void setNetworked(boolean nw);
 	public boolean isNetworked();
 	public ProxiedSession getAsProxiedSession();
 	
