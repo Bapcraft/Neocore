@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import io.neocore.api.LoadAsync;
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.PlayerIoThreadingModel;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.ServiceType;
 import io.neocore.api.database.IdentityLinkage;
@@ -50,13 +51,17 @@ public class CommonPlayerManager {
 	private Set<ServiceType> loadableServices;
 	private List<ProviderContainer> providerContainers;
 	
-	public CommonPlayerManager(ServiceManager sm, EventManager em, Scheduler sched) {
+	private PlayerIoThreadingModel ioModel;
+	
+	public CommonPlayerManager(ServiceManager sm, EventManager em, PlayerIoThreadingModel io, Scheduler sched) {
 		
 		this.serviceManager = sm;
 		this.eventManager = em;
 		this.scheduler = sched;
 		
 		this.networkSync = new NullNetworkSync();
+		
+		this.ioModel = io;
 		
 		this.loadableServices = new HashSet<>();
 		this.wrapServices();
@@ -99,7 +104,7 @@ public class CommonPlayerManager {
 			} else {
 				
 				log.warning("Player hasn't finished being populated, but we tried to revalidate it.  Queueing delayed thread to do it.");
-				this.scheduler.invokeAsync(() -> {
+				this.scheduler.invokeAsync(() -> { // We don't make this get wrapped by invokeWithModel because this is all done without forking away from the network thread.
 					
 					try {
 						Thread.sleep(100L); // TODO Make this configurable.
@@ -165,10 +170,27 @@ public class CommonPlayerManager {
 		// Now we actually can initialize it.
 		Class<? extends IdentityProvider<?>> servClazz = (Class<? extends IdentityProvider<?>>) type.getServiceClass();
 		ProviderContainer container = null;
-		if (type.getServiceClass().isAnnotationPresent(LoadAsync.class) && IdentityLinkage.class.isAssignableFrom(servClazz)) {
-			container = new AsyncProviderContainer(identProvider, this.scheduler);
-		} else {
+		if (this.ioModel == PlayerIoThreadingModel.SINGLE_THREAD) {
+			
 			container = new DirectProviderContainer(identProvider);
+			
+		} else if (this.ioModel == PlayerIoThreadingModel.FORCE_ASYNC) {
+			
+			container = new AsyncProviderContainer(identProvider, this.scheduler);
+			
+		} else if (this.ioModel == PlayerIoThreadingModel.AUTO || this.ioModel == null) {
+			
+			if (type.getServiceClass().isAnnotationPresent(LoadAsync.class) && IdentityLinkage.class.isAssignableFrom(servClazz)) {
+				container = new AsyncProviderContainer(identProvider, this.scheduler);
+			} else {
+				container = new DirectProviderContainer(identProvider);
+			}
+			
+		} else {
+			
+			NeocoreAPI.getLogger().severe("Theading model " + this.ioModel + " not supported when trying to wrap " + type.getName() + ", falling back to single-threaded.");
+			container = new DirectProviderContainer(identProvider);
+			
 		}
 		
 		this.providerContainers.add(container);
@@ -220,6 +242,16 @@ public class CommonPlayerManager {
 		
 	}
 	
+	private void invokeAccordingToModel(Runnable r) {
+		
+		if (this.ioModel == PlayerIoThreadingModel.SINGLE_THREAD) {
+			r.run();
+		} else {
+			this.scheduler.invokeAsync(r);
+		}
+		
+	}
+	
 	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadReason reason, LoadType type, Consumer<NeoPlayer> callback) {
 		
 		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
@@ -245,7 +277,7 @@ public class CommonPlayerManager {
 		for (ProviderContainer container : this.providerContainers) {
 			
 			// Don't load things that are not present on the host yet.  FIXME More context-awareness from the containers.
-			if (type == LoadType.PRELOAD && container instanceof DirectProviderContainer) continue;
+			//if (type == LoadType.PRELOAD && container instanceof DirectProviderContainer) continue; TODO
 			
 			ProvisionResult result = container.load(np, () -> {
 				eventLatch.countDown();
@@ -264,7 +296,7 @@ public class CommonPlayerManager {
 		}
 		
 		// Now wait for all of the containers to finish their work before calling back.
-		this.scheduler.invokeAsync(() -> {
+		this.invokeAccordingToModel(() -> {
 			
 			try {
 				eventLatch.await();
@@ -276,7 +308,7 @@ public class CommonPlayerManager {
 			np.setPopulated();
 			
 			// Spawn a thread for the callback.
-			if (callback != null) this.scheduler.invokeAsync(() -> callback.accept(np));
+			if (callback != null) this.invokeAccordingToModel(() -> callback.accept(np));
 			
 		});
 		
@@ -342,7 +374,7 @@ public class CommonPlayerManager {
 		}
 		
 		// Spawn the thread that invokes the callback once everything's unloaded.
-		this.scheduler.invokeAsync(() -> {
+		this.invokeAccordingToModel(() -> {
 			
 			try {
 				latch.await();
@@ -399,7 +431,7 @@ public class CommonPlayerManager {
 		}
 		
 		// Spawn the thread that invokes the callback once everything's unloaded.
-		this.scheduler.invokeAsync(() -> {
+		this.invokeAccordingToModel(() -> {
 			
 			try {
 				latch.await();
