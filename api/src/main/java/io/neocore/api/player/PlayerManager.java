@@ -40,25 +40,6 @@ public interface PlayerManager {
 	public NeoPlayer getPlayer(UUID uuid);
 	
 	/**
-	 * Triggers asynchronously-loaded identities to be preloaded into the
-	 * caches for the given UUID.
-	 * 
-	 * @param uuid The player's UUID.
-	 * @param callback A callback to invoke once complete.
-	 */
-	public void preload(UUID uuid, Consumer<NeoPlayer> callback);
-	
-	/**
-	 * Triggers asynchronously-loaded identities to be preloaded into the
-	 * caches for the given UUID.
-	 * 
-	 * @param uuid The player's UUID.
-	 */
-	public default void preload(UUID uuid) {
-		this.preload(uuid, o -> {});
-	}
-	
-	/**
 	 * Registers a service to be loaded on the player.
 	 * 
 	 * @param type The service type.
@@ -72,5 +53,28 @@ public interface PlayerManager {
 	 * @return A set of the online players.
 	 */
 	public Set<NeoPlayer> getOnlinePlayers();
+	
+	/**
+	 * Requests a lease for the specified player.  If there are no leases for
+	 * the player then it will trigger a low-level load for the player data, if
+	 * another lease is requested after this then nothing will happen.  If we
+	 * have begun to unload the player and a lease is requested then we will
+	 * wait until we have finished unloading it to start loading it again.
+	 * 
+	 * @param uuid The player's UUID
+	 * @return The lease for this player.
+	 */
+	public PlayerLease requestLease(UUID uuid);
+	
+	/**
+	 * Does the same as the function with only one argument, but registers the
+	 * callback before triggering anything.
+	 * 
+	 * @see requestLease(UUID)
+	 * @param uuid The UUID of the player
+	 * @param callback Callback to invoke once the player has finished loading
+	 * @return
+	 */
+	public PlayerLease requestLease(UUID uuid, Consumer<NeoPlayer> callback);
 	
 }
