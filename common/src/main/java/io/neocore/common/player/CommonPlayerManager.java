@@ -1,10 +1,8 @@
 package io.neocore.common.player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -40,7 +38,6 @@ import io.neocore.api.player.PlayerIdentity;
 public class CommonPlayerManager {
 	
 	protected Set<NeoPlayer> playerCache = new TreeSet<>();
-	protected Map<UUID, LoadType> loadStates = new HashMap<>();
 	
 	private ServiceManager serviceManager;
 	private EventManager eventManager;
@@ -104,7 +101,7 @@ public class CommonPlayerManager {
 			} else {
 				
 				log.warning("Player hasn't finished being populated, but we tried to revalidate it.  Queueing delayed thread to do it.");
-				this.scheduler.invokeAsync(() -> { // We don't make this get wrapped by invokeWithModel because this is all done without forking away from the network thread.
+				this.scheduler.invokeAsync(() -> { // We don't make this get wrapped by invokeAccordingToModel because this has to be done by forking away from the network thread anyways.
 					
 					try {
 						Thread.sleep(100L); // TODO Make this configurable.
@@ -197,10 +194,6 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public LoadType getLoadType(UUID uuid) {
-		return this.loadStates.get(uuid);
-	}
-	
 	public NeoPlayer findPlayer(UUID uuid) {
 		
 		for (NeoPlayer np : this.playerCache) {
@@ -252,23 +245,12 @@ public class CommonPlayerManager {
 		
 	}
 	
-	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadReason reason, LoadType type, Consumer<NeoPlayer> callback) {
+	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadReason reason, Consumer<NeoPlayer> callback) {
 		
 		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
 		this.eventManager.broadcast(new PreLoadPlayerEvent(reason, uuid));
 		
 		if (reason == LoadReason.JOIN || reason == LoadReason.OTHER) this.networkSync.updateSubscriptionState(uuid, true);
-		
-		// Check to see if we're actually going to be converting it to a full form.
-		if (this.getLoadType(uuid) == LoadType.PRELOAD && type == LoadType.FULL) {
-			
-			/*
-			 * We're removing our local copy because we're going to be loading
-			 * from the provider caches for the full version anyways.
-			 */
-			this.playerCache.removeIf(p -> p.getUniqueId().equals(uuid)); // THIS IS REALLY IMPORTANT.
-			
-		}
 		
 		NeoPlayer np = new NeoPlayer(uuid);
 		CountDownLatch eventLatch = new CountDownLatch(this.providerContainers.size());
@@ -312,8 +294,7 @@ public class CommonPlayerManager {
 			
 		});
 		
-		// Set up caches.
-		this.loadStates.put(uuid, type);
+		// Set up cache.
 		this.addCachedPlayer(np);
 		
 		// Configure the flushing procedure.
@@ -404,7 +385,6 @@ public class CommonPlayerManager {
 		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
 		this.eventManager.broadcast(new PreUnloadPlayerEvent(reason, np));
 		this.removeCachedPlayer(np);
-		this.loadStates.remove(uuid);
 		
 		CountDownLatch latch = new CountDownLatch(this.providerContainers.size());
 		
@@ -454,13 +434,11 @@ public class CommonPlayerManager {
 		
 		this.eventManager.broadcast(new PreReloadPlayerEvent(reason, uuid));
 		
-		LoadType type = this.loadStates.get(uuid);
-		
 		this.unloadPlayer(uuid, UnloadReason.OTHER, () -> {
 			
 			NeocoreAPI.getLogger().finer("Unload for " + uuid + " complete, reassembling...");
 			
-			this.assemblePlayer(uuid, LoadReason.REVALIDATE, type, np -> {
+			this.assemblePlayer(uuid, LoadReason.REVALIDATE, np -> {
 				
 				NeocoreAPI.getLogger().fine("Revalidation for " + uuid + " complete.");
 				this.eventManager.broadcast(new PostReloadPlayerEvent(reason, np));

@@ -9,9 +9,6 @@ import io.neocore.api.database.artifact.IdentifierManager;
 import io.neocore.api.database.ban.BanEntry;
 import io.neocore.api.database.ban.BanService;
 import io.neocore.api.database.player.DatabasePlayer;
-import io.neocore.api.event.database.FlushReason;
-import io.neocore.api.event.database.PostUnloadPlayerEvent;
-import io.neocore.api.event.database.UnloadReason;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.host.login.InitialLoginEvent;
@@ -24,16 +21,14 @@ import io.neocore.common.service.ServiceManagerImpl;
 
 public class LoginAcceptorImpl implements LoginAcceptor {
 	
-	private CommonPlayerManager players;
 	private CommonEventManager events;
 	private ServiceManagerImpl services;
 	private IdentifierManager idents;
 	
 	private List<Context> contexts;
 	
-	public LoginAcceptorImpl(CommonPlayerManager players, CommonEventManager events, ServiceManagerImpl services, IdentifierManager idents, List<Context> ctxs) {
+	public LoginAcceptorImpl(CommonEventManager events, ServiceManagerImpl services, IdentifierManager idents, List<Context> ctxs) {
 		
-		this.players = players;
 		this.events = events;
 		this.services = services;
 		this.idents = idents;
@@ -134,32 +129,8 @@ public class LoginAcceptorImpl implements LoginAcceptor {
 	@Override
 	public void onDisconnectEvent(DisconnectEvent event) {
 		
-		NeoPlayer np = event.getPlayer();
-		
 		// Broadcast the event straightaway.
 		this.events.broadcast(event);
-		
-		// Setup the unload and broadcast.
-		Runnable unloadAndBroadcast = () -> {
-			
-			this.players.unloadPlayer(np.getUniqueId(), UnloadReason.DISCONNECT, () -> {
-				this.events.broadcast(new PostUnloadPlayerEvent(UnloadReason.DISCONNECT, np.getUniqueId()));
-			});
-			
-		};
-		
-		// Now we (flush and) unload once we're sure everyone is done using it.
-		if (np.isDirty()) {
-			
-			// Either do the unload after a flush...
-			this.players.flushPlayer(np.getUniqueId(), FlushReason.UNLOAD, unloadAndBroadcast);
-			
-		} else {
-			
-			/// ...or do immediately.
-			unloadAndBroadcast.run();
-			
-		}
 		
 	}
 	

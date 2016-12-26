@@ -91,7 +91,7 @@ public class NeocoreImpl implements Neocore {
 		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager);
 		
 		// Set up acceptors.
-		this.loginAcceptor = new LoginAcceptorImpl(this.playerManager, this.eventManager, this.serviceManager, this.identManager, host.getContexts());
+		this.loginAcceptor = new LoginAcceptorImpl(this.eventManager, this.serviceManager, this.identManager, host.getContexts());
 		this.proxyAcceptor = new ProxyAcceptorImpl(this.serviceManager);
 		
 		// Set up the task queue.
