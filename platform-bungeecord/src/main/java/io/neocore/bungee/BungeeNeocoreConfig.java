@@ -11,6 +11,7 @@ import java.util.Scanner;
 import com.typesafe.config.Config;
 
 import io.neocore.api.NeocoreConfig;
+import io.neocore.api.PlayerIoThreadingModel;
 import io.neocore.api.host.Context;
 import io.neocore.api.host.LesserContext;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -25,6 +26,9 @@ public class BungeeNeocoreConfig implements NeocoreConfig {
 	
 	private Context primaryContext;
 	private List<Context> contexts;
+
+	private static final String pIoModel_key = "server.playerThreadingModel";
+	private PlayerIoThreadingModel pIoModel = PlayerIoThreadingModel.AUTO;
 	
 	public BungeeNeocoreConfig(Config conf) {
 		
@@ -32,6 +36,8 @@ public class BungeeNeocoreConfig implements NeocoreConfig {
 		this.networkName = conf.getString("server.network");
 		
 		this.enforceBans = conf.getBoolean("server.enforceBans");
+
+		if (conf.hasPath(pIoModel_key)) this.pIoModel = PlayerIoThreadingModel.valueOf(conf.getString(pIoModel_key));
 		
 		this.primaryContext = new LesserContext(conf.getString("context.primary"));
 		this.contexts = new ArrayList<>();
@@ -102,6 +108,11 @@ public class BungeeNeocoreConfig implements NeocoreConfig {
 			
 		}
 		
+	}
+
+	@Override
+	public PlayerIoThreadingModel getPlayerThreadingModel() {
+		return this.pIoModel;
 	}
 	
 }
