@@ -35,6 +35,7 @@ import io.neocore.common.cmd.CommandCheckPerm;
 import io.neocore.common.cmd.CommandCheckPerms;
 import io.neocore.common.cmd.CommandCreateGroup;
 import io.neocore.common.cmd.CommandException;
+import io.neocore.common.cmd.CommandForcePlayerLoad;
 import io.neocore.common.cmd.CommandReloadPermissions;
 import io.neocore.common.cmd.CommandSetGroupParent;
 import io.neocore.common.cmd.CommandSetPermission;
@@ -123,6 +124,7 @@ public class NeocoreImpl implements Neocore {
 		this.host.registerCommand(new CommandException());
 		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "blame", ArtifactTypes.ADMIN_EVIDENCE, "neocore.cmd.blame"));
 		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "warn", ArtifactTypes.ADMIN_WARNING, "neocore.cmd.warn"));
+		this.host.registerCommand(new CommandForcePlayerLoad(this.playerManWrapper, host.getScheduler()));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(this.host);
