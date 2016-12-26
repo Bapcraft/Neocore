@@ -1,7 +1,6 @@
 package io.neocore.api.host.chat;
 
 import io.neocore.api.host.ConnectingPlayer;
-import io.neocore.api.player.PlayerIdentity;
 
 /**
  * Represents a player that can send and recieve chat messages.
