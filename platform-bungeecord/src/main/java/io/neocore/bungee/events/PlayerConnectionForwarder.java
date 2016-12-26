@@ -1,22 +1,23 @@
 package io.neocore.bungee.events;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
-import io.neocore.api.event.database.LoadReason;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.infrastructure.ProxyAcceptor;
 import io.neocore.api.player.NeoPlayer;
+import io.neocore.api.player.PlayerLease;
+import io.neocore.api.player.PlayerManager;
 import io.neocore.bungee.events.wrappers.BungeeInitialLoginEvent;
 import io.neocore.bungee.events.wrappers.BungeePostLoginEvent;
 import io.neocore.common.NeocoreImpl;
-import io.neocore.common.player.CommonPlayerManager;
-import io.neocore.common.player.LoadType;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -31,6 +32,8 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	
 	public LoginAcceptor loginAcceptor;
 	public ProxyAcceptor proxyAcceptor;
+	
+	private Map<UUID, PlayerLease> leases = new ConcurrentHashMap<>();
 	
 	public PlayerConnectionForwarder(NeocoreImpl neo) {
 		this.neocore = neo;
@@ -65,10 +68,9 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		ProxiedPlayer player = event.getPlayer();
 		UUID uuid = player.getUniqueId();
 		
-		CommonPlayerManager cpm = this.neocore.getPlayerAssembler();
-		NeoPlayer np = cpm.assemblePlayer(uuid, LoadReason.JOIN, LoadType.FULL, loaded -> {
+		PlayerManager pm = this.neocore.getPlayerManager();
+		PlayerLease pl = pm.requestLease(uuid, loaded -> {
 			
-
 			/*
 			 * First we increase the login count and update the last login, and
 			 * then we deal with the session stuff. 
@@ -109,6 +111,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 				// Update network info.
 				sess.setAddress(player.getAddress().getAddress());
 				sess.setHostString(player.getAddress().getHostName());
+				sess.setNetworked(true);
 				
 				flush = true;
 				
@@ -127,15 +130,20 @@ public class PlayerConnectionForwarder extends EventForwarder {
 			
 		});
 		
+		// Store the lease.
+		this.leases.put(uuid, pl);
+		
 		// Actually fire the event.
-		if (this.loginAcceptor != null) this.loginAcceptor.onPostLoginEvent(new BungeePostLoginEvent(np));
+		if (this.loginAcceptor != null) this.loginAcceptor.onPostLoginEvent(new BungeePostLoginEvent(pl.getPlayer()));
 		
 	}
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerDisconnectEvent event) {
 		
-		NeoPlayer np = this.neocore.getPlayerManager().getPlayer(event.getPlayer().getUniqueId());
+		PlayerLease pl = this.leases.get(event.getPlayer().getUniqueId());
+		NeoPlayer np = pl.getPlayer();
+		
 		if (np.hasIdentity(Session.class)) {
 			
 			Session sess = np.getSession();
@@ -149,6 +157,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		}
 		
 		if (this.loginAcceptor != null) this.loginAcceptor.onDisconnectEvent(new BungeeQuitEvent(np));
+		pl.release();
 		
 	}
 	
