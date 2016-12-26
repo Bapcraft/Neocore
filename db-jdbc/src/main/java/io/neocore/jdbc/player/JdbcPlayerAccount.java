@@ -3,10 +3,11 @@ package io.neocore.jdbc.player;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.eco.Account;
 
 @DatabaseTable(tableName = "accounts")
-public class JdbcPlayerAccount implements Account {
+public class JdbcPlayerAccount extends AbstractPersistentRecord implements Account {
 	
 	@DatabaseField(canBeNull = false, foreign = true)
 	private JdbcDbPlayer owner;
@@ -32,7 +33,7 @@ public class JdbcPlayerAccount implements Account {
 	public void setBalance(float val) {
 		
 		this.balance = val;
-		this.owner.dirty();
+		this.dirty();
 		
 	}
 	
@@ -45,13 +46,26 @@ public class JdbcPlayerAccount implements Account {
 	public void setMultiplier(float mul) {
 		
 		this.multiplier = mul;
-		this.owner.dirty();
+		this.dirty();
 		
 	}
 	
 	@Override
 	public float getMultiplier() {
 		return this.multiplier;
+	}
+
+	@Override
+	public void dirty() {
+		
+		this.owner.dirty();
+		this.owner.updatedAccounts.add(this);
+		
+	}
+
+	@Override
+	public boolean isDirty() {
+		return this.owner.isDirty();
 	}
 	
 }

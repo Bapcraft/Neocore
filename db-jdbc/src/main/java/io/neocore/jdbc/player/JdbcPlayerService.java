@@ -75,12 +75,9 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 			
 			try {
 				
-				// FIXME Slower than we might want.
-				dbp.groupMemberships.updateAll();
-				dbp.extensions.updateAll();
-				dbp.accounts.updateAll();
-				
+				dbp.cleanupCachedSaves();
 				this.playerDao.createOrUpdate(dbp);
+				dbp.setDirty(false);
 				
 			} catch (SQLException e) {
 				NeocoreAPI.getLogger().log(Level.WARNING, "Problem flushing player to database! (" + uuid + ")", e);

@@ -77,10 +77,6 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 				
 				try {
 					
-					// FIXME Slower than we might want.
-					created.flairs.updateAll();
-					created.perms.updateAll();
-					
 					this.groupDao.createOrUpdate(created);
 					created.setDirty(false);
 					
@@ -157,10 +153,6 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 				jg.setFlushProcedure(() -> {
 					
 					try {
-						
-						// FIXME Slower than we might want.
-						jg.flairs.updateAll();
-						jg.perms.updateAll();
 						
 						this.groupDao.update(jg);
 						jg.setDirty(false);

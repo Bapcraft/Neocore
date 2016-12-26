@@ -2,15 +2,21 @@ package io.neocore.jdbc.session;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
+
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.session.EndpointMove;
 import io.neocore.api.database.session.ProxiedSession;
@@ -46,6 +52,7 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 	
 	@ForeignCollectionField
 	protected ForeignCollection<JdbcNetworkMove> moves;
+	protected Set<JdbcNetworkMove> updatedMoves = new HashSet<>();
 	
 	@DatabaseField(canBeNull = false)
 	private Date start = new Date();
@@ -199,6 +206,7 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 		
 		JdbcNetworkMove nm = new JdbcNetworkMove(this);
 		this.moves.add(nm);
+		this.updatedMoves.add(nm);
 		this.dirty();
 		
 		return nm;
@@ -208,6 +216,22 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 	@Override
 	public int compareTo(Session o) {
 		return this.getUniqueId().compareTo(o.getUniqueId());
+	}
+	
+	protected void cleanupCachedSaves() {
+
+		this.updatedMoves.forEach(m -> {
+			
+			try {
+				this.moves.update(m);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing move data.", e);
+			}
+			
+		});
+		
+		this.updatedMoves.clear();
+		
 	}
 	
 }

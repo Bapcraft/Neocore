@@ -1,11 +1,15 @@
 package io.neocore.jdbc.player;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.ForeignCollection;
@@ -34,12 +38,14 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	
 	@ForeignCollectionField
 	protected ForeignCollection<JdbcPlayerAccount> accounts;
+	protected Set<JdbcPlayerAccount> updatedAccounts = new HashSet<>();
 	
 	@ForeignCollectionField
 	protected ForeignCollection<JdbcGroupMembership> groupMemberships;
 	
 	@ForeignCollectionField
 	protected ForeignCollection<JdbcExtensionRecord> extensions;
+	private Set<JdbcExtensionRecord> updatedExtensions = new HashSet<>();
 	
 	@DatabaseField(canBeNull = false)
 	private Date firstLogin = new Date();
@@ -146,6 +152,7 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 				
 				// Update the data.
 				test.data = ext.serialize();
+				this.updatedExtensions.add(test);
 				
 				// And close out everything.
 				this.dirty();
@@ -279,6 +286,34 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	@Override
 	public Flair getCurrentFlair() {
 		return new JdbcFlair(this.currentFlairPrefix, this.currentFlairSuffix); // Probably shouldn't be instantiating it like that.
+	}
+	
+	protected void cleanupCachedSaves() {
+
+		this.updatedAccounts.forEach(a -> {
+			
+			try {
+				this.accounts.update(a);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing account data!", e);
+			}
+			
+		});
+		
+		this.updatedAccounts.clear();
+		
+		this.updatedExtensions.forEach(ex -> {
+			
+			try {
+				this.extensions.update(ex);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing extension data!", e);
+			}
+			
+		});
+		
+		this.updatedExtensions.clear();
+		
 	}
 	
 }

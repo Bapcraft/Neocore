@@ -188,8 +188,9 @@ public class JdbcSessionService extends AbstractJdbcService implements SessionSe
 			
 			try {
 				
-				sess.moves.updateAll(); // FIXME Slower than we might want.
+				sess.cleanupCachedSaves();
 				this.sessionDao.createOrUpdate(sess);
+				sess.setDirty(false);
 				
 			} catch (SQLException e) {
 				NeocoreAPI.getLogger().log(Level.WARNING, "Problem flushing session to database! (" + uuid + ")", e);

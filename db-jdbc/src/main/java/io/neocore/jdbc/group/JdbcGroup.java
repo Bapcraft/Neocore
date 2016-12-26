@@ -3,7 +3,9 @@ package io.neocore.jdbc.group;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -37,6 +39,7 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	
 	@ForeignCollectionField
 	protected ForeignCollection<JdbcFlair> flairs;
+	private Set<JdbcFlair> updatedFlairs = new HashSet<>();
 	
 	@ForeignCollectionField
 	protected ForeignCollection<JdbcPermissionEntry> perms;
@@ -113,11 +116,16 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	@Override
 	public void addFlair(Flair flair) {
 		
+		JdbcFlair f;
+		
 		if (flair instanceof JdbcFlair) {
-			this.flairs.add((JdbcFlair) flair);
+			f = (JdbcFlair) flair;
 		} else {
-			this.flairs.add(new JdbcFlair(flair.getPrefix(), flair.getSuffix())); // Dirty hack.
+			f = new JdbcFlair(flair.getPrefix(), flair.getSuffix()); // Dirty hack?
 		}
+		
+		this.flairs.add(f);
+		this.updatedFlairs.add(f);
 		
 	}
 	
@@ -292,6 +300,25 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	@Override
 	public boolean isSecret() {
 		return this.secret;
+	}
+
+	@Override
+	public void flush() {
+		
+		this.updatedFlairs.forEach(f -> {
+			
+			try {
+				this.flairs.update(f);
+			} catch (SQLException e) {
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem saving group data.", e);
+			}
+			
+		});
+		
+		this.updatedFlairs.clear();
+		
+		super.flush();
+		
 	}
 	
 }

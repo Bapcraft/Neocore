@@ -32,7 +32,7 @@ public class JdbcNetworkMove extends AbstractPersistentRecord implements Endpoin
 	@Override
 	public void dirty() {
 		
-		super.dirty();
+		this.session.updatedMoves.add(this);
 		this.session.dirty();
 		
 	}
