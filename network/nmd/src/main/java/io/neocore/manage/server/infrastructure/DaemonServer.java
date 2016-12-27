@@ -62,6 +62,8 @@ public class DaemonServer {
 		this.messageManager.registerHandler(PayloadCase.PLAYERLISTUPDATE, new RebroadcastHandler());
 		this.messageManager.registerHandler(PayloadCase.PLAYERLISTUPDATE, new PlayerListUpdateHandler());
 		this.messageManager.registerHandler(PayloadCase.UPDATENOTIFICATION, new PlayerUpdateHandler());
+		this.messageManager.registerHandler(PayloadCase.BANSUPDATENOTIFICATION, new RebroadcastHandler());
+		this.messageManager.registerHandler(PayloadCase.PERMSUPDATENOTIFICATION, new RebroadcastHandler());
 		
 	}
 	
