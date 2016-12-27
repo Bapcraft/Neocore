@@ -9,13 +9,22 @@ public abstract class EventManager {
 	/**
 	 * Registers a listener in the relevant event bus.
 	 * 
-	 * @param mod The module providinng the listener.
- 	 * @param clazz The event class to listen for events of.
-	 * @param listener The listener itself.
-	 * @param priority The priority of the listener.
-	 * @return The listener registration record.
+	 * @param mod The module providing the listener
+ 	 * @param clazz The event class to listen for events of
+	 * @param listener The listener itself
+	 * @param priority The priority of the listener
+	 * @return The listener registration record
 	 */
-	public abstract <T extends Event> RegisteredListener<T> registerListener(Module mod, Class<T> clazz, Consumer<T> listener, int priority);
+	public abstract <T extends Event> RegisteredListener<T> registerListener(Module mod, Class<?> clazz, Consumer<T> listener, int priority);
+	
+	/**
+	 * Uses reflection to handle register multiple listeners from a single class.
+	 * 
+	 * @param mod The module providing the listener
+	 * @param listener The listener container object
+	 * @param defaultPriority The default priority to use
+	 */
+	public abstract void registerListeners(Module mod, SimpleListener listener, int defaultPriority);
 	
 	/**
 	 * Registers a type of event.
