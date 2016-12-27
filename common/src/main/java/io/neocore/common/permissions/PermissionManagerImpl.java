@@ -23,7 +23,7 @@ import io.neocore.common.service.ServiceManagerImpl;
 
 public class PermissionManagerImpl implements PermissionManager {
 	
-	private static final String COLLECTION_GROUP_CFG_TAG = "GroupConfiguration";
+	public static final String COLLECTION_GROUP_CFG_TAG = "GroupConfiguration";
 	
 	private PlayerManagerWrapperImpl players;
 	private List<Context> contexts;
