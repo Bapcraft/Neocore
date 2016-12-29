@@ -20,8 +20,8 @@ public class ExtensionManager {
 	/**
 	 * Registers the extension class as a type of player extension.
 	 * 
-	 * @param clazz The class to register.
-	 * @return The registration entry.
+	 * @param clazz The class to register
+	 * @return The registration entry
 	 */
 	public RegisteredExtension registerExtension(Class<? extends Extension> clazz) {
 		
@@ -43,8 +43,8 @@ public class ExtensionManager {
 	/**
 	 * Finds the registration entry using the given simple name.
 	 * 
-	 * @param name The name of extension to look for.
-	 * @return The registration entry.
+	 * @param name The name of extension to look for
+	 * @return The registration entry
 	 */
 	public RegisteredExtension getType(String name) {
 		
@@ -59,9 +59,9 @@ public class ExtensionManager {
 	/**
 	 * Deserializes the serialized extension into an actual Extension object.
 	 * 
-	 * @param name The name of the extension.
-	 * @param data The serialized extension.
-	 * @return The deserialized extension.
+	 * @param name The name of the extension
+	 * @param data The serialized extension
+	 * @return The deserialized extension
 	 */
 	public Extension deserialize(String name, String data) {
 		

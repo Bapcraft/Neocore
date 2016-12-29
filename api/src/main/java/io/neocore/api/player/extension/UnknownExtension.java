@@ -7,7 +7,7 @@ package io.neocore.api.player.extension;
  * @author treyzania
  */
 public class UnknownExtension extends Extension {
-
+	
 	private final String name, data;
 	
 	public UnknownExtension(String name, String data) {
@@ -16,22 +16,21 @@ public class UnknownExtension extends Extension {
 		this.data = data;
 		
 	}
-
+	
 	@Override
 	public String getName() {
 		return this.name;
 	}
-
-	@Override
-	public String serialize() {
+	
+	public String getData() {
 		return this.data;
 	}
-
+	
 	@Override
 	public boolean isDirty() {
 		return false;
 	}
-
+	
 	@Override
 	public void clean() {
 		// lol wat

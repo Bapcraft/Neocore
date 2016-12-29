@@ -16,21 +16,21 @@ public class RegisteredExtension implements Comparable<RegisteredExtension> {
 	}
 	
 	/**
-	 * @return The plaintext name of this registration.
+	 * @return The plaintext name of this registration
 	 */
 	public String getName() {
 		return this.name;
 	}
 	
 	/**
-	 * @return The extension's class.
+	 * @return The extension's class
 	 */
 	public Class<? extends Extension> getExtensionClass() {
 		return this.extensionClass;
 	}
 	
 	/**
-	 * @return The extension builder's class.
+	 * @return The extension builder's class
 	 */
 	public Class<? extends ExtensionBuilder> getBuilderClass() {
 		return this.builderClass;
@@ -39,13 +39,20 @@ public class RegisteredExtension implements Comparable<RegisteredExtension> {
 	/**
 	 * Deserialized the extension into an actual object from the serialization provided.
 	 * 
-	 * @param data The seriaized extension.
-	 * @return The actual extension object.
+	 * @param data The serialized extension
+	 * @return The actual extension object
 	 */
 	public Extension deserialize(String data) {
+		return this.getBuilder().deserialize(data);
+	}
+	
+	/**
+	 * @return A new builder of the type associated with the Extension
+	 */
+	public ExtensionBuilder getBuilder() {
 		
 		try {
-			return this.builderClass.newInstance().deserialize(data);
+			return this.builderClass.newInstance();
 		} catch (InstantiationException e) {
 			throw new IllegalArgumentException("Bad builder!", e);
 		} catch (IllegalAccessException e) {
@@ -57,15 +64,18 @@ public class RegisteredExtension implements Comparable<RegisteredExtension> {
 	/**
 	 * Serialized the extension into a String.
 	 * 
-	 * @param ext The extension to serialize.
-	 * @return The serialized extension.
+	 * @param ext The extension to serialize
+	 * @return The serialized extension
 	 */
 	public String serialize(Extension ext) {
 		
-		if (ext == null || ext.getClass() != this.extensionClass) throw new IllegalArgumentException("Invalid extension: " + ext);
+		ExtensionBuilder builder = this.getBuilder();
 		
-		// YAAAS.
-		return ext.serialize();
+		if (builder.isCompatible(ext)) {
+			return builder.serialize(ext);
+		} else {
+			throw new IllegalArgumentException("bitch");
+		}
 		
 	}
 	

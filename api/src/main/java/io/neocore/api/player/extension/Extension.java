@@ -24,13 +24,6 @@ public abstract class Extension {
 	}
 	
 	/**
-	 * Serializes this extension object into a String that can be usedd by the database.
-	 * 
-	 * @return The serialized extension.
-	 */
-	public abstract String serialize();
-	
-	/**
 	 * Checks to see if this object needs to be updated into the database.
 	 * 
 	 * @return <code>true</code> if the object is pending a flush, <code>false</code> otherwise.
