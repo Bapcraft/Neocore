@@ -99,7 +99,14 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	
 	@Override
 	public GroupMembership addGroup(Group group) {
-		return null; // FIXME TODO
+		
+		JdbcGroupMembership gm = new JdbcGroupMembership(this);
+		gm.setGroup(group);
+		gm.setDirty(false);
+		
+		this.addGroupMembership(gm);
+		return gm;
+		
 	}
 	
 	@Override
@@ -151,7 +158,7 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 			if (test.type.equals(ext.getName())) {
 				
 				// Update the data.
-				test.data = ext.serialize();
+				test.data = NeocoreAPI.getAgent().getExtensionManager().serialize(ext);
 				this.updatedExtensions.add(test);
 				
 				// And close out everything.
@@ -160,7 +167,7 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 				return;
 				
 			}
-
+			
 		}
 		
 		// At this point we're sure it's not in it so far so we can add it.
@@ -285,7 +292,7 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 
 	@Override
 	public Flair getCurrentFlair() {
-		return new JdbcFlair(this.currentFlairPrefix, this.currentFlairSuffix); // Probably shouldn't be instantiating it like that.
+		return this.currentFlairPrefix != null && this.currentFlairSuffix != null ? new JdbcFlair(this.currentFlairPrefix, this.currentFlairSuffix) : null; // Probably shouldn't be instantiating it like that.
 	}
 	
 	protected void cleanupCachedSaves() {
