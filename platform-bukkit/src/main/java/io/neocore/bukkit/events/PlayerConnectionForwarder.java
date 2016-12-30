@@ -17,16 +17,19 @@ import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.database.session.ProxiedSession;
 import io.neocore.api.database.session.Session;
 import io.neocore.api.database.session.SessionState;
+import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerLease;
 import io.neocore.api.player.PlayerManager;
+import io.neocore.api.player.group.Flair;
 import io.neocore.bukkit.events.wrappers.BukkitInitialLoginEvent;
 import io.neocore.bukkit.events.wrappers.BukkitPostJoinEvent;
 import io.neocore.bukkit.events.wrappers.BukkitQuitEvent;
 import io.neocore.bukkit.events.wrappers.BukkitServerPingEvent;
 import io.neocore.common.NeocoreImpl;
+import net.md_5.bungee.api.ChatColor;
 
 public class PlayerConnectionForwarder extends EventForwarder {
 	
@@ -139,11 +142,21 @@ public class PlayerConnectionForwarder extends EventForwarder {
 			if (flush) loaded.flush();
 			
 			/*
-			 * Now, we have to apply the permissions for the player.
+			 * Now, we have to apply the permissions and set up display name.
 			 */
 			
 			if (loaded.hasIdentity(DatabasePlayer.class) && loaded.hasIdentity(PermissedPlayer.class)) {
 				this.neocore.getPermissionManager().assignPermissions(loaded);
+			}
+			
+			if (loaded.hasIdentity(DatabasePlayer.class) && loaded.hasIdentity(ChattablePlayer.class)) {
+				
+				DatabasePlayer dbp = loaded.getIdentity(DatabasePlayer.class);
+				ChattablePlayer cp = loaded.getIdentity(ChattablePlayer.class);
+				
+				Flair f = dbp.getCurrentFlair();
+				if (f != null) cp.setDisplayName(ChatColor.translateAlternateColorCodes('&', f.apply(player.getName())));
+				
 			}
 			
 		});
