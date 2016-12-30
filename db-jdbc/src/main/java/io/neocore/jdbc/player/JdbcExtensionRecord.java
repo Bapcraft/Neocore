@@ -25,13 +25,13 @@ public class JdbcExtensionRecord {
 	public JdbcExtensionRecord(Extension ext) {
 		
 		this.type = ext.getName();
-		this.data = ext.serialize();
+		this.data = NeocoreAPI.getAgent().getExtensionManager().serialize(ext); // FIXME Breaks encapsulation.
 		
 	}
 	
 	public Extension deserialize() {
 		
-		// FIXME Muh encapsulation!
+		// FIXME Breaks encapsulation.
 		return NeocoreAPI.getAgent().getExtensionManager().deserialize(this.type, this.data);
 		
 	}
