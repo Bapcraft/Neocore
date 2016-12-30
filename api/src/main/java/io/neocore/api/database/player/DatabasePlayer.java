@@ -1,6 +1,7 @@
 package io.neocore.api.database.player;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -194,5 +195,26 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	 * @return The player's current flair
 	 */
 	public Flair getCurrentFlair();
+	
+	public default List<Flair> getAvailableFlairs() {
+		
+		List<Group> groups = new ArrayList<>();
+		this.getGroupMemberships().forEach(gm -> groups.add(gm.getGroup()));
+		
+		Collections.sort(groups, (Group a, Group b) -> {
+			
+			int restrictionCompare = Integer.compare(a.getRestrictionLevel(), b.getRestrictionLevel());
+			int priorityCompare = Integer.compare(a.getPriority(), b.getPriority());
+			int nameCompare = a.getName().compareTo(b.getName());
+			
+			return restrictionCompare != 0 ? restrictionCompare : priorityCompare != 0 ? priorityCompare : nameCompare;
+			
+		});
+		
+		List<Flair> flairs = new ArrayList<>();
+		groups.forEach(g -> flairs.addAll(g.getFlairs()));
+		return flairs;
+		
+	}
 	
 }

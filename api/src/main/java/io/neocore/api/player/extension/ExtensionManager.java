@@ -56,6 +56,13 @@ public class ExtensionManager {
 		
 	}
 	
+	public String serialize(Extension ext) {
+		
+		RegisteredExtension re = this.getType(ext.getName());
+		return re.serialize(ext);
+		
+	}
+	
 	/**
 	 * Deserializes the serialized extension into an actual Extension object.
 	 * 
