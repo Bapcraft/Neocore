@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import com.j256.ormlite.dao.CloseableIterator;
@@ -24,9 +23,9 @@ import io.neocore.api.player.group.PermissionEntry;
 
 @DatabaseTable(tableName = "groups")
 public class JdbcGroup extends AbstractPersistentRecord implements Group {
-	
-	@DatabaseField(id = true)
-	private UUID groupId;
+
+	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+	private int groupId;
 	
 	@DatabaseField(canBeNull = false)
 	private String name = "[undefined]";
@@ -57,12 +56,11 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 	protected transient JdbcGroupService resolver;
 	
 	public JdbcGroup() {
-		this.groupId = UUID.randomUUID();
+		
 	}
 	
 	public JdbcGroup(String name) {
 		
-		this.groupId = UUID.randomUUID();
 		this.name = name;
 		
 		// Capitalize the first letter of the set name for the pretty name.
@@ -70,7 +68,7 @@ public class JdbcGroup extends AbstractPersistentRecord implements Group {
 		
 	}
 	
-	public UUID getGroupId() {
+	public int getGroupId() {
 		return this.groupId;
 	}
 	

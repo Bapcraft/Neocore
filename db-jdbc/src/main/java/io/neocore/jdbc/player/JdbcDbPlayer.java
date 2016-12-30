@@ -127,7 +127,10 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 			if (acct.currency.equals(currency)) return acct;
 		}
 		
-		return new JdbcPlayerAccount(this, currency);
+		JdbcPlayerAccount acct = new JdbcPlayerAccount(this, currency);
+		this.accounts.add(acct);
+		this.updatedAccounts.add(acct);
+		return acct;
 		
 	}
 	
