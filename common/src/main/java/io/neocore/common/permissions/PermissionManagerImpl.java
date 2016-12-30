@@ -148,6 +148,8 @@ public class PermissionManagerImpl implements PermissionManager {
 			if (!gm.isCurrentlyValid()) continue;
 			Group g = gm.getGroup();
 			
+			if (g == null) continue;
+			
 			// Add the group and their ancestors to it.
 			totalGroups.add(g);
 			totalGroups.addAll(g.getAncestors());

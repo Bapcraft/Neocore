@@ -58,8 +58,11 @@ public class CommonEventManager extends EventManager {
 		Logger log = NeocoreAPI.getLogger();
 		
 		Class<?> clazz = listener.getClass();
-		Method[] methods = clazz.getDeclaredMethods();
+		Method[] methods = clazz.getMethods();
 		
+		log.info("Found " + methods.length + " potential event handlers.");
+		
+		int did = 0;
 		for (Method m : methods) {
 			
 			if (m.isAnnotationPresent(NeocoreEventHandler.class)) {
@@ -83,6 +86,7 @@ public class CommonEventManager extends EventManager {
 				NeocoreEventHandler neh = m.getAnnotation(NeocoreEventHandler.class);
 				int priority = neh.priority() != -1 ? neh.priority() : defaultPriority;
 				
+				log.info("Registering " + m.getName() + "...");
 				this.registerListener(mod, type, event -> {
 					
 					try {
@@ -97,9 +101,13 @@ public class CommonEventManager extends EventManager {
 					
 				}, priority);
 				
+				did++;
+				
 			}
 			
 		}
+		
+		log.info("Registered " + did + " methods as event handlers for " + listener.getClass().getSimpleName() + " from " + mod.getName() + ".");
 		
 	}
 	
