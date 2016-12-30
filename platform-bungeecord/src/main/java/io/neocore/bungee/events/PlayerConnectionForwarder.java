@@ -24,6 +24,7 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.event.EventHandler;
 
 public class PlayerConnectionForwarder extends EventForwarder {
@@ -34,6 +35,7 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	public ProxyAcceptor proxyAcceptor;
 	
 	private Map<UUID, PlayerLease> leases = new ConcurrentHashMap<>();
+	private Map<UUID, PlayerLease> disconnectingPlayers = new ConcurrentHashMap<>();
 	
 	public PlayerConnectionForwarder(NeocoreImpl neo) {
 		this.neocore = neo;
@@ -127,7 +129,6 @@ public class PlayerConnectionForwarder extends EventForwarder {
 				this.neocore.getPermissionManager().assignPermissions(loaded);
 			}
 			
-			
 		});
 		
 		// Store the lease.
@@ -141,23 +142,47 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	@EventHandler
 	public void onPlayerQuit(PlayerDisconnectEvent event) {
 		
-		PlayerLease pl = this.leases.get(event.getPlayer().getUniqueId());
-		NeoPlayer np = pl.getPlayer();
+		UUID uuid = event.getPlayer().getUniqueId();
+		this.disconnectingPlayers.put(uuid, this.leases.get(uuid));
 		
-		if (np.hasIdentity(Session.class)) {
+		NeocoreAPI.getLogger().fine("Registered a player lease of " + uuid + " for disconnection.");
+		
+	}
+	
+	@EventHandler
+	public void onServerDisconnect(ServerDisconnectEvent event) {
+		
+		UUID uuid = event.getPlayer().getUniqueId();
+		
+		PlayerLease pl = this.disconnectingPlayers.get(uuid);
+		if (pl != null) {
 			
-			Session sess = np.getSession();
+			this.neocore.getHost().getScheduler().invokeAsyncDelayed(() -> {
+				
+				NeoPlayer np = pl.getPlayer();
+				
+				if (np.hasIdentity(Session.class)) {
+					
+					Session sess = np.getSession();
+					
+					sess.setEndDate(new Date());
+					sess.setState(SessionState.DISCONNECTED);
+					
+					np.dirty();
+					
+				}
+				
+				if (this.loginAcceptor != null) this.loginAcceptor.onDisconnectEvent(new BungeeQuitEvent(np));
+				
+				// Unloads should be flushed synchronously.
+				np.flush();
+				pl.release();
+				
+			}, 100L); // TODO Make configurable.
 			
-			sess.setEndDate(new Date());
-			sess.setState(SessionState.DISCONNECTED);
-			
-			// We don't flush it because it'll do that for unloading, just make sure it's dirty.
-			np.dirty();
-			
+		} else {
+			NeocoreAPI.getLogger().finer("Player moving server, don't need to worry about unloading just yet.");
 		}
-		
-		if (this.loginAcceptor != null) this.loginAcceptor.onDisconnectEvent(new BungeeQuitEvent(np));
-		pl.release();
 		
 	}
 	
