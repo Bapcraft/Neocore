@@ -198,8 +198,7 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	
 	public default List<Flair> getAvailableFlairs() {
 		
-		List<Group> groups = new ArrayList<>();
-		this.getGroupMemberships().forEach(gm -> groups.add(gm.getGroup()));
+		List<Group> groups = this.getGroups();
 		
 		Collections.sort(groups, (Group a, Group b) -> {
 			
