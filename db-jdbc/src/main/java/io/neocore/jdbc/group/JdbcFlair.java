@@ -7,6 +7,9 @@ import io.neocore.api.player.group.Flair;
 
 @DatabaseTable(tableName = "groupFlairs")
 public class JdbcFlair implements Flair {
+
+	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+	private int flairId;
 	
 	@DatabaseField(canBeNull = false, foreign = true)
 	private JdbcGroup owner;

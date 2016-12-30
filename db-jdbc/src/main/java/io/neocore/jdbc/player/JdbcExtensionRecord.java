@@ -8,6 +8,9 @@ import io.neocore.api.player.extension.Extension;
 
 @DatabaseTable(tableName = "playerExtensions")
 public class JdbcExtensionRecord {
+
+	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+	private int extensionId;
 	
 	@DatabaseField(canBeNull = false, foreign = true)
 	protected JdbcDbPlayer owner;

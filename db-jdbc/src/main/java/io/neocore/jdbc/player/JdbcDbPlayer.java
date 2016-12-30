@@ -100,9 +100,7 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 	@Override
 	public GroupMembership addGroup(Group group) {
 		
-		JdbcGroupMembership gm = new JdbcGroupMembership(this);
-		gm.setGroup(group);
-		gm.setDirty(false);
+		JdbcGroupMembership gm = new JdbcGroupMembership(this, group);
 		
 		this.addGroupMembership(gm);
 		return gm;
@@ -129,7 +127,7 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 			if (acct.currency.equals(currency)) return acct;
 		}
 		
-		return null;
+		return new JdbcPlayerAccount(this, currency);
 		
 	}
 	

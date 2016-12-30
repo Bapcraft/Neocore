@@ -12,6 +12,9 @@ import io.neocore.api.infrastructure.NetworkEndpoint;
 @DatabaseTable(tableName = "networkMoves")
 public class JdbcNetworkMove extends AbstractPersistentRecord implements EndpointMove {
 	
+	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+	private int moveId;
+	
 	@DatabaseField(foreign = true)
 	private JdbcSession session;
 	

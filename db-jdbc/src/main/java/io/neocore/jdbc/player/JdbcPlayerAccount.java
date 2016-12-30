@@ -8,6 +8,9 @@ import io.neocore.api.eco.Account;
 
 @DatabaseTable(tableName = "accounts")
 public class JdbcPlayerAccount extends AbstractPersistentRecord implements Account {
+
+	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+	private int accountId;
 	
 	@DatabaseField(canBeNull = false, foreign = true)
 	private JdbcDbPlayer owner;
@@ -25,8 +28,11 @@ public class JdbcPlayerAccount extends AbstractPersistentRecord implements Accou
 		// ORMLite.
 	}
 	
-	public JdbcPlayerAccount(String curName) {
+	public JdbcPlayerAccount(JdbcDbPlayer owner, String curName) {
+		
+		this.owner = owner;
 		this.currency = curName;
+		
 	}
 	
 	@Override

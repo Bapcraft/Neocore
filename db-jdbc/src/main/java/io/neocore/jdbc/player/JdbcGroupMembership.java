@@ -5,6 +5,7 @@ import java.util.Date;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.player.group.Group;
 import io.neocore.api.player.group.GroupMembership;
@@ -12,10 +13,13 @@ import io.neocore.api.player.group.GroupMembership;
 @DatabaseTable(tableName = "groupMemberships")
 public class JdbcGroupMembership extends AbstractPersistentRecord implements GroupMembership {
 	
+	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+	private int membershipId;
+	
 	@DatabaseField(canBeNull = false, foreign = true)
 	protected JdbcDbPlayer owner;
 	
-	@DatabaseField
+	@DatabaseField(canBeNull = false)
 	protected String groupName;
 	
 	@DatabaseField(canBeNull = true)
@@ -28,8 +32,11 @@ public class JdbcGroupMembership extends AbstractPersistentRecord implements Gro
 		// ORMLite.
 	}
 	
-	public JdbcGroupMembership(JdbcDbPlayer owner) {
+	public JdbcGroupMembership(JdbcDbPlayer owner, Group g) {
+		
 		this.owner = owner;
+		this.groupName = g.getName();
+		
 	}
 
 	@Override
@@ -42,7 +49,7 @@ public class JdbcGroupMembership extends AbstractPersistentRecord implements Gro
 
 	@Override
 	public Group getGroup() {
-		return null; // TODO Make this query the group properly.
+		return NeocoreAPI.getAgent().getPermissionManager().getGroup(this.groupName); // FIXME Breaks encapsulation.
 	}
 
 	@Override

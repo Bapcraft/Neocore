@@ -1,7 +1,5 @@
 package io.neocore.jdbc.group;
 
-import java.util.UUID;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -13,8 +11,8 @@ import io.neocore.api.player.group.PermissionEntry;
 @DatabaseTable(tableName = "permissions")
 public class JdbcPermissionEntry extends AbstractPersistentRecord implements PermissionEntry {
 	
-	@DatabaseField(id = true)
-	private UUID id;
+	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
+	private int permId;
 	
 	@DatabaseField(foreign = true)
 	private JdbcGroup group;
@@ -29,12 +27,10 @@ public class JdbcPermissionEntry extends AbstractPersistentRecord implements Per
 	private PermState state;
 	
 	public JdbcPermissionEntry() {
-		this.id = UUID.randomUUID();
+		// ORMlite
 	}
 	
 	public JdbcPermissionEntry(Context context, String node, PermState state) {
-		
-		this.id = UUID.randomUUID();
 		
 		this.context = context != null ? context.getName() : null;
 		this.node = node;
