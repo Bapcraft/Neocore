@@ -87,6 +87,14 @@ public class PlayerConnectionForwarder extends EventForwarder {
 		PlayerManager pm = this.neocore.getPlayerManager();
 		PlayerLease pl = pm.requestLease(uuid, loaded -> {
 			
+			// Sanity check.
+			if (loaded == null) {
+				
+				NeocoreAPI.getLogger().severe("CRITICAL ERROR: Loaded null player after lease resolution for UUID " + uuid + " (player: " + player.getName() + ").");
+				return;
+				
+			}
+			
 			/*
 			 * First we increase the login count and update the last login, and
 			 * then we deal with the session stuff. 
