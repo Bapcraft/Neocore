@@ -65,5 +65,10 @@ public class BukkitPermPlayer extends WrappedPlayer implements PermissedPlayer {
 	public List<PermissionCollection> getCollections() {
 		return new ArrayList<>(this.collections);
 	}
+
+	@Override
+	public void applyChanges() {
+		this.getPlayerOrThrow().recalculatePermissions();
+	}
 	
 }
