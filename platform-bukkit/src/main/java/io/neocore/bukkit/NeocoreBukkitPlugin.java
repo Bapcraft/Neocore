@@ -35,8 +35,8 @@ import io.neocore.bukkit.services.BukkitChatService;
 import io.neocore.bukkit.services.BukkitLoginService;
 import io.neocore.bukkit.services.network.StandaloneNetworkMapService;
 import io.neocore.bukkit.services.permissions.BukkitPermsService;
-import io.neocore.bukkit.shced.NeoBukkitScheduler;
 import io.neocore.common.FullHostPlugin;
+import io.neocore.common.JavaNativeScheduler;
 import io.neocore.common.NeocoreImpl;
 
 public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
@@ -64,7 +64,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 	// Utils
 	private BungeeCom bungee;
 	private CommandInjector cmdInjector;
-	private NeoBukkitScheduler scheduler;
+	private Scheduler scheduler;
 	
 	@Override
 	public void onEnable() {
@@ -77,10 +77,10 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 
 		// Set up command injector.
 		this.cmdInjector = new CommandInjector_19r2(); // FIXME Make this figure out the details automatically.
-		this.scheduler = new NeoBukkitScheduler(this, this.getServer().getScheduler());
+		this.scheduler = new JavaNativeScheduler(this.getLogger());
 		
 		// Initialize and install Neocore
-		NeocoreInstaller.applyLogger(Bukkit.getLogger());
+		NeocoreInstaller.applyLogger(this.getLogger());
 		NeocoreImpl neo = new NeocoreImpl(this);
 		NeocoreInstaller.install(neo);
 		this.neocore = neo; // Alias because we use it a lot here.
