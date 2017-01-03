@@ -1,10 +1,9 @@
 package io.neocore.bungee.events;
 
-import java.util.Set;
-
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.infrastructure.DownstreamTransferEvent;
 import io.neocore.api.infrastructure.NetworkEndpoint;
+import io.neocore.api.infrastructure.NetworkMap;
 import io.neocore.api.infrastructure.NetworkMapService;
 import io.neocore.api.player.NeoPlayer;
 import net.md_5.bungee.api.ProxyServer;
@@ -48,8 +47,10 @@ public class BungeeDownstreamTransferEvent implements DownstreamTransferEvent {
 		String name = this.event.getTarget().getName();
 		
 		NetworkMapService nmServ = NeocoreAPI.getAgent().getServiceManager().getService(NetworkMapService.class);
-		Set<NetworkEndpoint> eps = nmServ.getLocalNetworkMap().getEndpoints();
-		for (NetworkEndpoint ne : eps) {
+		if (nmServ == null) return null; // FIXME TODO
+		NetworkMap map = nmServ.getLocalNetworkMap();
+		if (map == null) return null; // FIXME TODO
+		for (NetworkEndpoint ne : map.getEndpoints()) {
 			if (ne.getAgentName().equals(name)) return ne;
 		}
 		

@@ -143,7 +143,15 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	public void onPlayerQuit(PlayerDisconnectEvent event) {
 		
 		UUID uuid = event.getPlayer().getUniqueId();
-		this.disconnectingPlayers.put(uuid, this.leases.get(uuid));
+		PlayerLease lease = this.leases.get(uuid);
+		this.disconnectingPlayers.put(uuid, lease);
+		
+		// Now we call this to make sure the player is fully loaded before we try to unload it.
+		try {
+			lease.getPlayerEventually();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		NeocoreAPI.getLogger().fine("Registered a player lease of " + uuid + " for disconnection.");
 		
