@@ -28,6 +28,8 @@ import io.neocore.api.player.group.GroupMembership;
  */
 public class NeoPlayer extends AbstractPersistentRecord implements PersistentPlayerIdentity, Comparable<NeoPlayer> {
 	
+	private static final String UNKNOWN_USERNAME_NAME = "[unknown]";
+	
 	/**
 	 * The player's unique ID, according to Mojang.
 	 */
@@ -47,6 +49,8 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	 * Set if the player has been fully populated with its required identites.
 	 */
 	private boolean isPopulated;
+	
+	private transient String cachedUsername = UNKNOWN_USERNAME_NAME;
 	
 	public NeoPlayer(UUID uuid) {
 		
@@ -74,10 +78,28 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	}
 	
 	/**
-	 * @return The username of the player.
+	 * @return The username of the player
 	 */
 	public String getUsername() {
-		return this.hasIdentity(ServerPlayer.class) ? this.getIdentity(ServerPlayer.class).getName() : "[undefined]";
+		
+		if (this.hasIdentity(ServerPlayer.class)) {
+			
+			ServerPlayer sp = this.getIdentity(ServerPlayer.class);
+			if (sp.isOnline()) this.cachedUsername = sp.getName();
+			
+			return this.cachedUsername;
+			
+		} else {
+			return this.cachedUsername;
+		}
+		
+	}
+	
+	/**
+	 * @return If the player is online or not
+	 */
+	public boolean isOnline() {
+		return this.hasIdentity(ServerPlayer.class) && this.getIdentity(ServerPlayer.class).isOnline();
 	}
 	
 	/**
@@ -244,9 +266,13 @@ public class NeoPlayer extends AbstractPersistentRecord implements PersistentPla
 	@Override
 	public void flush() {
 		
-		// We don't really pay attention to the dirtyness of identities.
-		this.getFlushProcedure().run();
-		this.setDirty(false);
+		synchronized (this) {
+			
+			// We don't really pay attention to the dirtyness of identities.
+			this.getFlushProcedure().run();
+			this.setDirty(false);
+			
+		}
 		
 	}
 	

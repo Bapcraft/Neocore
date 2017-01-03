@@ -3,7 +3,9 @@ package io.neocore.api.database.player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.neocore.api.database.PersistentPlayerIdentity;
 import io.neocore.api.eco.Account;
@@ -49,7 +51,7 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	 * Returns a list of all of the groups that this player is immediately a
 	 * member of right now in time.
 	 * 
-	 * @return A list of the player's groups.
+	 * @return A list of the player's groups
 	 */
 	public default List<Group> getGroups() {
 		
@@ -59,6 +61,27 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 		}
 		
 		return groups;
+		
+	}
+	
+	/**
+	 * Returns a list of all the groups that this player is part of in any way,
+	 * either directly or through inheritance.
+	 * 
+	 * @return The list of groups
+	 */
+	public default List<Group> getInheritedGroups() {
+		
+		Set<Group> groups = new HashSet<>(); // Use a set 
+		
+		for (Group g : this.getGroups()) {
+			
+			groups.add(g);
+			groups.addAll(g.getAncestors());
+			
+		}
+		
+		return new ArrayList<>(groups);
 		
 	}
 	
@@ -196,9 +219,15 @@ public interface DatabasePlayer extends PlayerIdentity, PersistentPlayerIdentity
 	 */
 	public Flair getCurrentFlair();
 	
+	/**
+	 * Gets a list of all of the flairs that this user has available based
+	 * on their group memberships.
+	 * 
+	 * @return The flairs available to the user
+	 */
 	public default List<Flair> getAvailableFlairs() {
 		
-		List<Group> groups = this.getGroups();
+		List<Group> groups = this.getInheritedGroups();
 		
 		Collections.sort(groups, (Group a, Group b) -> {
 			
