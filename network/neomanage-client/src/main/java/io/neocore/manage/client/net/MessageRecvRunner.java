@@ -44,7 +44,13 @@ public class MessageRecvRunner implements Runnable {
 				NeocoreAPI.getLogger().finer("Got message ID:" + Long.toHexString(msg.getMessageId()) + " from " + this.daemonName + " of type " + msg.getPayloadCase().name() + ".");
 				
 				if (!msg.hasSenderId() || !UUID.fromString(msg.getSenderId()).equals(NeocoreAPI.getAgent().getAgentId())) {
-					this.recvCallback.accept(msg);
+					
+					try {
+						this.recvCallback.accept(msg);
+					} catch (Throwable t) {
+						NeocoreAPI.getLogger().log(Level.SEVERE, "Severe unknown error when processing Neomanage network packet!", t);
+					}
+					
 				} else {
 					NeocoreAPI.getLogger().warning("Got message from self of type " + msg.getPayloadCase() + ", ignoring.");
 				}
