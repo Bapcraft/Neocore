@@ -55,4 +55,12 @@ public interface PermissedPlayer extends ConnectingPlayer {
 	 */
 	public List<PermissionCollection> getCollections();
 	
+	/**
+	 * Optionally performs an update of the underlying player permissions in
+	 * the event they do not normally happen immediately.
+	 */
+	public default void applyChanges() {
+		
+	}
+	
 }
