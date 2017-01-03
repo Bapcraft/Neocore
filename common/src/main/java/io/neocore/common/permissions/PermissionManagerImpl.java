@@ -3,6 +3,7 @@ package io.neocore.common.permissions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,6 +11,7 @@ import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.group.GroupService;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.host.Context;
+import io.neocore.api.host.LesserContext;
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.host.permissions.PermissionCollection;
 import io.neocore.api.host.permissions.PermissionsService;
@@ -26,14 +28,14 @@ public class PermissionManagerImpl implements PermissionManager {
 	public static final String COLLECTION_GROUP_CFG_TAG = "GroupConfiguration";
 	
 	private PlayerManagerWrapperImpl players;
-	private List<Context> contexts;
+	private Set<Context> contexts;
 	
 	private PermissionsService permsService;
 	private GroupService groupService;
 	
 	private List<Group> cache;
 	
-	public PermissionManagerImpl(PlayerManagerWrapperImpl players, ServiceManagerImpl services) {
+	public PermissionManagerImpl(PlayerManagerWrapperImpl players, ServiceManagerImpl services, List<Context> contexts) {
 		
 		this.players = players;
 		
@@ -42,10 +44,11 @@ public class PermissionManagerImpl implements PermissionManager {
 		});
 		
 		services.registerRegistrationHandler(GroupService.class, e -> {
-			
 			this.groupService = (GroupService) e.getServiceProvider();
-			
 		});
+		
+		this.contexts = new HashSet<>(contexts);
+		this.contexts.add(new LesserContext("GLOBAL")); // Should never really be defined, but in case it is we'll add it.
 		
 	}
 	
@@ -173,7 +176,7 @@ public class PermissionManagerImpl implements PermissionManager {
 			
 			// Iterate through all of the permission nodes for the group.
 			for (PermissionEntry pe : g.getPermissions()) {
-				if (this.contexts.contains(pe.getContext()) && pe.isSet()) permMap.put(pe.getPermissionNode(), pe.getState());
+				if ((pe.getContext() == null || this.contexts.contains(pe.getContext())) && pe.isSet()) permMap.put(pe.getPermissionNode(), pe.getState());
 			}
 			
 		}
@@ -184,6 +187,9 @@ public class PermissionManagerImpl implements PermissionManager {
 		for (Map.Entry<String, Boolean> entry : permMap.entrySet()) {
 			col.setPermission(entry.getKey(), entry.getValue());
 		}
+		
+		// Finally update everything underneath.
+		pp.applyChanges();
 		
 	}
 	

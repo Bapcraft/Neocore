@@ -89,7 +89,7 @@ public class NeocoreImpl implements Neocore {
 		this.moduleManager = new ModuleManagerImpl(this, host.getMicromoduleDirectory());
 		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager, host.getNeocoreConfig().getPlayerThreadingModel(), host.getScheduler());
 		this.playerManWrapper = new PlayerManagerWrapperImpl(this.playerManager);
-		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager);
+		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager, host.getNeocoreConfig().getContexts());
 		
 		// Set up acceptors.
 		this.loginAcceptor = new LoginAcceptorImpl(this.eventManager, this.serviceManager, this.identManager, host.getContexts());
@@ -108,7 +108,7 @@ public class NeocoreImpl implements Neocore {
 		
 		// Register ALL these commands.
 		log.info("Installing commands...");
-		this.host.registerCommand(new CommandActiveUserManager(this.playerManWrapper));
+		this.host.registerCommand(new CommandActiveUserManager(this.playerManWrapper, this.playerManager));
 		this.host.registerCommand(new CommandArtifactManager(this.serviceManager));
 		this.host.registerCommand(new CommandBroadcast(this.serviceManager));
 		this.host.registerCommand(new TreeCommand(

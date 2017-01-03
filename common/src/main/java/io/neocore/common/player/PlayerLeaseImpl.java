@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
-
-import com.treyzania.jzania.ExoContainer;
+import java.util.logging.Logger;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.player.NeoPlayer;
@@ -15,22 +14,22 @@ import io.neocore.api.player.PlayerLease;
 
 public class PlayerLeaseImpl implements PlayerLease {
 	
-	private final ExoContainer exo = new ExoContainer(NeocoreAPI.getLogger());
-	
 	private final UUID uuid;
 	private final Date issueTime = new Date();
 	
 	private PlayerManagerWrapperImpl manager;
+	private CommonPlayerManager assembler;
 	
 	private boolean released = false;
 	private CountDownLatch waitForCompleted = new CountDownLatch(1);
 	
 	private List<Consumer<NeoPlayer>> callbacks = new ArrayList<>();
 	
-	public PlayerLeaseImpl(UUID uuid, PlayerManagerWrapperImpl wrapper) {
+	public PlayerLeaseImpl(UUID uuid, PlayerManagerWrapperImpl wrapper, CommonPlayerManager assembler) {
 		
 		this.uuid = uuid;
 		this.manager = wrapper;
+		this.assembler = assembler;
 		
 	}
 	
@@ -38,20 +37,20 @@ public class PlayerLeaseImpl implements PlayerLease {
 	public UUID getUniqueId() {
 		return this.uuid;
 	}
-
+	
 	@Override
 	public NeoPlayer getPlayer() {
 		return this.manager.getPlayer(this.uuid);
 	}
-
+	
 	@Override
 	public NeoPlayer getPlayerEventually() throws InterruptedException {
 		
-		this.waitForCompleted.await();
+		this.assembler.awaitPlayerPopulation(this.uuid);
 		return this.getPlayer();
 		
 	}
-
+	
 	@Override
 	public void addCallback(Consumer<NeoPlayer> callback) {
 		
@@ -66,22 +65,29 @@ public class PlayerLeaseImpl implements PlayerLease {
 		}
 		
 	}
-
+	
 	@Override
 	public Date getIssueTime() {
 		return this.issueTime;
 	}
-
+	
 	@Override
 	public void release() {
 		
 		synchronized (this) {
 			
-			NeocoreAPI.getLogger().finest("Lease release requested! (" + this.uuid + ")");
+			Logger log = NeocoreAPI.getLogger();
+			log.finest("Lease release requested! (" + this.uuid + ")");
+			
 			if (!this.released) {
 				
 				this.manager.releaseLease(this);
 				this.released = true;
+				
+			} else {
+				
+				log.warning("Requested release of lease that was alredy released for " + this.uuid + "!");
+				throw new IllegalStateException("Already-released lease was attempted to be released again.");
 				
 			}
 			
@@ -100,9 +106,16 @@ public class PlayerLeaseImpl implements PlayerLease {
 			
 			this.waitForCompleted.countDown();
 			
-			NeoPlayer player = this.getPlayer();
-			for (Consumer<NeoPlayer> cb : this.callbacks) {
-				this.exo.invoke("LeaseCallback(" + this.uuid + ")", () -> cb.accept(player));
+			try {
+				
+				NeoPlayer player = this.getPlayerEventually();
+				
+				for (Consumer<NeoPlayer> cb : this.callbacks) {
+					cb.accept(player);
+				}
+				
+			} catch (InterruptedException e) {
+				NeocoreAPI.getLogger().warning("Interrupted during wait for completion for " + this.uuid + " in lease!");
 			}
 			
 			this.callbacks = null;

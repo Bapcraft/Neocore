@@ -48,7 +48,7 @@ public class CommonEventManager extends EventManager {
 		return rl;
 		
 	}
-
+	
 	@Override
 	public void registerListeners(Module mod, SimpleListener listener, int defaultPriority) {
 		
@@ -117,6 +117,7 @@ public class CommonEventManager extends EventManager {
 		
 		if (!this.busses.containsKey(event)) {
 			
+			NeocoreAPI.getLogger().fine("Creating bus for type " + event.getName() + ".");
 			EventBus<T> bus = new EventBus<>();
 			this.busses.put(event, bus);
 			return bus;
@@ -130,11 +131,20 @@ public class CommonEventManager extends EventManager {
 	@Override
 	public <T extends Event> void broadcast(Class<? extends Event> type, T event) {
 		
+		Preconditions.checkNotNull(type);
+		Preconditions.checkNotNull(event);
+		NeocoreAPI.getLogger().finer("Starting event broadcast: " + type.getName() + " + (" + event + ")");
+		
 		// Make sure we have a bus for it already set up.
 		registerEventType(type);
 		
 		// Actually broadcast it.
-		this.busses.get(type).broadcast(event);
+		EventBus<?> bus = this.busses.get(type);
+		if (bus != null) {
+			bus.broadcast(event);
+		} else {
+			NeocoreAPI.getLogger().warning("Tried to broadcast an event that doesn't have a bus. (" + type.getName() + " " + event + ")");
+		}
 		
 	}
 	

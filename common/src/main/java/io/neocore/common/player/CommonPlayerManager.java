@@ -1,10 +1,11 @@
 package io.neocore.common.player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +38,8 @@ import io.neocore.api.player.PlayerIdentity;
 
 public class CommonPlayerManager {
 	
-	protected Set<NeoPlayer> playerCache = new TreeSet<>();
+	protected Set<NeoPlayer> playerCache = new HashSet<>();
+	protected Map<UUID, List<CountDownLatch>> latches = new HashMap<>();
 	
 	private ServiceManager serviceManager;
 	private EventManager eventManager;
@@ -47,6 +49,7 @@ public class CommonPlayerManager {
 	
 	private Set<ServiceType> loadableServices;
 	private List<ProviderContainer> providerContainers;
+	private boolean wrappersDirty = false;
 	
 	private PlayerIoThreadingModel ioModel;
 	
@@ -81,12 +84,16 @@ public class CommonPlayerManager {
 		
 	}
 	
+	public NetworkSync getNetworkSync() {
+		return this.networkSync;
+	}
+	
 	private void processInvalidation(UUID uuid) {
 		
 		Logger log = NeocoreAPI.getLogger();
 		
 		NeoPlayer player = this.findPlayer(uuid);
-		log.finer("Processing invalidation for " + uuid + " ( " + (player != null ? player.getUsername() : "[undefined]") + " )...");
+		log.finer("Processing invalidation for " + uuid + "...");
 		
 		if (player != null) {
 			
@@ -131,10 +138,13 @@ public class CommonPlayerManager {
 	
 	private void wrapServices() {
 		
+		NeocoreAPI.getLogger().fine("Wrapping " + this.loadableServices.size() + " services for player dependency injection.");
+		
 		this.providerContainers = new ArrayList<>();
 		this.loadableServices.forEach(t -> this.addServiceWrapper(t));
 		
 		this.updateContainerLockCoordinators();
+		this.wrappersDirty = false;
 		
 	}
 	
@@ -235,6 +245,42 @@ public class CommonPlayerManager {
 		
 	}
 	
+	protected void awaitPlayerPopulation(UUID uuid) {
+		
+		if (this.isPopulated(uuid)) return;
+		
+		CountDownLatch latch = new CountDownLatch(1);
+		
+		synchronized (this.latches) {
+			
+			List<CountDownLatch> here = this.latches.get(uuid);
+			if (here == null) {
+				
+				here = new ArrayList<>();
+				this.latches.put(uuid, here);
+				
+			}
+			
+			here.add(latch);
+			
+		}
+		
+		try {
+			
+			boolean awaitOk = latch.await(10000L, TimeUnit.MILLISECONDS);
+			if (!awaitOk) {
+				
+				NeocoreAPI.getLogger().warning("Timeout when awaiting player population.  This is probably a bug!");
+				throw new IllegalStateException("Timed out when awaiting for player population.");
+				
+			}
+			
+		} catch (InterruptedException e) {
+			NeocoreAPI.getLogger().severe("Waiting for player to finish loading interruped, continuing anyways.");
+		}
+		
+	}
+	
 	private void invokeAccordingToModel(Runnable r) {
 		
 		if (this.ioModel == PlayerIoThreadingModel.SINGLE_THREAD) {
@@ -248,6 +294,7 @@ public class CommonPlayerManager {
 	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadReason reason, Consumer<NeoPlayer> callback) {
 		
 		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
+		if (this.wrappersDirty) this.wrapServices();
 		this.eventManager.broadcast(new PreLoadPlayerEvent(reason, uuid));
 		
 		if (reason == LoadReason.JOIN || reason == LoadReason.OTHER) this.networkSync.updateSubscriptionState(uuid, true);
@@ -257,9 +304,6 @@ public class CommonPlayerManager {
 		
 		// Now actually load the things.
 		for (ProviderContainer container : this.providerContainers) {
-			
-			// Don't load things that are not present on the host yet.  FIXME More context-awareness from the containers.
-			//if (type == LoadType.PRELOAD && container instanceof DirectProviderContainer) continue; TODO
 			
 			ProvisionResult result = container.load(np, () -> {
 				eventLatch.countDown();
@@ -281,13 +325,32 @@ public class CommonPlayerManager {
 		this.invokeAccordingToModel(() -> {
 			
 			try {
+				
 				eventLatch.await();
+				
 			} catch (InterruptedException e) {
 				NeocoreAPI.getLogger().warning("Waiting for player assembly was interrupted, invoking callback anyways...");
 			}
 			
 			this.eventManager.broadcast(new PostLoadPlayerEvent(reason, np));
 			np.setPopulated();
+			
+			synchronized (this.latches) {
+				
+				// Notify all waiting threads.
+				List<CountDownLatch> userLatches = this.latches.get(uuid);
+				if (userLatches != null) {
+					
+					for (CountDownLatch latch : userLatches) {
+						latch.countDown();
+					}
+					
+					// Now remove the latch list.
+					this.latches.remove(uuid);
+					
+				}
+				
+			}
 			
 			// Spawn a thread for the callback.
 			if (callback != null) this.invokeAccordingToModel(() -> callback.accept(np));
@@ -298,33 +361,46 @@ public class CommonPlayerManager {
 		this.addCachedPlayer(np);
 		
 		// Configure the flushing procedure.
-		np.setFlushProcedure(() -> {
-			
-			CountDownLatch flushWaiter = new CountDownLatch(1);
-			
-			this.flushPlayer(uuid, np.isDirty() ? FlushReason.DIRTY_CLEAN : FlushReason.EXPLICIT, () -> {
-				
-				NeocoreAPI.getLogger().finest("NeoPlayer " + uuid + " successfully flushed.");
-				flushWaiter.countDown();
-				
-			});
-			
-			try {
-				flushWaiter.await(10000L, TimeUnit.MILLISECONDS); // FIXME Make configurable.
-			} catch (InterruptedException e) {
-				NeocoreAPI.getLogger().warning("Interrupted while waiting for ");
-			}
-			
-		});
+		np.setFlushProcedure(() -> flushPlayerBlockingly(np));
 		
 		// Now return the container while it gets populated in some other thread.
 		return np;
 		
 	}
 	
+	private void flushPlayerBlockingly(NeoPlayer np) {
+		
+		UUID uuid = np.getUniqueId();
+		CountDownLatch flushWaiter = new CountDownLatch(1);
+		
+		this.flushPlayer(uuid, np.isDirty() ? FlushReason.DIRTY_CLEAN : FlushReason.EXPLICIT, () -> {
+			
+			NeocoreAPI.getLogger().finest("NeoPlayer " + uuid + " successfully flushed.");
+			flushWaiter.countDown();
+			
+		});
+		
+		try {
+			
+			boolean flushOk = flushWaiter.await(15000L, TimeUnit.MILLISECONDS); // FIXME Make configurable.
+			if (!flushOk) {
+				
+				NeocoreAPI.getLogger().severe("Flushing of NeoPlayer " + uuid + " timed out.  This is probably a bug!");
+				throw new IllegalStateException("Timed out when waiting for complete player flushing.");
+				
+			}
+			
+		} catch (InterruptedException e) {
+			NeocoreAPI.getLogger().warning("Interrupted while waiting for flush to complete.");
+		}
+		
+	}
+	
 	public synchronized void flushPlayer(UUID uuid, FlushReason reason, Runnable callback) {
 		
-		NeocoreAPI.getLogger().fine("Flushing player " + uuid + " to database...");
+		Logger log = NeocoreAPI.getLogger();
+		log.fine("Flushing player " + uuid + " to database...");
+		
 		NeoPlayer np = this.findPlayer(uuid);
 		
 		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
@@ -341,6 +417,7 @@ public class CommonPlayerManager {
 				container.flush(np, () -> {
 					
 					// Count down the latch when we're done unloading it.
+					log.fine("In the process of flushing " + np.getUniqueId() + ", " + container.getClass().getSimpleName() + " of " + container.getProvisionedClass().getSimpleName() + " has finished.");
 					latch.countDown();
 					
 				});
@@ -348,6 +425,7 @@ public class CommonPlayerManager {
 			} else {
 				
 				// Nothing to unload but we still need to account for it.
+				log.fine("In the process of flushing " + np.getUniqueId() + ", we skipped " + container.getProvisionedClass().getSimpleName() + " of " + container.getProvisionedClass().getSimpleName() + ".");
 				latch.countDown();
 				
 			}
@@ -358,20 +436,33 @@ public class CommonPlayerManager {
 		this.invokeAccordingToModel(() -> {
 			
 			try {
-				latch.await();
+				
+				boolean flushOk = latch.await(10000L, TimeUnit.MILLISECONDS); // FIXME Make configuratble.
+				if (!flushOk) {
+					
+					log.warning("Problem awaiting flush completion for player " + uuid + ".  This is probably a bug!");
+					throw new IllegalStateException("Timed out when waiting for player flushing.");
+					
+				}
+				
 			} catch (InterruptedException e) {
-				NeocoreAPI.getLogger().warning("Waiting for identity flushing was interrupted, broadcasting events and invoking callback anyways...");
+				log.warning("Waiting for identity flushing was interrupted, broadcasting events and invoking callback anyways...");
+			} finally {
+				
+				log.finest("Player " + uuid + " has finished identity population.");
+				
+				// Mark the player as clean.
+				np.setDirty(false);
+				
+				// Broadcast the event in all the relevant channels.
+				this.networkSync.announceInvalidation(uuid);
+				this.eventManager.broadcast(new PostFlushPlayerEvent(reason, np));
+				
+				// Run the callback.
+				log.finer("Cleanup for init of " + uuid + " complete, invoking callback.");
+				if (callback != null) callback.run();
+				
 			}
-			
-			// Mark the player as clean.
-			np.setDirty(false);
-			
-			// Broadcast the event in all the relevant channels.
-			this.networkSync.announceInvalidation(uuid);
-			this.eventManager.broadcast(new PostFlushPlayerEvent(reason, np));
-			
-			// Run the callback.
-			if (callback != null) callback.run();
 			
 		});
 		
@@ -414,15 +505,25 @@ public class CommonPlayerManager {
 		this.invokeAccordingToModel(() -> {
 			
 			try {
-				latch.await();
+				
+				boolean awaitOk = latch.await(10000L, TimeUnit.MILLISECONDS);
+				if (!awaitOk) {
+					
+					NeocoreAPI.getLogger().severe("Timed out when waiting for unload of " + uuid + "  This is probably a bug!");
+					throw new IllegalStateException("Timed out when waiting for player unload.");
+					
+				}
+				
 			} catch (InterruptedException e) {
 				NeocoreAPI.getLogger().warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
+			} finally {
+
+				if (reason == UnloadReason.DISCONNECT) this.networkSync.updateSubscriptionState(uuid, false);
+				this.eventManager.broadcast(new PostUnloadPlayerEvent(reason, uuid));
+				
+				if (callback != null) callback.run();
+				
 			}
-			
-			if (reason == UnloadReason.DISCONNECT) this.networkSync.updateSubscriptionState(uuid, false);
-			this.eventManager.broadcast(new PostUnloadPlayerEvent(reason, uuid));
-			
-			if (callback != null) callback.run();
 			
 		});
 		

@@ -63,7 +63,8 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 	
 	private void flagLeases(NeoPlayer player) {
 		
-		List<PlayerLeaseImpl> plis = this.leases.get(player.getUniqueId());
+		// We have to duplicate this list because otherwise we'd end up removing things while we're iterating.
+		List<PlayerLeaseImpl> plis = new ArrayList<>(this.leases.get(player.getUniqueId()));
 		
 		for (PlayerLeaseImpl pl : plis) {
 			pl.flagCompleted();
@@ -114,7 +115,7 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 			playerLeases = this.leases.get(uuid);
 		}
 		
-		PlayerLeaseImpl lease = new PlayerLeaseImpl(uuid, this);
+		PlayerLeaseImpl lease = new PlayerLeaseImpl(uuid, this, this.playerManager);
 		if (callback != null) lease.addCallback(callback);
 		
 		playerLeases.add(lease);
@@ -128,6 +129,10 @@ public class PlayerManagerWrapperImpl implements PlayerManager {
 		
 		return lease;
 		
+	}
+	
+	public Map<UUID, List<PlayerLeaseImpl>> getLeases() {
+		return this.leases;
 	}
 	
 }
