@@ -301,7 +301,10 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 		this.updatedAccounts.forEach(a -> {
 			
 			try {
+				
 				this.accounts.update(a);
+				NeocoreAPI.getLogger().info("Updated one thing.");
+				
 			} catch (SQLException e) {
 				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing account data!", e);
 			}
@@ -314,6 +317,7 @@ public class JdbcDbPlayer extends AbstractPersistentRecord implements DatabasePl
 			
 			try {
 				this.extensions.update(ex);
+				NeocoreAPI.getLogger().info("Updated another thing.");
 			} catch (SQLException e) {
 				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing extension data!", e);
 			}

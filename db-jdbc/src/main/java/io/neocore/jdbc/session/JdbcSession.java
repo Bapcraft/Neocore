@@ -205,9 +205,14 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 	public EndpointMove createEndpointMove() {
 		
 		JdbcNetworkMove nm = new JdbcNetworkMove(this);
-		this.moves.add(nm);
-		this.updatedMoves.add(nm);
-		this.dirty();
+		
+		if (this.moves != null) {
+			
+			this.moves.add(nm);
+			this.updatedMoves.add(nm);
+			this.dirty();
+			
+		}
 		
 		return nm;
 		
@@ -219,16 +224,22 @@ public class JdbcSession extends AbstractPersistentRecord implements ProxiedSess
 	}
 	
 	protected void cleanupCachedSaves() {
-
-		this.updatedMoves.forEach(m -> {
+		
+		if (this.moves != null) {
 			
-			try {
-				this.moves.update(m);
-			} catch (SQLException e) {
-				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing move data.", e);
-			}
+			this.updatedMoves.forEach(m -> {
+				
+				try {
+					this.moves.update(m);
+				} catch (SQLException e) {
+					NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing move data.", e);
+				}
+				
+			});
 			
-		});
+		} else {
+			NeocoreAPI.getLogger().warning("Missing moves collection for " + this.uuid + "!  Was it flushed to the database?");
+		}
 		
 		this.updatedMoves.clear();
 		

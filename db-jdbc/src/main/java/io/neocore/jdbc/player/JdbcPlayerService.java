@@ -76,11 +76,11 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 			try {
 				
 				dbp.cleanupCachedSaves();
-				this.playerDao.createOrUpdate(dbp);
+				this.playerDao.update(dbp);
 				dbp.setDirty(false);
 				
 			} catch (SQLException e) {
-				NeocoreAPI.getLogger().log(Level.WARNING, "Problem flushing player to database! (" + uuid + ")", e);
+				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem flushing player to database! (" + uuid + ")", e);
 			}
 			
 		} else {
@@ -136,8 +136,8 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 				
 				if (p == null) {
 					
-					p = new JdbcDbPlayer(uuid);
-					this.playerDao.create(p);
+					this.playerDao.create(new JdbcDbPlayer(uuid));
+					p = this.playerDao.queryForId(uuid);
 					
 				}
 				
@@ -180,7 +180,7 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 			return "nobody";
 		} catch (SQLException e) {
 			
-			NeocoreAPI.getLogger().log(Level.WARNING, "Problem loading player last username.", e);
+			NeocoreAPI.getLogger().log(Level.SEVERE, "Problem loading player last username.", e);
 			return String.format("ERROR(%s)", id);
 			
 		}

@@ -12,6 +12,9 @@ import io.neocore.api.infrastructure.NetworkEndpoint;
 @DatabaseTable(tableName = "networkMoves")
 public class JdbcNetworkMove extends AbstractPersistentRecord implements EndpointMove {
 	
+	public static final String UNDEFINED_ENDPOINT = "[null]";
+	public static final String NULL_ENDPOINT = "[null]";
+	
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
 	private int moveId;
 	
@@ -22,7 +25,7 @@ public class JdbcNetworkMove extends AbstractPersistentRecord implements Endpoin
 	private Date time = new Date();
 	
 	@DatabaseField(canBeNull = false)
-	private String destination = "[undefined]";
+	private String destination = UNDEFINED_ENDPOINT;
 	
 	protected JdbcNetworkMove() {
 		
@@ -69,7 +72,7 @@ public class JdbcNetworkMove extends AbstractPersistentRecord implements Endpoin
 	
 	@Override
 	public void setDestination(NetworkEndpoint ep) {
-		this.destination = ep.getNetworkName();
+		this.destination = ep != null ? ep.getNetworkName() : NULL_ENDPOINT;
 	}
 	
 	@Override

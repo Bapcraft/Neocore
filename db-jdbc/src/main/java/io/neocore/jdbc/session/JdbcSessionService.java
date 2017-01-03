@@ -121,8 +121,19 @@ public class JdbcSessionService extends AbstractJdbcService implements SessionSe
 					
 					if (matches.size() == 0) {
 						
-						session = new JdbcSession(uuid);
-						this.sessionDao.create(session);
+						int updated = -1;
+						
+						try {
+							
+							JdbcSession created = new JdbcSession(uuid);
+							this.sessionDao.create(created);
+							session = this.sessionDao.queryForId(created.getSessionId());
+							
+						} catch (SQLException e) {
+							NeocoreAPI.getLogger().log(Level.SEVERE, "Problem when creating session entry!", e);
+						}
+						
+						if (updated != 1) NeocoreAPI.getLogger().warning("Didn't update only 1 row when creating session!  Expect problems!");
 						
 					} else {
 						session = matches.remove(0);
@@ -174,7 +185,13 @@ public class JdbcSessionService extends AbstractJdbcService implements SessionSe
 			
 		}
 		
-		if (session != null) this.cache.add(session);
+		if (session != null) {
+			
+			this.cache.add(session);
+			this.playerIdToSessionIdMap.put(uuid, session.getSessionId());
+			
+		}
+		
 		return session;
 		
 	}
