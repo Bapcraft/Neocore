@@ -1,9 +1,11 @@
 package io.neocore.bukkit.cmd;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
+import org.bukkit.command.Command;
+import org.bukkit.command.SimpleCommandMap;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.cmd.AbstractCommand;
@@ -11,27 +13,52 @@ import io.neocore.bukkit.NMSHelper;
 
 public class CommandInjector_19r2 extends CommandInjector {
 	
-	private CommandMap map;
+	private SimpleCommandMap map;
+	private Map<String, Command> nativeCommandMap;
 	
+	@SuppressWarnings("unchecked")
 	public CommandInjector_19r2() {
 		
 		try {
 			
 			Field f = NMSHelper.formatNmsClass("CraftServer").getDeclaredField("commandMap");
-			boolean acc = f.isAccessible();
 			f.setAccessible(true);
-			this.map = (CommandMap) f.get(Bukkit.getServer());
-			f.setAccessible(acc);
+			
+			Object o = f.get(Bukkit.getServer());
+			if (o instanceof SimpleCommandMap) {
+				
+				this.map = (SimpleCommandMap) o;
+				
+				Field cmdField = this.map.getClass().getDeclaredField("knownCommands");
+				cmdField.setAccessible(true);
+				
+				this.nativeCommandMap = (Map<String, Command>) cmdField.get(this.map);
+				
+			} else {
+				Bukkit.getLogger().severe("Couldn't properly manipulate command map.");
+			}
 			
 		} catch (ReflectiveOperationException e){
-			NeocoreAPI.getLogger().severe("Error setting up command injector!  Neocore-rooted command probably won't work!");
+			Bukkit.getLogger().severe("Error setting up command injector!  Neocore-rooted commands probably won't work!");
 		}
 		
 	}
 	
 	@Override
 	public void inject(AbstractCommand cmd) {
-		this.map.register(cmd.getName(), cmd.getPrefix(), new CommandWrapper(cmd));
+		
+		Command adding = new CommandWrapper(cmd);
+		
+		if (!cmd.isNativeOverride()) {
+			this.map.register(cmd.getName(), cmd.getPrefix(), adding);
+		} else {
+			
+			String label = "bukkit:" + cmd.getName();
+			adding.setLabel(label);
+			this.nativeCommandMap.put(label, adding);
+			
+		}
+		
 	}
 	
 }

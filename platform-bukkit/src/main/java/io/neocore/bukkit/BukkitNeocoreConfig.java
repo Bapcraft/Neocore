@@ -15,7 +15,6 @@ import com.typesafe.config.Config;
 import io.neocore.api.NeocoreConfig;
 import io.neocore.api.PlayerIoThreadingModel;
 import io.neocore.api.host.Context;
-import io.neocore.api.host.LesserContext;
 
 public class BukkitNeocoreConfig implements NeocoreConfig {
 	
@@ -42,13 +41,13 @@ public class BukkitNeocoreConfig implements NeocoreConfig {
 		
 		if (conf.hasPath(pIoModel_key)) this.pIoModel = PlayerIoThreadingModel.valueOf(conf.getString(pIoModel_key));
 		
-		this.primaryContext = new LesserContext(conf.getString("context.primary"));
+		this.primaryContext = Context.create(conf.getString("context.primary"));
 		this.contexts = new ArrayList<>();
 		this.contexts.add(this.primaryContext);
 		
 		List<String> ctxStrs = conf.getStringList("context.secondaries");
 		for (String ctx : ctxStrs) {
-			this.contexts.add(new LesserContext(ctx));
+			this.contexts.add(Context.create(ctx));
 		}
 		
 	}

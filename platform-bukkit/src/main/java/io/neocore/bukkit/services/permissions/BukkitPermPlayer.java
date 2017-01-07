@@ -1,10 +1,13 @@
 package io.neocore.bukkit.services.permissions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.host.permissions.PermissedPlayer;
@@ -63,12 +66,22 @@ public class BukkitPermPlayer extends WrappedPlayer implements PermissedPlayer {
 
 	@Override
 	public List<PermissionCollection> getCollections() {
-		return new ArrayList<>(this.collections);
+		return Collections.unmodifiableList(this.collections);
 	}
 
 	@Override
 	public void applyChanges() {
-		this.getPlayerOrThrow().recalculatePermissions();
+		
+		Player p = this.getPlayerOrThrow();
+		
+		BukkitScheduler bs = p.getServer().getScheduler();
+		
+		bs.scheduleSyncDelayedTask(this.plugin, () -> {
+			
+			
+			
+		});
+		
 	}
 	
 }

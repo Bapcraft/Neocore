@@ -2,6 +2,9 @@ package io.neocore.bukkit.services;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import io.neocore.api.host.login.LoginAcceptor;
 import io.neocore.api.host.login.LoginService;
 import io.neocore.api.host.login.ServerPlayer;
@@ -29,6 +32,18 @@ public class BukkitLoginService implements LoginService {
 	@Override
 	public ServerPlayer load(UUID uuid) {
 		return new BukkitPlayer(uuid);
+	}
+
+	@Override
+	public ServerPlayer findPlayerByName(String name) {
+		
+		Player p = Bukkit.getPlayer(name);
+		if (p != null) {
+			return this.load(p.getUniqueId());
+		} else {
+			return null;
+		}
+		
 	}
 	
 }

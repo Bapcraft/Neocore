@@ -25,6 +25,7 @@ import io.neocore.api.task.DumbTaskDelegator;
 import io.neocore.api.task.Task;
 import io.neocore.bukkit.cmd.CommandInjector;
 import io.neocore.bukkit.cmd.CommandInjector_19r2;
+import io.neocore.bukkit.cmd.CommandNativeDumpPerms;
 import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.events.EventForwarder;
 import io.neocore.bukkit.events.PlayerConnectionForwarder;
@@ -35,6 +36,7 @@ import io.neocore.bukkit.services.BukkitChatService;
 import io.neocore.bukkit.services.BukkitLoginService;
 import io.neocore.bukkit.services.network.StandaloneNetworkMapService;
 import io.neocore.bukkit.services.permissions.BukkitPermsService;
+import io.neocore.bukkit.services.permissions.PbInjectionListener;
 import io.neocore.common.FullHostPlugin;
 import io.neocore.common.JavaNativeScheduler;
 import io.neocore.common.NeocoreImpl;
@@ -128,6 +130,7 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 		
 		// FIXME Clean up how the server start tasks and stuff are set up.
 		pl.registerEvents(new PluginModuleAutloader(pl), this);
+		pl.registerEvents(new PbInjectionListener(this.permsService), this);
 		
 		// Set up a broadcast for server initialization.
 		neo.getTaskQueue().enqueue(new Task(new DumbTaskDelegator("Neocore-Init")) {
@@ -151,6 +154,9 @@ public class NeocoreBukkitPlugin extends JavaPlugin implements FullHostPlugin {
 			neo.init();
 			
 		});
+		
+		// Native commands.
+		this.registerCommand(new CommandNativeDumpPerms());
 		
 	}
 	
