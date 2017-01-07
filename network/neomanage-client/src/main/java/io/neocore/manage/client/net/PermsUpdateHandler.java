@@ -23,7 +23,7 @@ public class PermsUpdateHandler extends MessageHandler {
 		
 		UpdatePermissionsNotification upn = message.getPermsUpdateNotification();
 		
-		ReloadExtent extent = upn.getExtenrt();
+		ReloadExtent extent = upn.getExtent();
 		PermissionManager perms = NeocoreAPI.getAgent().getPermissionManager();
 		
 		if (extent == ReloadExtent.PLAYER_PERMS) {

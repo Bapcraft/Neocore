@@ -145,7 +145,7 @@ message UpdatePermissionsNotification {
 		
 	}
 	
-	required ReloadExtent extenrt = 1;
+	required ReloadExtent extent = 1;
 	optional string specificUuid = 2; // If we're just doing a player reload, if unset then we do everyone.
 	
 }

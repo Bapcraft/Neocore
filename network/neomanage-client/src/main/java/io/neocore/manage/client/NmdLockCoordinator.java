@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import io.neocore.common.player.LockCoordinator;
+import io.neocore.common.net.LockCoordinator;
 import io.neocore.manage.client.net.NmNetwork;
 import io.neocore.manage.proto.ClientMessageUtils;
 import io.neocore.manage.proto.NeomanageProtocol.ClientMessage;

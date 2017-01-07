@@ -132,7 +132,7 @@ public class NmcMicromodule extends JavaMicromodule {
 		
 		// Setup network sync.
 		this.networkSync = new NmdNetworkSync(impl.getAgentId(), this.network);
-		impl.getPlayerAssembler().overrideNetworkSync(this.networkSync);
+		impl.getNetworkManager().setNetworkSync(this.networkSync);
 		
 		// Configure handler manager.
 		this.handlerManager.setHandler(PayloadCase.DAEMONSHUTDOWN, new RemoteShutdownHandler(this.network));
