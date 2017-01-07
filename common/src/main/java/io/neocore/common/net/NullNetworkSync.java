@@ -1,4 +1,4 @@
-package io.neocore.common.player;
+package io.neocore.common.net;
 
 import java.util.Set;
 import java.util.UUID;
@@ -29,6 +29,16 @@ public class NullNetworkSync extends NetworkSync {
 	@Override
 	public LockCoordinator getLockCoordinator() {
 		return new NullLockCoordinator();
+	}
+
+	@Override
+	public void announcePermissionsRefresh() {
+		// Nothing
+	}
+
+	@Override
+	public void announceBansReload() {
+		// Nothing
 	}
 	
 }

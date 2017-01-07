@@ -1,11 +1,11 @@
 package io.neocore.common.cmd;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.cmd.CmdSender;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.host.Context;
-import io.neocore.api.host.LesserContext;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.group.Group;
 
@@ -22,7 +22,7 @@ public class CommandSetPermission extends AbstractCommand {
 		if (args.length != 4) this.badUsage();
 		
 		String groupName = args[0];
-		Context context = args[1].equals("GLOBAL") ? null : new LesserContext(args[1]);
+		Context context = Context.create(args[1]);
 		String node = args[2].toLowerCase();
 		String state = args[3].toLowerCase();
 		
@@ -80,6 +80,10 @@ public class CommandSetPermission extends AbstractCommand {
 			}
 			
 		}
+		
+		// Networkyness
+		// FIXME Coupling.
+		NeocoreInstaller.installed.getNetworkManager().getNetworkSync().announcePermissionsRefresh();
 		
 		// Let's assume we're all okay.
 		this.success();

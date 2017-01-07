@@ -7,6 +7,8 @@ import io.neocore.api.host.Scheduler;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
+import io.neocore.common.net.LockCoordinator;
+import io.neocore.common.net.NullLockCoordinator;
 
 public class AsyncProviderContainer extends ProviderContainer implements LockableContainer {
 	

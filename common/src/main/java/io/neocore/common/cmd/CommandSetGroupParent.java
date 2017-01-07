@@ -1,6 +1,7 @@
 package io.neocore.common.cmd;
 
 import io.neocore.api.NeocoreAPI;
+import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.cmd.CmdSender;
 import io.neocore.api.database.player.DatabasePlayer;
@@ -77,6 +78,9 @@ public class CommandSetGroupParent extends AbstractCommand {
 		} else {
 			sender.sendMessage("Parent removed for " + group.getDisplayName() + ".");
 		}
+		
+		// FIXME Coupling.
+		NeocoreInstaller.installed.getNetworkManager().getNetworkSync().announcePermissionsRefresh();
 		
 		this.success();
 		

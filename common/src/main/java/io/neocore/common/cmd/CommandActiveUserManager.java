@@ -3,13 +3,19 @@ package io.neocore.common.cmd;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.api.cmd.CmdSender;
+import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.host.login.ServerPlayer;
+import io.neocore.api.host.permissions.PermissedPlayer;
+import io.neocore.api.host.permissions.PermissionCollection;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
+import io.neocore.api.player.group.Group;
+import io.neocore.api.player.group.GroupMembership;
 import io.neocore.common.player.CommonPlayerManager;
 import io.neocore.common.player.PlayerLeaseImpl;
 import io.neocore.common.player.PlayerManagerWrapperImpl;
@@ -91,6 +97,47 @@ public class CommandActiveUserManager extends AbstractCommand {
 				}
 				
 				sender.sendMessage(sb.toString());
+				
+			}
+			
+			if (np.hasIdentity(DatabasePlayer.class)) {
+				
+				DatabasePlayer dbp = np.getIdentity(DatabasePlayer.class);
+				List<GroupMembership> gms = dbp.getGroupMemberships();
+				
+				sender.sendMessage("   - Groups (" + gms.size() + "):");
+				for (GroupMembership gm : gms) {
+					
+					Group g = gm.getGroup();
+					sender.sendMessage("     - " + g.getDisplayName() + " &7" + g.getName());
+					
+				}
+				
+			}
+			
+			// Permissions
+			if (np.hasIdentity(PermissedPlayer.class)) {
+				
+				PermissedPlayer pp = np.getIdentity(PermissedPlayer.class);
+				List<PermissionCollection> cols = pp.getCollections();
+				
+				sender.sendMessage("   - Collections (" + cols.size() + "):");
+				for (PermissionCollection col : cols) {
+					
+					sender.sendMessage("     (");
+					
+					Set<String> tags = col.getTags();
+					StringBuilder tagSb = new StringBuilder("      - Tags:");
+					for (String tag : tags) {
+						tagSb.append(" " + tag);
+					}
+					
+					sender.sendMessage(tagSb.toString());
+					sender.sendMessage("      - Permissions: " + col.getPermissionsApplied().size());
+					
+					sender.sendMessage("     )");
+					
+				}
 				
 			}
 			

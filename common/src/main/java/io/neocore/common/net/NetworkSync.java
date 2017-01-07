@@ -1,4 +1,4 @@
-package io.neocore.common.player;
+package io.neocore.common.net;
 
 import java.util.Set;
 import java.util.UUID;
@@ -56,5 +56,15 @@ public abstract class NetworkSync {
 	 * @return The network lock coordinator to use for locking on resources
 	 */
 	public abstract LockCoordinator getLockCoordinator();
+	
+	/**
+	 * Announces to the network that permissions should be reloaded.
+	 */
+	public abstract void announcePermissionsRefresh();
+	
+	/**
+	 * Announces to the network that bans should be reloaded.
+	 */
+	public abstract void announceBansReload();
 	
 }

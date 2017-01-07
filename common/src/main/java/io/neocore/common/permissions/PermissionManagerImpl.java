@@ -7,11 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
+
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.group.GroupService;
 import io.neocore.api.database.player.DatabasePlayer;
 import io.neocore.api.host.Context;
-import io.neocore.api.host.LesserContext;
 import io.neocore.api.host.permissions.PermissedPlayer;
 import io.neocore.api.host.permissions.PermissionCollection;
 import io.neocore.api.host.permissions.PermissionsService;
@@ -48,7 +49,6 @@ public class PermissionManagerImpl implements PermissionManager {
 		});
 		
 		this.contexts = new HashSet<>(contexts);
-		this.contexts.add(new LesserContext("GLOBAL")); // Should never really be defined, but in case it is we'll add it.
 		
 	}
 	
@@ -56,8 +56,14 @@ public class PermissionManagerImpl implements PermissionManager {
 		if (this.cache == null) this.reloadGroups();
 	}
 	
-	private void reloadGroups() {
+	public void reloadGroups() {
+		
+		long start = System.currentTimeMillis();
 		this.cache = this.groupService.loadGroups();
+		long end = System.currentTimeMillis();
+		
+		NeocoreAPI.getLogger().info("Loaded " + this.cache.size() + " groups in " + (end - start) + " ms.");
+		
 	} 
 	
 	@Override
@@ -112,24 +118,25 @@ public class PermissionManagerImpl implements PermissionManager {
 	public void assignPermissions(NeoPlayer player) {
 		
 		this.checkReloadGroups();
+		Logger log = NeocoreAPI.getLogger();
 		
 		if (this.permsService == null) {
 			
-			NeocoreAPI.getLogger().severe("Can't assign permissions if we don't have a permissions service!");
+			log.severe("Can't assign permissions if we don't have a permissions service!");
 			return;
 			
 		}
 		
 		if (this.groupService == null) {
 			
-			NeocoreAPI.getLogger().severe("Can't assign permissions if we don't have a groups service!");
+			log.severe("Can't assign permissions if we don't have a groups service!");
 			return;
 			
 		}
 		
 		if (!player.hasIdentity(DatabasePlayer.class) || !player.hasIdentity(PermissedPlayer.class)) {
 			
-			NeocoreAPI.getLogger().warning("Can't assign permissions onto player that doesn't have a database and permisson identity!");
+			log.warning("Can't assign permissions onto player that doesn't have a database and permisson identity!");
 			return;
 			
 		}
@@ -151,7 +158,12 @@ public class PermissionManagerImpl implements PermissionManager {
 			if (!gm.isCurrentlyValid()) continue;
 			Group g = gm.getGroup();
 			
-			if (g == null) continue;
+			if (g == null) {
+				
+				NeocoreAPI.getLogger().warning("Found an invalid group in a membership when processing permissions for " + player.getUniqueId() + ".");
+				continue;
+				
+			}
 			
 			// Add the group and their ancestors to it.
 			totalGroups.add(g);
@@ -176,7 +188,20 @@ public class PermissionManagerImpl implements PermissionManager {
 			
 			// Iterate through all of the permission nodes for the group.
 			for (PermissionEntry pe : g.getPermissions()) {
-				if ((pe.getContext() == null || this.contexts.contains(pe.getContext())) && pe.isSet()) permMap.put(pe.getPermissionNode(), pe.getState());
+				
+				Context permCtx = pe.getContext();
+				
+				for (Context envCtx : this.contexts) {
+					
+					if (Context.checkCompatility(envCtx, permCtx) && pe.isSet()) {
+						
+						permMap.put(pe.getPermissionNode(), pe.getState());
+						break;
+						
+					}
+					
+				}
+				
 			}
 			
 		}
@@ -190,6 +215,8 @@ public class PermissionManagerImpl implements PermissionManager {
 		
 		// Finally update everything underneath.
 		pp.applyChanges();
+		
+		
 		
 	}
 	

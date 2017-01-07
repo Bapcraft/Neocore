@@ -1,4 +1,4 @@
-package io.neocore.common.player;
+package io.neocore.common.net;
 
 import java.util.UUID;
 

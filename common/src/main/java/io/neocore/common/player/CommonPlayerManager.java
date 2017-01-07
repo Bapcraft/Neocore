@@ -35,6 +35,8 @@ import io.neocore.api.host.Scheduler;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
+import io.neocore.common.net.NetworkSync;
+import io.neocore.common.net.NullNetworkSync;
 
 public class CommonPlayerManager {
 	

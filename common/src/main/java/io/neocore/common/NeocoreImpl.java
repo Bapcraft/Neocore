@@ -30,10 +30,12 @@ import io.neocore.api.task.TaskQueue;
 import io.neocore.common.cmd.CommandActiveUserManager;
 import io.neocore.common.cmd.CommandAdminArtifact;
 import io.neocore.common.cmd.CommandArtifactManager;
+import io.neocore.common.cmd.CommandBan;
 import io.neocore.common.cmd.CommandBroadcast;
 import io.neocore.common.cmd.CommandCheckPerm;
 import io.neocore.common.cmd.CommandCheckPerms;
 import io.neocore.common.cmd.CommandCreateGroup;
+import io.neocore.common.cmd.CommandDumpPerms;
 import io.neocore.common.cmd.CommandException;
 import io.neocore.common.cmd.CommandForcePlayerLoad;
 import io.neocore.common.cmd.CommandReloadPermissions;
@@ -43,6 +45,7 @@ import io.neocore.common.database.DatabaseConfImpl;
 import io.neocore.common.database.DatabaseManagerImpl;
 import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.module.ModuleManagerImpl;
+import io.neocore.common.net.NetworkManagerImpl;
 import io.neocore.common.permissions.PermissionManagerImpl;
 import io.neocore.common.player.CommonPlayerManager;
 import io.neocore.common.player.LoginAcceptorImpl;
@@ -67,6 +70,7 @@ public class NeocoreImpl implements Neocore {
 	private ExtensionManager extManager;
 	private PermissionManagerImpl permManager;
 	private IdentifierManager identManager;
+	private NetworkManagerImpl netManager;
 	
 	@SuppressWarnings("unused")
 	private LoginAcceptor loginAcceptor;
@@ -90,6 +94,7 @@ public class NeocoreImpl implements Neocore {
 		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager, host.getNeocoreConfig().getPlayerThreadingModel(), host.getScheduler());
 		this.playerManWrapper = new PlayerManagerWrapperImpl(this.playerManager);
 		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager, host.getNeocoreConfig().getContexts());
+		this.netManager = new NetworkManagerImpl(this.playerManager);
 		
 		// Set up acceptors.
 		this.loginAcceptor = new LoginAcceptorImpl(this.eventManager, this.serviceManager, this.identManager, host.getContexts());
@@ -125,6 +130,8 @@ public class NeocoreImpl implements Neocore {
 		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "blame", ArtifactTypes.ADMIN_EVIDENCE, "neocore.cmd.blame"));
 		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "warn", ArtifactTypes.ADMIN_WARNING, "neocore.cmd.warn"));
 		this.host.registerCommand(new CommandForcePlayerLoad(this.playerManWrapper, host.getScheduler()));
+		this.host.registerCommand(new CommandDumpPerms());
+		this.host.registerCommand(new CommandBan(this.serviceManager));
 		
 		// Register the host right now.
 		this.moduleManager.registerModule(this.host);
@@ -142,6 +149,10 @@ public class NeocoreImpl implements Neocore {
 		// Now that the database(s) is(/are) set up, we can init the services themselves.
 		log.info("Initializing services...");
 		this.serviceManager.initializeServices();
+		
+		// Permissions.
+		log.info("Loading groups...");
+		this.permManager.reloadGroups();
 		
 		log.info("Doing final cleanup and things...");
 		
@@ -245,6 +256,10 @@ public class NeocoreImpl implements Neocore {
 	@Override
 	public IdentifierManager getIdentifierManager() {
 		return this.identManager;
+	}
+	
+	public NetworkManagerImpl getNetworkManager() {
+		return this.netManager;
 	}
 	
 	@Override
