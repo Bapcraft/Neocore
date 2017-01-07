@@ -9,7 +9,6 @@ import com.j256.ormlite.table.DatabaseTable;
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.database.ban.BanEntry;
 import io.neocore.api.host.Context;
-import io.neocore.api.host.LesserContext;
 
 @DatabaseTable(tableName = "bans")
 public class JdbcBan extends AbstractPersistentRecord implements BanEntry {
@@ -142,7 +141,7 @@ public class JdbcBan extends AbstractPersistentRecord implements BanEntry {
 	
 	@Override
 	public Context getContext() {
-		return this.context != null ? new LesserContext(this.context) : null;
+		return Context.create(this.context);
 	}
 	
 }

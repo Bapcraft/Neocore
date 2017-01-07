@@ -5,7 +5,6 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import io.neocore.api.database.AbstractPersistentRecord;
 import io.neocore.api.host.Context;
-import io.neocore.api.host.LesserContext;
 import io.neocore.api.player.group.PermissionEntry;
 
 @DatabaseTable(tableName = "permissions")
@@ -44,7 +43,7 @@ public class JdbcPermissionEntry extends AbstractPersistentRecord implements Per
 	
 	@Override
 	public Context getContext() {
-		return this.context != null ? new LesserContext(this.context) : null;
+		return Context.create(this.context);
 	}
 
 	@Override

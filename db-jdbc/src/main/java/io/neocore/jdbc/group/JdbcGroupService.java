@@ -140,15 +140,15 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 	@Override
 	public List<Group> loadGroups() {
 		
-		List<Group> out = new ArrayList<>();
-		
 		try {
 			
 			// Pretty much just load the cache from the database.
-			this.cache = this.groupDao.queryForAll();
+			List<JdbcGroup> refreshed = this.groupDao.queryForAll();
 			
 			// Set up the flush callback.
-			for (JdbcGroup jg : this.cache) {
+			for (JdbcGroup jg : refreshed) {
+				
+				jg.resolver = this;
 				
 				jg.setFlushProcedure(() -> {
 					
@@ -165,14 +165,17 @@ public class JdbcGroupService extends AbstractJdbcService implements GroupServic
 				
 			}
 			
+			// Update the cache.
+			this.cache = new ArrayList<>(refreshed);
+			
 			// Fill the output list because of how Java doesn't like auto upcasting generics.
-			out.addAll(this.cache);
+			return new ArrayList<>(refreshed);
 			
 		} catch (SQLException e) {
 			NeocoreAPI.getLogger().log(Level.SEVERE, "Problem loading groups from DB.", e);
 		}
 		
-		return out;
+		return null;
 		
 	}
 
