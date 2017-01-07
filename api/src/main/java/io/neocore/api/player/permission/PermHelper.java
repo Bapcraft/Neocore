@@ -17,7 +17,6 @@ public class PermHelper {
 		
 		// Global wildcard.
 		if (base.equals(WILDCARD)) return 0;
-				
 		
 		// Check if it matches exactly.
 		if (base.equals(query)) return baseParts.length;

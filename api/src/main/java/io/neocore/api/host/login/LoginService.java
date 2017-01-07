@@ -9,14 +9,14 @@ public interface LoginService extends HostServiceProvider, IdentityProvider<Serv
 	/**
 	 * Sets the login acceptor.
 	 * 
-	 * @param acceptor The acceptor.
+	 * @param acceptor The acceptor
 	 */
 	public void setLoginAcceptor(LoginAcceptor acceptor);
 	
 	/**
 	 * Gets the current login acceptor.
 	 * 
-	 * @return The acceptor.
+	 * @return The acceptor
 	 */
 	public LoginAcceptor getLoginAcceptor();
 	
@@ -24,5 +24,13 @@ public interface LoginService extends HostServiceProvider, IdentityProvider<Serv
 	default Class<? extends PlayerIdentity> getIdentityClass() {
 		return ServerPlayer.class;
 	}
+	
+	/**
+	 * Gets a player based on their username.
+	 * 
+	 * @param name The player's name
+	 * @return The player, or null if unavailable
+	 */
+	public ServerPlayer findPlayerByName(String name);
 	
 }

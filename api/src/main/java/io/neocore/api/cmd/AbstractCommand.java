@@ -49,4 +49,8 @@ public abstract class AbstractCommand {
 		throw new InvalidUsageSignal();
 	}
 	
+	public boolean isNativeOverride() {
+		return false;
+	}
+	
 }

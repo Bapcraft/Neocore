@@ -7,7 +7,7 @@ public class NeocoreTestRunner {
 	
 	public static void main(String[] args) {
 		
-		Result res = JUnitCore.runClasses(PermHelperTest.class);
+		Result res = JUnitCore.runClasses(PermHelperTest.class, ContextMatchTest.class);
 		
 		for (Failure fail : res.getFailures()) {
 			System.out.println(fail.toString());

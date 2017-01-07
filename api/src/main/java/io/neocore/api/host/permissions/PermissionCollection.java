@@ -1,5 +1,6 @@
 package io.neocore.api.host.permissions;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface PermissionCollection {
@@ -46,5 +47,10 @@ public interface PermissionCollection {
 	 * @return A copy of the set of tags on the collection.
 	 */
 	public Set<String> getTags();
+	
+	/**
+	 * @return A list of permissions applied through this collection.
+	 */
+	public Map<String, Boolean> getPermissionsApplied();
 	
 }
