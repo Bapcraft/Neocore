@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.player.DatabasePlayer;
@@ -66,6 +67,10 @@ public class PlayerConnectionForwarder extends EventForwarder {
 	@EventHandler
 	public void onPostLogin(PostLoginEvent event) {
 		
+		if (this.loginAcceptor == null) return;
+		
+		Logger log = NeocoreAPI.getLogger();
+		
 		// Now we can initialize the player.
 		ProxiedPlayer player = event.getPlayer();
 		UUID uuid = player.getUniqueId();
@@ -127,6 +132,8 @@ public class PlayerConnectionForwarder extends EventForwarder {
 			
 			if (loaded.hasIdentity(DatabasePlayer.class) && loaded.hasIdentity(PermissedPlayer.class)) {
 				this.neocore.getPermissionManager().assignPermissions(loaded);
+			} else {
+				log.warning("Not loading permissions for " + uuid + ".");
 			}
 			
 		});
