@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.google.common.collect.Iterators;
 
+import io.neocore.api.NeocoreInstaller;
 import io.neocore.api.ServiceManager;
 import io.neocore.api.cmd.AbstractServiceCommand;
 import io.neocore.api.cmd.CmdSender;
@@ -179,11 +180,24 @@ public class CommandBan extends AbstractServiceCommand {
 		bans.addBan(be);
 		bans.flushBans();
 		
+		// FIXME Eww strong coupling!
+		NeocoreInstaller.installed.getNetworkManager().getNetworkSync().announceBansReload();
+		
 	}
 
 	@Override
 	public boolean isNativeOverride() {
 		return true;
+	}
+	
+	@Override
+	public String getEndpointName() {
+		return "neoban"; // Bukkit makes me sad.
+	}
+
+	@Override
+	public String getProxyName() {
+		return "ban";
 	}
 	
 }
