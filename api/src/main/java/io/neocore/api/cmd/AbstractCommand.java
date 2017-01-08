@@ -53,4 +53,12 @@ public abstract class AbstractCommand {
 		return false;
 	}
 	
+	public String getEndpointName() {
+		return this.getName();
+	}
+	
+	public String getProxyName() {
+		return "!" + this.getName();
+	}
+	
 }
