@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 
-import io.neocore.api.NeocoreAPI;
 import io.neocore.api.cmd.AbstractCommand;
 import io.neocore.bukkit.NMSHelper;
 
@@ -49,15 +48,10 @@ public class CommandInjector_19r2 extends CommandInjector {
 		
 		Command adding = new CommandWrapper(cmd);
 		
-		if (!cmd.isNativeOverride()) {
-			this.map.register(cmd.getName(), cmd.getPrefix(), adding);
-		} else {
-			
-			String label = "bukkit:" + cmd.getName();
-			adding.setLabel(label);
-			this.nativeCommandMap.put(label, adding);
-			
-		}
+		boolean res = this.map.register(cmd.getEndpointName(), cmd.getPrefix(), adding);
+		if (cmd.isNativeOverride()) this.nativeCommandMap.put(adding.getLabel(), adding);
+		
+		Bukkit.getLogger().info("Injected command " + cmd.getName() + " with result: " + res);
 		
 	}
 	

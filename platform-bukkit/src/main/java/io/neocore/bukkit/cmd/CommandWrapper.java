@@ -1,5 +1,6 @@
 package io.neocore.bukkit.cmd;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -17,7 +18,7 @@ public class CommandWrapper extends Command {
 	
 	public CommandWrapper(AbstractCommand cmd) {
 		
-		super(cmd.getName(), cmd.getDescription(), cmd.getUsage(), cmd.getAliases());
+		super(cmd.getEndpointName(), cmd.getDescription(), cmd.getUsage(), cmd.getAliases());
 		
 		this.command = cmd;
 		
@@ -52,6 +53,19 @@ public class CommandWrapper extends Command {
 		NeocoreAPI.getLogger().warning("Command " + this.getName() + " finished execution but no explicit resolution was announced!");
 		return true;
 		
+	}
+	
+	@Override
+	public boolean setLabel(String name) {
+		
+		if (this.command.isNativeOverride()) Bukkit.getLogger().warning("Tried to set label of native override command " + this.command.getName() + " to " + name + ", this doesn't do anything really.");
+		return super.setLabel(name);
+		
+	}
+	
+	@Override
+	public String getLabel() {
+		return !this.command.isNativeOverride() ? super.getLabel() : "bukkit:" + this.command.getName();
 	}
 	
 }
