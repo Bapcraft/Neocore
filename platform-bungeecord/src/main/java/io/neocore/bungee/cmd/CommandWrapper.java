@@ -17,7 +17,7 @@ public class CommandWrapper extends Command {
 	
 	public CommandWrapper(AbstractCommand cmd) {
 		
-		super("!" + cmd.getName());
+		super(cmd.getProxyName());
 		
 		this.command = cmd;
 		
