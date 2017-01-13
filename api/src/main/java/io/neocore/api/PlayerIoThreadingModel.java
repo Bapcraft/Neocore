@@ -9,7 +9,9 @@ public enum PlayerIoThreadingModel {
 	
 	SINGLE_THREAD,
 	FORCE_ASYNC,
+	FORCE_DEFERRED,
 	
-	AUTO;
+	AUTO,
+	AUTO_DEFERRED;
 	
 }
