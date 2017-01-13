@@ -83,6 +83,9 @@ public class NeocoreImpl implements Neocore {
 		
 		this.agentId = UUID.randomUUID();
 		this.host = host;
+
+		// Set up the task queue.
+		this.tasks = new TaskQueue();
 		
 		// Define various managers.
 		this.serviceManager = new ServiceManagerImpl();
@@ -99,9 +102,6 @@ public class NeocoreImpl implements Neocore {
 		// Set up acceptors.
 		this.loginAcceptor = new LoginAcceptorImpl(this.eventManager, this.serviceManager, this.identManager, host.getContexts());
 		this.proxyAcceptor = new ProxyAcceptorImpl(this.serviceManager);
-		
-		// Set up the task queue.
-		this.tasks = new TaskQueue();
 		
 	}
 	
