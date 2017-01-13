@@ -91,7 +91,7 @@ public class NeocoreImpl implements Neocore {
 		this.identManager = new IdentifierManager();
 		this.dbManager = new DatabaseManagerImpl(this.serviceManager);
 		this.moduleManager = new ModuleManagerImpl(this, host.getMicromoduleDirectory());
-		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager, host.getNeocoreConfig().getPlayerThreadingModel(), host.getScheduler());
+		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager, host.getNeocoreConfig().getPlayerThreadingModel(), host.getScheduler(), this.tasks);
 		this.playerManWrapper = new PlayerManagerWrapperImpl(this.playerManager);
 		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager, host.getNeocoreConfig().getContexts());
 		this.netManager = new NetworkManagerImpl(this.playerManager);

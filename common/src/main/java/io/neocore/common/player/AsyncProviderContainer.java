@@ -63,7 +63,7 @@ public class AsyncProviderContainer extends ProviderContainer implements Lockabl
 			
 		});
 		
-		return ProvisionResult.THREAD_SPAWNED;
+		return ProvisionResult.INJECTION_THREAD_SPAWNED;
 		
 	}
 	

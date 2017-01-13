@@ -3,6 +3,7 @@ package io.neocore.common.player;
 public enum ProvisionResult {
 	
 	IMMEDIATELY_INJECTED,
-	THREAD_SPAWNED;
+	QUEUED_DEFERRED_INJECTION,
+	INJECTION_THREAD_SPAWNED;
 	
 }
