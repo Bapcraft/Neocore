@@ -2,7 +2,7 @@ package io.neocore.api.player.extension;
 
 public abstract class ExtensionBuilder {
 	
-	public abstract Extension deserialize(String data);
+	public abstract Extension deserialize(String data, Class<? extends Extension> to);
 	
 	public abstract String serialize(Extension ext);
 	

@@ -43,7 +43,7 @@ public class RegisteredExtension implements Comparable<RegisteredExtension> {
 	 * @return The actual extension object
 	 */
 	public Extension deserialize(String data) {
-		return this.getBuilder().deserialize(data);
+		return this.getBuilder().deserialize(data, this.extensionClass);
 	}
 	
 	/**
