@@ -27,7 +27,7 @@ public class BungeeNeocoreConfig implements NeocoreConfig {
 	private List<Context> contexts;
 
 	private static final String pIoModel_key = "server.playerThreadingModel";
-	private PlayerIoThreadingModel pIoModel = PlayerIoThreadingModel.AUTO;
+	private PlayerIoThreadingModel pIoModel = PlayerIoThreadingModel.AUTO_DEFERRED;
 	
 	public BungeeNeocoreConfig(Config conf) {
 		
