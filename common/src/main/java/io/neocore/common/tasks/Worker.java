@@ -54,15 +54,11 @@ public class Worker implements Runnable {
 	}
 	
 	public void begin() {
+
+		if (this.isRunning) throw new IllegalStateException("Worker is already working!");
 		
-		synchronized (this) {
-			
-			if (this.isRunning) throw new IllegalStateException("Worker is already working!");
-			
-			this.thread = new Thread(this, this.getName() + "-Thread");
-			this.thread.start();
-			
-		}
+		this.thread = new Thread(this, this.getName() + "-Thread");
+		this.thread.start();
 		
 	}
 	
@@ -77,14 +73,20 @@ public class Worker implements Runnable {
 			
 			// Now actually do the looping.
 			String exoName = String.format("CurrentTask(%s)", this.getName());
-			while (true) {
+			while (this.isRunning) {
 				
 				// All the heavy lifting is done by the container.
-				this.container.invoke(exoName, this.queue.dequeue());
+				Task t = this.queue.dequeue();
+				
+				System.out.println("starting job " + t.getName());
+				this.container.invoke(exoName, t);
+				System.out.println("completed job " + t.getName());
 				
 			}
 			
 		}
+		
+		NeocoreAPI.getLogger().warning("Worker stopped!");
 		
 	}
 	

@@ -34,9 +34,6 @@ import io.neocore.api.host.Scheduler;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
-import io.neocore.api.task.DumbTaskDelegator;
-import io.neocore.api.task.RunnableTask;
-import io.neocore.api.task.TaskDelegator;
 import io.neocore.api.task.TaskQueue;
 import io.neocore.common.net.NetworkSync;
 import io.neocore.common.net.NullNetworkSync;
@@ -50,8 +47,6 @@ public class CommonPlayerManager {
 	private EventManager eventManager;
 	private Scheduler scheduler;
 	private TaskQueue taskQueue;
-	
-	private TaskDelegator taskDelegator = new DumbTaskDelegator("PlayerAssembler");
 	
 	private NetworkSync networkSync;
 	
@@ -301,8 +296,13 @@ public class CommonPlayerManager {
 		} else if (this.ioModel == PlayerIoThreadingModel.FORCE_ASYNC || this.ioModel == PlayerIoThreadingModel.AUTO) {
 			this.scheduler.invokeAsync(r);
 		} else if (this.ioModel == PlayerIoThreadingModel.FORCE_DEFERRED || this.ioModel == PlayerIoThreadingModel.AUTO_DEFERRED) {
-			this.taskQueue.enqueue(new RunnableTask(this.taskDelegator, r));
+			
+			// Not the best way to do it but do to the way things are ordered right now it's the best for how we're using this method.
+			// TODO Long term: Make this actually add to the queue as expected.
+			this.scheduler.invokeAsync(r);
+			
 		}
+		
 	}
 	
 	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadReason reason, Consumer<NeoPlayer> callback) {

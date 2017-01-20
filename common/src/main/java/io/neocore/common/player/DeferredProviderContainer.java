@@ -8,7 +8,6 @@ import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
 import io.neocore.api.player.PlayerIdentity;
 import io.neocore.api.task.DumbTaskDelegator;
-import io.neocore.api.task.RunnableTask;
 import io.neocore.api.task.TaskDelegator;
 import io.neocore.api.task.TaskQueue;
 
@@ -36,7 +35,7 @@ public class DeferredProviderContainer extends ProviderContainer {
 	@Override
 	public ProvisionResult load(NeoPlayer player, Runnable callback) {
 		
-		this.addWrappedRunnableToQueue(() -> {
+		this.addWrappedRunnableToQueue("load " + player.getUniqueId(), () -> {
 			
 			try {
 				
@@ -66,7 +65,7 @@ public class DeferredProviderContainer extends ProviderContainer {
 		
 		IdentityLinkage<?> link = this.getProviderAsLinkage();
 		
-		this.addWrappedRunnableToQueue(() -> {
+		this.addWrappedRunnableToQueue("flush " + player.getUniqueId(), () -> {
 			
 			try {
 				if (player.hasIdentity(link.getIdentityClass())) link.flush(player.getUniqueId());
@@ -83,7 +82,7 @@ public class DeferredProviderContainer extends ProviderContainer {
 	@Override
 	public void unload(NeoPlayer player, Runnable callback) {
 		
-		this.addWrappedRunnableToQueue(() -> {
+		this.addWrappedRunnableToQueue("unload " + player.getUniqueId(), () -> {
 			
 			try {
 				this.provider.unload(player.getUniqueId());
@@ -97,8 +96,8 @@ public class DeferredProviderContainer extends ProviderContainer {
 		
 	}
 	
-	private void addWrappedRunnableToQueue(Runnable r) {
-		this.queue.enqueue(new RunnableTask(this.delegator, r));
+	private void addWrappedRunnableToQueue(String name, Runnable r) {
+		this.queue.enqueue(new NamedRunnableTask(this.delegator, name, r));
 	}
 	
 }
