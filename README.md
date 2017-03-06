@@ -39,8 +39,11 @@ synchronize with each other.
 You need to have Maven and the JDK on your system, but once you have they you
 can basically just do the following:
 
-    $ maven clean install
+    $ make deps     # Makes sure that you have jzania installed, you only need to do this once.
+    $ make          # Actually builds the project.
 
-And then you'll have to look around in the subdirectories for whichever jars
-you want, but I'll be writing a Makefile to make it easier to find what you
-want soon.
+Then everything you should need will be in the `target` directory.  In order to
+do a cleanup of this directory and anything else, use:
+
+    $ make clean
+
