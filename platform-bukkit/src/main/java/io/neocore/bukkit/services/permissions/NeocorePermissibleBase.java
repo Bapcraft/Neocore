@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.bukkit.craftbukkit.libs.jline.internal.Preconditions;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.ServerOperator;
@@ -31,7 +30,9 @@ public class NeocorePermissibleBase extends PermissibleBase {
 	@Override
 	public boolean hasPermission(String inName) {
 		
-		Preconditions.checkNotNull(inName);
+		if (inName == null) {
+			throw new IllegalArgumentException("Permission cannot be null");
+		}
 		
 		// To check if it works.
 		if (inName.equals("!test")) throw new UnsupportedOperationException("PASSED");
