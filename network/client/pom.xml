@@ -3,6 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<artifactId>neomanage-client</artifactId>
+	<name>Neomanage Network Client</name>	
 	
 	<parent>
 		<groupId>io.neocore</groupId>

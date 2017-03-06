@@ -2,11 +2,15 @@
 	
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>io.neocore</groupId>
-	<artifactId>neocore-bukkit</artifactId>
-	<version>0.0.1-MC1.9.4-SNAPSHOT</version>
-	<name>Neocore-Bukkit</name>
+	<artifactId>neocore-bukkit-plugin</artifactId>
+	<name>Neocore Bukkit Plugin</name>
 	
+	<parent>
+		<groupId>io.neocore</groupId>
+		<artifactId>neocore-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
 	<repositories>
 		
 		<repository>

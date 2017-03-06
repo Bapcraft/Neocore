@@ -1,16 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	
-	<modelVersion>4.0.0</modelVersion>
-	
-	<groupId>io.neocore</groupId>
+	<modelVersion>4.0.0</modelVersion>	
 	<artifactId>neomanage-parent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<name>Neocore Network Management Project</name>
 	<packaging>pom</packaging>
-	
+
+	<parent>
+		<groupId>io.neocore</groupId>
+		<artifactId>neocore-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
 	<modules>
-		<module>nmd</module>
-		<module>neomanage-proto</module>
-		<module>neomanage-client</module>
+		<module>client</module>
+		<module>daemon</module>
+		<module>protocol</module>
 	</modules>
 	
 	<properties>

@@ -5,6 +5,7 @@
 	<groupId>io.neocore</groupId>
 	<artifactId>neocore-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<name>Neocore Project</name>
 	<packaging>pom</packaging>
 	
 	<modules>

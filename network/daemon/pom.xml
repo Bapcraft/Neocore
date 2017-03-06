@@ -3,6 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<artifactId>nmd</artifactId>
+	<name>Neomanage Network Server Daemon</name>
 	
 	<parent>
 		<groupId>io.neocore</groupId>
