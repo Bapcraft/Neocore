@@ -1,8 +1,8 @@
 package io.neocore.common.player;
 
-import java.util.logging.Level;
+import java.io.IOException;
+import java.util.function.Consumer;
 
-import io.neocore.api.NeocoreAPI;
 import io.neocore.api.database.IdentityLinkage;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
@@ -33,20 +33,34 @@ public class DeferredProviderContainer extends ProviderContainer {
 	}
 	
 	@Override
-	public ProvisionResult load(NeoPlayer player, Runnable callback) {
+	public ProvisionResult load(NeoPlayer player, Consumer<LoadResult> callback) {
 		
 		this.addWrappedRunnableToQueue("load " + player.getUniqueId(), () -> {
 			
+			PlayerIdentity pi = null;
+			
 			try {
 				
-				PlayerIdentity pi = this.provider.load(player.getUniqueId());
-				if (pi != null) player.addIdentity(pi);
+				pi = this.provider.load(player.getUniqueId());
+				if (pi != null) {
+					
+					player.addIdentity(pi);
+					
+				}
 				
-			} catch (Throwable t) {
-				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem when providing " + this.getProvider().getIdentityClass().getName() + "!", t);
-			} finally {
-				if (callback != null) callback.run();
+			} catch (IOException e) {
+				
+				if (callback != null) callback.accept(new LoadResult(ActionStatus.FAILURE, e));
+				return;
+				
+			} catch (RuntimeException e) {
+				
+				if (callback != null) callback.accept(new LoadResult(ActionStatus.FAILURE, e));
+				return;
+				
 			}
+			
+			if (callback != null) callback.accept(new LoadResult(pi != null ? ActionStatus.SUCCESS : ActionStatus.ABORTED, pi));
 			
 		});
 		
@@ -55,7 +69,7 @@ public class DeferredProviderContainer extends ProviderContainer {
 	}
 	
 	@Override
-	public void flush(NeoPlayer player, Runnable callback) {
+	public void flush(NeoPlayer player, Consumer<FlushResult> callback) {
 		
 		if (!(provider instanceof IdentityLinkage)) {
 			
@@ -70,27 +84,33 @@ public class DeferredProviderContainer extends ProviderContainer {
 			try {
 				if (player.hasIdentity(link.getIdentityClass())) link.flush(player.getUniqueId());
 			} catch (Throwable t) {
-				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem when flushing " + this.getProvider().getIdentityClass().getName() + "!", t);
-			} finally {
-				if (callback != null) callback.run();
+				
+				if (callback != null) callback.accept(new FlushResult(ActionStatus.FAILURE));
+				return;
+				
 			}
+			
+			if (callback != null) callback.accept(new FlushResult(ActionStatus.SUCCESS));
 			
 		});
 		
 	}
 	
 	@Override
-	public void unload(NeoPlayer player, Runnable callback) {
+	public void unload(NeoPlayer player, Consumer<UnloadResult> callback) {
 		
 		this.addWrappedRunnableToQueue("unload " + player.getUniqueId(), () -> {
 			
 			try {
 				this.provider.unload(player.getUniqueId());
-			} catch (Throwable t) {
-				NeocoreAPI.getLogger().log(Level.SEVERE, "Problem when unloading " + this.getProvider().getIdentityClass().getName() + "!", t);
-			} finally {
-				if (callback != null) callback.run();
+			} catch (RuntimeException t) {
+				
+				if (callback != null) callback.accept(new UnloadResult(ActionStatus.FAILURE));
+				return;
+				
 			}
+			
+			if (callback != null) callback.accept(new UnloadResult(ActionStatus.SUCCESS));
 			
 		});
 		

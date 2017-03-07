@@ -1,6 +1,7 @@
 package io.neocore.common.player;
 
-import java.util.UUID;
+import java.io.IOException;
+import java.util.function.Consumer;
 
 import io.neocore.api.database.Persistent;
 import io.neocore.api.host.Scheduler;
@@ -37,14 +38,17 @@ public class AsyncProviderContainer extends ProviderContainer implements Lockabl
 	}
 	
 	@Override
-	public ProvisionResult load(NeoPlayer player, Runnable callback) {
+	public ProvisionResult load(NeoPlayer player, Consumer<LoadResult> callback) {
 		
 		// Invoke it in a separate thread.
 		this.scheduler.invokeAsync(() -> {
 			
-			this.exo.invoke("Provide(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
+			this.locker.blockUntilUnlocked(player.getUniqueId(), 15000L); // TODO Make configurable.
+			PlayerIdentity ident = null;
+			
+			try {
 				
-				PlayerIdentity ident = this.loadIdentity(player.getUniqueId());
+				ident = this.getProvider().load(player.getUniqueId());
 				
 				if (ident != null) {
 					
@@ -57,9 +61,19 @@ public class AsyncProviderContainer extends ProviderContainer implements Lockabl
 					
 				}
 				
-			});
+			} catch (IOException e) {
+				
+				if (callback != null) callback.accept(new LoadResult(ActionStatus.FAILURE, e));
+				return;
+				
+			} catch (RuntimeException e) {
+				
+				if (callback != null) callback.accept(new LoadResult(ActionStatus.FAILURE, e));
+				return;
+				
+			}
 			
-			if (callback != null) callback.run();
+			if (callback != null) callback.accept(new LoadResult(ident != null ? ActionStatus.SUCCESS : ActionStatus.ABORTED, ident));
 			
 		});
 		
@@ -67,44 +81,60 @@ public class AsyncProviderContainer extends ProviderContainer implements Lockabl
 		
 	}
 	
-	/**
-	 * Used for preloading async identities.
-	 * 
-	 * @param uuid The UUID to load.
-	 * @return The identity corresponding to the UUID.
-	 */
-	public PlayerIdentity loadIdentity(UUID uuid) {
-		
-		this.locker.blockUntilUnlocked(uuid, 15 * 1000L); // 15 seconds FIXME Make this configurable.
-		return this.getProvider().load(uuid);
-		
-	}
-	
 	@Override
-	public void flush(NeoPlayer player, Runnable callback) {
+	public void flush(NeoPlayer player, Consumer<FlushResult> callback) {
 		
 		this.scheduler.invokeAsync(() -> {
 			
-			this.exo.invoke("Flush(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
-				this.getProviderAsLinkage().flush(player.getUniqueId());
-			});
+			if (!this.isLinkage()) {
+				
+				if (callback != null) callback.accept(new FlushResult(ActionStatus.FAILURE));
+				return;
+				
+			}
 			
-			if (callback != null) callback.run();
+			try {
+				
+				this.locker.lock(player.getUniqueId());
+				try {
+					this.getProviderAsLinkage().flush(player.getUniqueId());
+				} catch (IOException e) {
+
+					if (callback != null) callback.accept(new FlushResult(ActionStatus.FAILURE));
+					return;
+					
+				} catch (RuntimeException e) {
+					
+					if (callback != null) callback.accept(new FlushResult(ActionStatus.FAILURE));
+					return;
+					
+				}
+
+				if (callback != null) callback.accept(new FlushResult(ActionStatus.SUCCESS));
+				
+			} finally {
+				this.locker.unlock(player.getUniqueId());
+			}
 			
 		});
 		
 	}
 	
 	@Override
-	public void unload(NeoPlayer player, Runnable callback) {
+	public void unload(NeoPlayer player, Consumer<UnloadResult> callback) {
 		
 		this.scheduler.invokeAsync(() -> {
 			
-			this.exo.invoke("Unload(" + this.getProvider().getClass().getSimpleName() + ")-Async", () -> {
+			try {
 				this.getProvider().unload(player.getUniqueId());
-			});
+			} catch (RuntimeException e) {
+				
+				if (callback != null) callback.accept(new UnloadResult(ActionStatus.FAILURE));
+				return;
+				
+			}
 			
-			if (callback != null) callback.run();
+			if (callback != null) callback.accept(new UnloadResult(ActionStatus.SUCCESS));
 			
 		});
 		

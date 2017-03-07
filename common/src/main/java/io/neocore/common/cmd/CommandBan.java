@@ -1,5 +1,6 @@
 package io.neocore.common.cmd;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.UUID;
@@ -58,7 +59,16 @@ public class CommandBan extends AbstractServiceCommand {
 			} else {
 				
 				PlayerService players = this.getService(PlayerService.class);
-				UUID dbid = players.resolveUUID(bannedQuery);
+				UUID dbid = new UUID(0, 0);
+				
+				try {
+					dbid = players.resolveUUIDs(bannedQuery).get(0);
+				} catch (IOException ioe) {
+					
+					// TODO
+					ioe.printStackTrace();
+					
+				}
 				
 				if (dbid != null) {
 					uuid = dbid;

@@ -1,5 +1,6 @@
 package io.neocore.api.database.artifact;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import io.neocore.api.database.player.PlayerService;
@@ -62,7 +63,11 @@ public class IdentifierManager {
 		} else if (uuid.version() == 4) {
 			
 			if (this.players == null) throw new UnsupportedOperationException("No player service loaded!  Version 4 UUIDs can't be resolved.");
-			return this.players.getLastUsername(uuid);
+			try {
+				return this.players.getLastUsername(uuid);
+			} catch (IOException e) {
+				return "[unknown]";
+			}
 			
 		}
 		

@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.neocore.api.LoadAsync;
@@ -307,7 +308,8 @@ public class CommonPlayerManager {
 	
 	public synchronized NeoPlayer assemblePlayer(UUID uuid, LoadReason reason, Consumer<NeoPlayer> callback) {
 		
-		NeocoreAPI.getLogger().fine("Initializing player " + uuid + "...");
+		Logger log = NeocoreAPI.getLogger();
+		log.fine("Initializing player " + uuid + "...");
 		if (this.wrappersDirty) this.wrapServices();
 		this.eventManager.broadcast(new PreLoadPlayerEvent(reason, uuid));
 		
@@ -319,11 +321,17 @@ public class CommonPlayerManager {
 		// Now actually load the things.
 		for (ProviderContainer container : this.providerContainers) {
 			
-			ProvisionResult result = container.load(np, () -> {
+			ProvisionResult result = container.load(np, res -> {
+				
+				if (res.getStatus() != ActionStatus.SUCCESS) {
+					log.log(Level.SEVERE, "Problem loading identity: " + container.getProvider().getIdentityClass().getSimpleName(), res.getException());
+				}
+				
 				eventLatch.countDown();
+				
 			});
 			
-			NeocoreAPI.getLogger().finer(
+			log.finer(
 				String.format(
 					"Provision result for %s (hashcode: %s) on %s was %s.",
 					np.getUniqueId(),
@@ -343,7 +351,7 @@ public class CommonPlayerManager {
 				eventLatch.await();
 				
 			} catch (InterruptedException e) {
-				NeocoreAPI.getLogger().warning("Waiting for player assembly was interrupted, invoking callback anyways...");
+				log.warning("Waiting for player assembly was interrupted, invoking callback anyways...");
 			}
 			
 			this.eventManager.broadcast(new PostLoadPlayerEvent(reason, np));
@@ -428,10 +436,13 @@ public class CommonPlayerManager {
 			PlayerIdentity ident = np.getIdentity(container.getProvisionedClass());
 			if (ident != null) {
 				
-				container.flush(np, () -> {
+				container.flush(np, res -> {
+					
+					if (res.getStatus() != ActionStatus.SUCCESS) {
+						log.log(Level.SEVERE, "Problem when flushing player " + uuid + ": " + res.getStatus().name());
+					}
 					
 					// Count down the latch when we're done unloading it.
-					log.fine("In the process of flushing " + np.getUniqueId() + ", " + container.getClass().getSimpleName() + " of " + container.getProvisionedClass().getSimpleName() + " has finished.");
 					latch.countDown();
 					
 				});
@@ -463,7 +474,7 @@ public class CommonPlayerManager {
 				log.warning("Waiting for identity flushing was interrupted, broadcasting events and invoking callback anyways...");
 			} finally {
 				
-				log.finest("Player " + uuid + " has finished identity population.");
+				log.finest("Player " + uuid + " has probably finished identity population.");
 				
 				// Mark the player as clean.
 				np.setDirty(false);
@@ -484,7 +495,8 @@ public class CommonPlayerManager {
 	
 	public synchronized void unloadPlayer(UUID uuid, UnloadReason reason, Runnable callback) {
 		
-		NeocoreAPI.getLogger().fine("Unloading player " + uuid + "...");
+		Logger log = NeocoreAPI.getLogger();
+		log.fine("Unloading player " + uuid + "...");
 		NeoPlayer np = this.findPlayer(uuid);
 		
 		if (np == null) throw new IllegalArgumentException("This player doesn't seem to be loaded! (" + uuid + ")");
@@ -499,7 +511,11 @@ public class CommonPlayerManager {
 			PlayerIdentity ident = np.getIdentity(container.getProvisionedClass());
 			if (ident != null) {
 				
-				container.unload(np, () -> {
+				container.unload(np, res -> {
+					
+					if (res.getStatus() != ActionStatus.SUCCESS) {
+						log.log(Level.SEVERE, "Problem unloading player " + uuid + ", apparently: " + res.getStatus().name());
+					}
 					
 					// Count down the latch when we're done unloading it.
 					latch.countDown();
@@ -523,13 +539,13 @@ public class CommonPlayerManager {
 				boolean awaitOk = latch.await(10000L, TimeUnit.MILLISECONDS);
 				if (!awaitOk) {
 					
-					NeocoreAPI.getLogger().severe("Timed out when waiting for unload of " + uuid + "  This is probably a bug!");
+					log.severe("Timed out when waiting for unload of " + uuid + "  This is probably a bug!");
 					throw new IllegalStateException("Timed out when waiting for player unload.");
 					
 				}
 				
 			} catch (InterruptedException e) {
-				NeocoreAPI.getLogger().warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
+				log.warning("Waiting for identity unloading was interrupted, invoking callback anyways...");
 			} finally {
 
 				if (reason == UnloadReason.DISCONNECT) this.networkSync.updateSubscriptionState(uuid, false);

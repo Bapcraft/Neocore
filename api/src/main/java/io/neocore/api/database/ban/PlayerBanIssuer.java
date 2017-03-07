@@ -1,5 +1,6 @@
 package io.neocore.api.database.ban;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import io.neocore.api.NeocoreAPI;
@@ -27,7 +28,11 @@ public class PlayerBanIssuer extends BanIssuer {
 	public String getDisplayName() {
 		
 		// FIXME Breaks encapsulation?
-		return NeocoreAPI.getAgent().getServiceManager().getService(PlayerService.class).getLastUsername(this.uuid);
+		try {
+			return NeocoreAPI.getAgent().getServiceManager().getService(PlayerService.class).getLastUsername(this.uuid);
+		} catch (IOException e) {
+			return "[unresolvable]";
+		}
 		
 	}
 

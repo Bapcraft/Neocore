@@ -1,5 +1,6 @@
 package io.neocore.jdbc.session;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +71,7 @@ public class JdbcSessionService extends AbstractJdbcService implements SessionSe
 	}
 
 	@Override
-	public Session load(UUID uuid) {
+	public Session load(UUID uuid) throws IOException {
 		
 		UUID sessionId = this.playerIdToSessionIdMap.get(uuid);
 		JdbcSession session = null;
@@ -197,7 +198,7 @@ public class JdbcSessionService extends AbstractJdbcService implements SessionSe
 	}
 	
 	@Override
-	public void flush(UUID uuid) {
+	public void flush(UUID uuid) throws IOException {
 		
 		JdbcSession sess = this.findSession(uuid);
 		

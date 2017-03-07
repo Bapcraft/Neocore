@@ -1,11 +1,14 @@
 package io.neocore.jdbc.player;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
@@ -67,7 +70,7 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 	}
 	
 	@Override
-	public void flush(UUID uuid) {
+	public void flush(UUID uuid) throws IOException {
 		
 		JdbcDbPlayer dbp = this.findPlayer(uuid);
 		
@@ -103,7 +106,7 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 	}
 	
 	@Override
-	public DatabasePlayer load(UUID uuid) {
+	public DatabasePlayer load(UUID uuid) throws IOException {
 		
 		JdbcDbPlayer p = this.findPlayer(uuid);
 		if (p != null) return p;
@@ -172,7 +175,7 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 	}
 	
 	@Override
-	public String getLastUsername(UUID id) {
+	public String getLastUsername(UUID id) throws IOException {
 		
 		try {
 			return this.playerDao.queryForId(id).getLastUsername();
@@ -188,14 +191,14 @@ public class JdbcPlayerService extends AbstractJdbcService implements PlayerServ
 	}
 
 	@Override
-	public UUID resolveUUID(String name) {
+	public List<UUID> resolveUUIDs(String name) throws IOException {
 		
 		try {
 			
 			List<JdbcDbPlayer> dbp = this.playerDao.queryForEq("lastUsername", name); // FIXME Field name.
 			
 			if (dbp.size() > 0) NeocoreAPI.getLogger().warning("Found multiple matching accounts for username " + name + ", picking first...");
-			if (!dbp.isEmpty()) return dbp.get(0).getUniqueId();
+			if (!dbp.isEmpty()) return new ArrayList<>(dbp.stream().map(p -> p.getUniqueId()).collect(Collectors.toList()));
 			
 		} catch (SQLException e) {
 			NeocoreAPI.getLogger().log(Level.SEVERE, "Couldn't get player UUID.", e);

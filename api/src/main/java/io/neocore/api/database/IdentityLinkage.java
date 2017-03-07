@@ -1,5 +1,6 @@
 package io.neocore.api.database;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import io.neocore.api.player.IdentityProvider;
@@ -11,8 +12,9 @@ public interface IdentityLinkage<T extends PersistentPlayerIdentity> extends Ide
 	 * necessary.
 	 * 
 	 * @param uuid The uuid of the identity to flush.
+	 * @throws IOException TODO
 	 */
-	public void flush(UUID uuid);
+	public void flush(UUID uuid) throws IOException;
 	
 	/**
 	 * Marks any cached references invalid and purges them from the caches.

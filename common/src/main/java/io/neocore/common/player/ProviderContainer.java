@@ -1,5 +1,7 @@
 package io.neocore.common.player;
 
+import java.util.function.Consumer;
+
 import com.treyzania.jzania.ExoContainer;
 
 import io.neocore.api.NeocoreAPI;
@@ -36,10 +38,10 @@ public abstract class ProviderContainer {
 		return (IdentityLinkage<?>) this.getProvider();
 	}
 	
-	public abstract ProvisionResult load(NeoPlayer player, Runnable callback);
+	public abstract ProvisionResult load(NeoPlayer player, Consumer<LoadResult> callback);
 	
-	public abstract void flush(NeoPlayer player, Runnable callback);
+	public abstract void flush(NeoPlayer player, Consumer<FlushResult> callback);
 	
-	public abstract void unload(NeoPlayer player, Runnable callback);
+	public abstract void unload(NeoPlayer player, Consumer<UnloadResult> callback);
 	
 }

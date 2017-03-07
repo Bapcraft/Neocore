@@ -1,5 +1,6 @@
 package io.neocore.bukkit.services.permissions;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
@@ -19,7 +20,7 @@ public class BukkitPermsService implements PermissionsService {
 	}
 	
 	@Override
-	public PermissedPlayer load(UUID uuid) {
+	public PermissedPlayer load(UUID uuid) throws IOException {
 		return new BukkitPermPlayer(this.plugin, uuid);
 	}
 	

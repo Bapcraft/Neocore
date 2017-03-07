@@ -1,5 +1,8 @@
 package io.neocore.common.player;
 
+import java.io.IOException;
+import java.util.function.Consumer;
+
 import io.neocore.api.database.Persistent;
 import io.neocore.api.player.IdentityProvider;
 import io.neocore.api.player.NeoPlayer;
@@ -19,57 +22,71 @@ public class DirectProviderContainer extends ProviderContainer {
 	}
 	
 	@Override
-	public ProvisionResult load(NeoPlayer player, Runnable callback) {
+	public ProvisionResult load(NeoPlayer player, Consumer<LoadResult> callback) {
 		
-		this.exo.invoke("Provide(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
+		PlayerIdentity ident = null;
+		try {
+			ident = this.getProvider().load(player.getUniqueId());
+		} catch (IOException e) {
 			
-			PlayerIdentity ident = this.getProvider().load(player.getUniqueId());
+			if (callback != null) callback.accept(new LoadResult(ActionStatus.FAILURE, e));
+			return ProvisionResult.INJECTION_NOT_POSSIBLE;
 			
-			if (ident != null) {
-				
-				// Call outward to the container.
-				if (ident instanceof Persistent) {
-					((Persistent) ident).setFlushProcedure(() -> player.flush());
-				}
-				
-				player.addIdentity(ident);
-				
+		} catch (RuntimeException e) {
+			
+			if (callback != null) callback.accept(new LoadResult(ActionStatus.FAILURE, e));
+			return ProvisionResult.INJECTION_NOT_POSSIBLE;
+			
+		}
+		
+		if (ident != null) {
+			
+			// Call outward to the container.
+			if (ident instanceof Persistent) {
+				((Persistent) ident).setFlushProcedure(() -> player.flush());
 			}
 			
-		});
+			player.addIdentity(ident);
+			
+		}
 		
-		if (callback != null) callback.run();
-		
-		return ProvisionResult.IMMEDIATELY_INJECTED;
+		if (callback != null) callback.accept(new LoadResult(ident != null ? ActionStatus.SUCCESS : ActionStatus.ABORTED, ident));
+		return ident != null ? ProvisionResult.IMMEDIATELY_INJECTED : ProvisionResult.INJECTION_NOT_POSSIBLE;
 		
 	}
 
 	@Override
-	public void flush(NeoPlayer player, Runnable callback) {
+	public void flush(NeoPlayer player, Consumer<FlushResult> callback) {
 		
+		boolean ok = true;
 		if (this.isLinkage()) {
 			
-			this.exo.invoke("Flush(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
-				this.getProviderAsLinkage().flush(player.getUniqueId()); // Very simple here.
-			});
+			try {
+				this.getProviderAsLinkage().flush(player.getUniqueId());
+			} catch (IOException e) {
+				ok = false;
+			} catch (RuntimeException e) {
+				ok = false;
+			}
 			
 		}
 		
-		if (callback != null) callback.run();
+		if (callback != null) callback.accept(new FlushResult(ok ? ActionStatus.SUCCESS : ActionStatus.FAILURE));
 		
 	}
 	
 	@Override
-	public void unload(NeoPlayer player, Runnable callback) {
+	public void unload(NeoPlayer player, Consumer<UnloadResult> callback) {
 		
-		this.exo.invoke("Unload(" + this.getProvider().getClass().getSimpleName() + ")-Direct", () -> {
-			
+		try {
+
 			// Very simple here.
 			this.getProvider().unload(player.getUniqueId());
+			if (callback != null) callback.accept(new UnloadResult(ActionStatus.SUCCESS));
 			
-		});
-		
-		if (callback != null) callback.run();
+		} catch (RuntimeException e) {
+			if (callback != null) callback.accept(new UnloadResult(ActionStatus.FAILURE));
+		}
 		
 	}
 	

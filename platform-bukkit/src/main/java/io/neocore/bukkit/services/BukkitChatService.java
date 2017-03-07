@@ -1,5 +1,6 @@
 package io.neocore.bukkit.services;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class BukkitChatService implements ChatService {
 	}
 	
 	@Override
-	public ChattablePlayer load(UUID uuid) {
+	public ChattablePlayer load(UUID uuid) throws IOException {
 		return new BukkitChattablePlayer(uuid);
 	}
 	

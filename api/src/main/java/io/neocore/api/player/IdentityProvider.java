@@ -1,5 +1,6 @@
 package io.neocore.api.player;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -18,8 +19,9 @@ public interface IdentityProvider<T extends PlayerIdentity> {
 	 * 
 	 * @param uuid The UUID of the player
 	 * @return The corresponding identity
+	 * @throws IOException TODO
 	 */
-	public T load(UUID uuid);
+	public T load(UUID uuid) throws IOException;
 	
 	/**
 	 * Purges player data from any local caches without writing anything to
