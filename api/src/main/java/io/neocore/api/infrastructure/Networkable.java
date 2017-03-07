@@ -3,9 +3,9 @@ package io.neocore.api.infrastructure;
 public interface Networkable {
 
 	/**
-	 * Returns the name of the network this member belongs to.  If this value
-	 * is either <code>null</code> or an empty string, then the client is
-	 * assumed to not be part of a network.
+	 * Returns the name of the network this member belongs to. If this value is
+	 * either <code>null</code> or an empty string, then the client is assumed
+	 * to not be part of a network.
 	 * 
 	 * @return The network's name
 	 */
@@ -20,5 +20,5 @@ public interface Networkable {
 	public default boolean isNetworked() {
 		return this.getNetworkName() != null && !this.getNetworkName().isEmpty();
 	}
-	
+
 }

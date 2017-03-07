@@ -18,22 +18,22 @@ public class CommandNativeDumpPerms extends AbstractCommand {
 
 	@Override
 	public void onExecute(CmdSender sender, String[] args) {
-		
+
 		Player p = Bukkit.getPlayer(sender.getUniqueId());
-		
+
 		if (p != null) {
-			
+
 			Set<PermissionAttachmentInfo> pais = p.getEffectivePermissions();
-			
+
 			sender.sendMessage("Permissions (" + pais.size() + "):");
 			for (PermissionAttachmentInfo pai : pais) {
-				
+
 				sender.sendMessage("   - " + (pai.getValue() ? ChatColor.GREEN : ChatColor.RED) + pai.getPermission());
-				
+
 			}
-			
+
 		}
-		
+
 	}
 
 }

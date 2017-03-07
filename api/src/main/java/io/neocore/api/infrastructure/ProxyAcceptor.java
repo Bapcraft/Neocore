@@ -6,12 +6,13 @@ package io.neocore.api.infrastructure;
  * @author treyzania
  */
 public interface ProxyAcceptor {
-	
+
 	/**
 	 * Should be called when a player is moving between two endpoints.
 	 * 
-	 * @param event The event.
+	 * @param event
+	 *            The event.
 	 */
 	public void onDownstreamTransfer(DownstreamTransferEvent event);
-	
+
 }

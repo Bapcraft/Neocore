@@ -7,24 +7,25 @@ import io.neocore.api.host.chat.ChatAcceptor;
 import io.neocore.bukkit.events.wrappers.BukkitChatEvent;
 
 public class ChatEventForwarder extends EventForwarder {
-	
+
 	private ChatAcceptor dest;
-	
+
 	public ChatEventForwarder() {
-		
+
 	}
-	
+
 	public void setAcceptor(ChatAcceptor acc) {
 		this.dest = acc;
 	}
-	
+
 	public ChatAcceptor getAcceptor() {
 		return this.dest;
 	}
-	
+
 	@EventHandler
 	public void onChatEvent(AsyncPlayerChatEvent event) {
-		if (dest != null) this.dest.onChatMessage(new BukkitChatEvent(event));
+		if (dest != null)
+			this.dest.onChatMessage(new BukkitChatEvent(event));
 	}
-	
+
 }

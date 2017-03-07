@@ -8,17 +8,17 @@ import io.neocore.api.infrastructure.NetworkEndpoint;
 import io.neocore.api.infrastructure.NetworkMap;
 
 public class BungeeNetworkMap implements NetworkMap {
-	
+
 	private BungeeFrontend frontend;
 	private DownstreamWrapper downstream;
-	
+
 	public BungeeNetworkMap(BungeeFrontend front, DownstreamWrapper down) {
-		
+
 		this.frontend = front;
 		this.downstream = down;
-		
+
 	}
-	
+
 	@Override
 	public ConnectionFrontend getFrontend() {
 		return this.frontend;
@@ -26,11 +26,11 @@ public class BungeeNetworkMap implements NetworkMap {
 
 	@Override
 	public Set<NetworkEndpoint> getEndpoints() {
-		
+
 		Set<NetworkEndpoint> eps = new HashSet<>();
 		eps.addAll(this.downstream.getEndpoints());
 		return eps;
-		
+
 	}
 
 }

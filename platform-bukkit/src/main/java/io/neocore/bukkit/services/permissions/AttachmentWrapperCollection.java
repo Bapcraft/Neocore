@@ -10,39 +10,45 @@ import org.bukkit.permissions.PermissionAttachment;
 import io.neocore.api.host.permissions.PermissionCollection;
 
 public class AttachmentWrapperCollection implements PermissionCollection {
-	
+
 	private PermissionAttachment attachment;
 	private Set<String> tags = new HashSet<>();
-	
-	private Map<String, Boolean> perms = new HashMap<>(); 
-	
+
+	private Map<String, Boolean> perms = new HashMap<>();
+
 	public AttachmentWrapperCollection(PermissionAttachment atta) {
 		this.attachment = atta;
 	}
-	
+
 	public PermissionAttachment getAttachment() {
 		return this.attachment;
 	}
-	
+
 	@Override
 	public boolean isPermissionSet(String perm) {
-		return this.attachment.getPermissible().isPermissionSet(perm); // Not strictly speaking compliant, but close enough.
+		return this.attachment.getPermissible().isPermissionSet(perm); // Not
+																		// strictly
+																		// speaking
+																		// compliant,
+																		// but
+																		// close
+																		// enough.
 	}
 
 	@Override
 	public void setPermission(String perm, boolean value) {
-		
+
 		this.perms.put(perm, value);
 		this.attachment.setPermission(perm, value);
-		
+
 	}
 
 	@Override
 	public void unsetPermission(String perm) {
-		
+
 		this.perms.remove(perm);
 		this.attachment.unsetPermission(perm);
-		
+
 	}
 
 	@Override
@@ -64,5 +70,5 @@ public class AttachmentWrapperCollection implements PermissionCollection {
 	public Map<String, Boolean> getPermissionsApplied() {
 		return new HashMap<>(this.perms);
 	}
-	
+
 }

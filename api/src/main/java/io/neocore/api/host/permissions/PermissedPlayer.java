@@ -10,57 +10,62 @@ import io.neocore.api.host.ConnectingPlayer;
  * @author treyzania
  */
 public interface PermissedPlayer extends ConnectingPlayer {
-	
+
 	/**
-	 * @return <code>true</code> if the player is an "operator", <code>false</code> otherwise.
+	 * @return <code>true</code> if the player is an "operator",
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean isOp();
-	
+
 	/**
 	 * Checks to see if the player has the permission specified.
 	 * 
-	 * @param perm The permission to check for.
+	 * @param perm
+	 *            The permission to check for.
 	 * @return The state of the permission.
 	 */
 	public boolean hasPermission(String perm);
-	
+
 	/**
-	 * Checks to see if there is a definition for the specified permission on the player.
+	 * Checks to see if there is a definition for the specified permission on
+	 * the player.
 	 * 
-	 * @param permission The permission to check.
+	 * @param permission
+	 *            The permission to check.
 	 * @return TODO
 	 */
 	public boolean isPermSet(String permission);
-	
+
 	/**
 	 * Gets a new, empty permission collection for the player.
 	 * 
 	 * @return The new collection.
 	 */
 	public PermissionCollection createCollection();
-	
+
 	/**
 	 * Removes the permission collection from the player.
 	 * 
-	 * @param col The collection to remove.
+	 * @param col
+	 *            The collection to remove.
 	 */
 	public void removeCollection(PermissionCollection col);
-	
+
 	/**
 	 * Returns a list of all of the permission collections that have been
-	 * created by this object in the cache.  Changes to the returned list
-	 * should not effect the actual collections allocated.
+	 * created by this object in the cache. Changes to the returned list should
+	 * not effect the actual collections allocated.
 	 * 
 	 * @return A list of cached collections.
 	 */
 	public List<PermissionCollection> getCollections();
-	
+
 	/**
-	 * Optionally performs an update of the underlying player permissions in
-	 * the event they do not normally happen immediately.
+	 * Optionally performs an update of the underlying player permissions in the
+	 * event they do not normally happen immediately.
 	 */
 	public default void applyChanges() {
-		
+
 	}
-	
+
 }

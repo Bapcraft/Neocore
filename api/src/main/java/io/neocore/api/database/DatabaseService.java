@@ -16,27 +16,32 @@ import io.neocore.api.database.session.SessionService;
 public enum DatabaseService implements ServiceType {
 
 	BAN(BanService.class), // Exactly what you think it is.
-	SESSION(SessionService.class), // Information about who is connecting, as well as when, from where, and to do what they are.
+	SESSION(SessionService.class), // Information about who is connecting, as
+									// well as when, from where, and to do what
+									// they are.
 	PLAYER(PlayerService.class), // Core player data, extensions, etc.
-	GROUP(GroupService.class), // Group definitions, flair, inheritance, tracks, etc.
+	GROUP(GroupService.class), // Group definitions, flair, inheritance, tracks,
+								// etc.
 	ARTIFACT(ArtifactService.class), // Warnings, evidence, etc.
 	ACTIONRECORD(null);
-	
+
 	private Class<? extends DatabaseServiceProvider> serviceClass;
-	
+
 	private DatabaseService(Class<? extends DatabaseServiceProvider> clazz) {
 		this.serviceClass = clazz;
 	}
-	
+
 	public boolean isCompatible(Class<? extends DatabaseServiceProvider> serv) {
-		
-		if (serv == null) return false;
-		if (this.getServiceClass() == null) return false;
-		
+
+		if (serv == null)
+			return false;
+		if (this.getServiceClass() == null)
+			return false;
+
 		return this.getServiceClass().isAssignableFrom(serv.getClass());
-		
+
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.name();
@@ -46,5 +51,5 @@ public enum DatabaseService implements ServiceType {
 	public Class<? extends ServiceProvider> getServiceClass() {
 		return this.serviceClass;
 	}
-	
+
 }

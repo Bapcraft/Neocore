@@ -20,118 +20,124 @@ import io.neocore.common.event.CommonEventManager;
 import io.neocore.common.service.ServiceManagerImpl;
 
 public class LoginAcceptorImpl implements LoginAcceptor {
-	
+
 	private CommonEventManager events;
 	private ServiceManagerImpl services;
 	private IdentifierManager idents;
-	
+
 	private List<Context> contexts;
-	
-	public LoginAcceptorImpl(CommonEventManager events, ServiceManagerImpl services, IdentifierManager idents, List<Context> ctxs) {
-		
+
+	public LoginAcceptorImpl(CommonEventManager events, ServiceManagerImpl services, IdentifierManager idents,
+			List<Context> ctxs) {
+
 		this.events = events;
 		this.services = services;
 		this.idents = idents;
-		
+
 		this.contexts = ctxs;
-		
-		this.services.registerRegistrationHandler(LoginService.class, r -> ((LoginService) r.getServiceProvider()).setLoginAcceptor(this));
-		
+
+		this.services.registerRegistrationHandler(LoginService.class,
+				r -> ((LoginService) r.getServiceProvider()).setLoginAcceptor(this));
+
 	}
-	
+
 	@Override
 	public void onInitialLoginEvent(InitialLoginEvent event) {
-		
+
 		UUID uuid = event.getPlayerUniqueId();
-		
+
 		// Verify bans
-		if (NeocoreAPI.getAgent().getHost().getNeocoreConfig().isEnforcingBans()) { // FIXME Encapsulation.
-			
+		if (NeocoreAPI.getAgent().getHost().getNeocoreConfig().isEnforcingBans()) { // FIXME
+																					// Encapsulation.
+
 			BanService serv = this.services.getService(BanService.class);
 			if (serv != null) {
-				
+
 				// Figure out which bans we care about.
 				List<BanEntry> playerBans = serv.getBans(uuid);
 				List<BanEntry> relevant = new ArrayList<>();
 				for (BanEntry ban : playerBans) {
-					
+
 					// Need to make sure that we can have temporary bans.
-					if (!ban.isActive()) continue;
-					
+					if (!ban.isActive())
+						continue;
+
 					if (ban.isGlobal()) {
-						
+
 						relevant.add(ban);
 						continue;
-						
+
 					} else {
-						
+
 						for (Context c : this.contexts) {
-							
+
 							if (c.equals(ban.getContext())) {
-								
+
 								relevant.add(ban);
 								continue;
-								
+
 							}
-							
+
 						}
-						
+
 					}
-					
+
 				}
-				
+
 				// Now report to the player if they're banned, and why.
 				if (relevant.size() > 0) {
-					
+
 					NeocoreAPI.getLogger().fine("Found " + relevant.size() + " relevant bans for player logging in.");
-					
+
 					StringBuilder sb = new StringBuilder("Banned!\n");
-					relevant.forEach(b -> sb.append("- " + b.getReason() + " (" + this.idents.getIdentifier(b.getIssuerId()) + ")\n"));
+					relevant.forEach(b -> sb
+							.append("- " + b.getReason() + " (" + this.idents.getIdentifier(b.getIssuerId()) + ")\n"));
 					event.disallow(sb.toString());
-					
+
 				} else {
 					event.allow(); // Verbosity.
 				}
-				
+
 			} else {
 				NeocoreAPI.getLogger().warning("Ban service null but we're supposed to be checking bans!");
 			}
-			
+
 		}
-		
+
 		// Broadcast the event.
 		this.events.broadcast(event);
-		
+
 		/**
-		 * We can't do any player initialization things here because Bukkit is dumb.
+		 * We can't do any player initialization things here because Bukkit is
+		 * dumb.
 		 */
-		
+
 	}
-	
+
 	@Override
 	public void onPostLoginEvent(PostLoginEvent event) {
-		
+
 		NeoPlayer np = event.getPlayer();
-		
+
 		// Initialize the player username stuff.
 		if (np.hasIdentity(DatabasePlayer.class)) {
-			
+
 			DatabasePlayer dbp = np.getIdentity(DatabasePlayer.class);
 			dbp.setLastUsername(np.getUsername());
-			
+
 		}
-		
+
 		// Broadcast
 		this.events.broadcast(PostLoginEvent.class, event);
-		
+
 	}
-	
+
 	@Override
 	public void onDisconnectEvent(DisconnectEvent event) {
-		
+
 		// Broadcast the event straightaway.
 		this.events.broadcast(event);
-		
+
 	}
-	
+
 }

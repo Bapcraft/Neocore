@@ -13,27 +13,27 @@ import io.neocore.api.player.PlayerIdentity;
  * @author treyzania
  */
 public class PlayerBanIssuer extends BanIssuer {
-	
+
 	protected UUID uuid;
-	
+
 	public PlayerBanIssuer(UUID uuid) {
 		this.uuid = uuid;
 	}
-	
+
 	public PlayerBanIssuer(PlayerIdentity pi) {
 		this(pi.getUniqueId());
 	}
-	
+
 	@Override
 	public String getDisplayName() {
-		
+
 		// FIXME Breaks encapsulation?
 		try {
 			return NeocoreAPI.getAgent().getServiceManager().getService(PlayerService.class).getLastUsername(this.uuid);
 		} catch (IOException e) {
 			return "[unresolvable]";
 		}
-		
+
 	}
 
 }

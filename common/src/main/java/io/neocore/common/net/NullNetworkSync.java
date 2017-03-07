@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class NullNetworkSync extends NetworkSync {
-	
+
 	@Override
 	public void updateSubscriptionState(UUID uuid, boolean state) {
 		// Nothing
@@ -15,17 +15,17 @@ public class NullNetworkSync extends NetworkSync {
 	public void updatePlayerList(Set<UUID> uuids) {
 		// Nothing
 	}
-	
+
 	@Override
 	public void announceInvalidation(UUID uuid) {
 		// Nothing
 	}
-	
+
 	@Override
 	public void setInvalidationCallback(Consumer<UUID> callback) {
 		// Nothing
 	}
-	
+
 	@Override
 	public LockCoordinator getLockCoordinator() {
 		return new NullLockCoordinator();
@@ -40,5 +40,5 @@ public class NullNetworkSync extends NetworkSync {
 	public void announceBansReload() {
 		// Nothing
 	}
-	
+
 }

@@ -6,35 +6,35 @@ package io.neocore.api.host;
  * @author treyzania
  */
 public class LesserContext implements Context {
-	
+
 	private String name;
-	
+
 	public LesserContext(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.name;
 	}
-	
+
 	@Override
 	public int hashCode() {
-		
+
 		// Yucky auto-generated code!
-		
+
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
-		
+
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		
+
 		// Yucky auto-generated code!
-		
+
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -48,7 +48,7 @@ public class LesserContext implements Context {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
-		
+
 	}
-	
+
 }

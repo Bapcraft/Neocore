@@ -9,13 +9,13 @@ import io.neocore.api.infrastructure.NetworkEndpoint;
 import io.neocore.api.infrastructure.NetworkMap;
 
 public class StandaloneNetworkMap implements NetworkMap {
-	
+
 	private StandaloneNetworkMember self;
-	
+
 	public StandaloneNetworkMap(StandaloneNetworkMember self) {
 		this.self = self;
 	}
-	
+
 	@Override
 	public ConnectionFrontend getFrontend() {
 		return this.self;

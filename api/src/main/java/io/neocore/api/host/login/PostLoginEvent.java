@@ -12,17 +12,19 @@ import io.neocore.api.event.Raisable;
  */
 @Raisable
 public interface PostLoginEvent extends PlayerEvent {
-	
+
 	/**
-	 * Sets the message to be displayed in chat.  Setting to <code>null</code> results in no message being sent.
+	 * Sets the message to be displayed in chat. Setting to <code>null</code>
+	 * results in no message being sent.
 	 * 
-	 * @param message The login message.
+	 * @param message
+	 *            The login message.
 	 */
 	public void setJoinMessage(String message);
-	
+
 	/**
 	 * @return The current login message.
 	 */
 	public String getJoinMessage();
-	
+
 }

@@ -8,12 +8,12 @@ import java.util.UUID;
  * @author treyzania
  */
 public interface PlayerIdentity {
-	
+
 	/**
 	 * Gets the universally-unique idetifier representing this player.
 	 * 
 	 * @return The player's UUID.
 	 */
 	public UUID getUniqueId();
-	
+
 }

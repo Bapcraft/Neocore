@@ -11,15 +11,15 @@ public class PingHandler extends MessageHandler {
 
 	@Override
 	public void handle(DaemonServer server, NmClient client, ClientMessage message) {
-		
+
 		Nmd.logger.finer("Got ping from " + client.getIdentString() + ".");
-		
+
 		ClientMessage.Builder b = ClientMessage.newBuilder();
 		b.setMessageId(ClientMessageUtils.random());
 		b.setPing(Ping.newBuilder().build());
-		
+
 		client.queueMessage(b.build());
-		
+
 	}
 
 }

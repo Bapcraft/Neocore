@@ -8,10 +8,10 @@ import io.neocore.api.player.NeoPlayer;
  * @author treyzania
  */
 public interface PlayerEvent extends Event {
-	
+
 	/**
 	 * @return The player in the context of the event.
 	 */
 	public NeoPlayer getPlayer();
-	
+
 }

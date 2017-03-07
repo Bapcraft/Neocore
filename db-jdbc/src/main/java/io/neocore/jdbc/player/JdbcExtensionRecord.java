@@ -11,32 +11,34 @@ public class JdbcExtensionRecord {
 
 	@DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
 	private int extensionId;
-	
+
 	@DatabaseField(canBeNull = false, foreign = true)
 	protected JdbcDbPlayer owner;
-	
+
 	@DatabaseField(canBeNull = false)
 	protected String type;
-	
+
 	@DatabaseField(canBeNull = false)
 	protected String data;
-	
+
 	public JdbcExtensionRecord() {
 		// ORMLite.
 	}
-	
+
 	public JdbcExtensionRecord(Extension ext) {
-		
+
 		this.type = ext.getName();
-		this.data = NeocoreAPI.getAgent().getExtensionManager().serialize(ext); // FIXME Breaks encapsulation.
-		
+		this.data = NeocoreAPI.getAgent().getExtensionManager().serialize(ext); // FIXME
+																				// Breaks
+																				// encapsulation.
+
 	}
-	
+
 	public Extension deserialize() {
-		
+
 		// FIXME Breaks encapsulation.
 		return NeocoreAPI.getAgent().getExtensionManager().deserialize(this.type, this.data);
-		
+
 	}
-	
+
 }

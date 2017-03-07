@@ -9,73 +9,86 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.ServerOperator;
 
 public class NeocorePermissibleBase extends PermissibleBase {
-	
+
 	private static final Random rand = new Random();
-	
+
 	private Map<String, Boolean> highUseCache = new HashMap<>();
 	private float cachingProbability = 0.001F; // TODO Make configurable.
-	
+
 	public NeocorePermissibleBase(ServerOperator opable) {
 		super(opable);
 	}
-	
+
 	@Override
 	public boolean hasPermission(Permission perm) {
-		
-		if (perm == null) throw new IllegalArgumentException("Permission cannot be null"); // no period o man (but gotta follow the API's spec)
+
+		if (perm == null)
+			throw new IllegalArgumentException("Permission cannot be null"); // no
+																				// period
+																				// o
+																				// man
+																				// (but
+																				// gotta
+																				// follow
+																				// the
+																				// API's
+																				// spec)
 		return this.hasPermission(perm.getName());
-		
+
 	}
-	
+
 	@Override
 	public boolean hasPermission(String inName) {
-		
+
 		if (inName == null) {
 			throw new IllegalArgumentException("Permission cannot be null");
 		}
-		
+
 		// To check if it works.
-		if (inName.equals("!test")) throw new UnsupportedOperationException("PASSED");
-		
+		if (inName.equals("!test"))
+			throw new UnsupportedOperationException("PASSED");
+
 		String[] parts = inName.split("\\.");
-		
+
 		for (int i = 0; i < parts.length; i++) {
-			
+
 			StringBuilder sb = new StringBuilder();
 			for (int j = 0; j < i; j++) {
 				sb.append(parts[j] + ".");
 			}
-			
+
 			String comp = sb.toString() + "*";
-			if (super.isPermissionSet(comp)) return this.cachingHasPermission(comp);
-			
+			if (super.isPermissionSet(comp))
+				return this.cachingHasPermission(comp);
+
 		}
-		
+
 		return this.cachingHasPermission(inName);
-		
+
 	}
-	
+
 	private boolean cachingHasPermission(String perm) {
-		
+
 		if (!this.highUseCache.containsKey(perm)) {
-			
+
 			boolean has = super.hasPermission(perm);
-			
-			if (rand.nextFloat() < this.cachingProbability) this.highUseCache.put(perm, has);
+
+			if (rand.nextFloat() < this.cachingProbability)
+				this.highUseCache.put(perm, has);
 			return has;
-			
+
 		} else {
 			return this.highUseCache.get(perm).booleanValue();
 		}
-		
+
 	}
-	
+
 	@Override
 	public void recalculatePermissions() {
-		
+
 		super.recalculatePermissions();
 		this.highUseCache = new HashMap<>();
-		
+
 	}
-	
+
 }

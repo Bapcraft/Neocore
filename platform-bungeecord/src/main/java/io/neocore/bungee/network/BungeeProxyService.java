@@ -5,13 +5,13 @@ import io.neocore.api.infrastructure.ProxyService;
 import io.neocore.bungee.events.PlayerConnectionForwarder;
 
 public class BungeeProxyService implements ProxyService {
-	
+
 	private PlayerConnectionForwarder forwarder;
-	
+
 	public BungeeProxyService(PlayerConnectionForwarder fwdr) {
 		this.forwarder = fwdr;
 	}
-	
+
 	@Override
 	public void setAcceptor(ProxyAcceptor acc) {
 		this.forwarder.proxyAcceptor = acc;

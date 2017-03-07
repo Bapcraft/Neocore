@@ -13,28 +13,34 @@ import io.neocore.api.host.permissions.PermissionsService;
  * @author treyzania
  */
 public enum HostService implements ServiceType {
-	
-	LOGIN(LoginService.class), // When players connect, present on both endpoints and proxies.
-	BROADCAST(BroadcastService.class), // General broadcasts, regardless of scale.
-	PERMISSIONS(PermissionsService.class), // The ability to attach permissions onto players for everyone to use.
-	CHAT(ChatService.class), // General communication bound to some player-like thing.
+
+	LOGIN(LoginService.class), // When players connect, present on both
+								// endpoints and proxies.
+	BROADCAST(BroadcastService.class), // General broadcasts, regardless of
+										// scale.
+	PERMISSIONS(PermissionsService.class), // The ability to attach permissions
+											// onto players for everyone to use.
+	CHAT(ChatService.class), // General communication bound to some player-like
+								// thing.
 	GAMEPLAY(null); // Player teleportation, chest UI, scoreboards, etc.
-	
+
 	private Class<? extends HostServiceProvider> serviceClass;
-	
+
 	private HostService(Class<? extends HostServiceProvider> clazz) {
 		this.serviceClass = clazz;
 	}
-	
+
 	public boolean isCompatible(Class<? extends HostServiceProvider> serv) {
-		
-		if (serv == null) return false;
-		if (this.getServiceClass() == null) return false;
-		
+
+		if (serv == null)
+			return false;
+		if (this.getServiceClass() == null)
+			return false;
+
 		return this.getServiceClass().isAssignableFrom(serv.getClass());
-		
+
 	}
-	
+
 	@Override
 	public String getName() {
 		return this.name();
@@ -44,5 +50,5 @@ public enum HostService implements ServiceType {
 	public Class<? extends ServiceProvider> getServiceClass() {
 		return this.serviceClass;
 	}
-	
+
 }

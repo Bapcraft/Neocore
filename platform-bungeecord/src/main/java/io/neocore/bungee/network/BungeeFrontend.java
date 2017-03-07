@@ -7,9 +7,9 @@ import io.neocore.api.infrastructure.ConnectionFrontend;
 import io.neocore.api.infrastructure.NetworkPlayer;
 
 public class BungeeFrontend implements ConnectionFrontend {
-	
+
 	private String networkName;
-	
+
 	public BungeeFrontend(String name) {
 		this.networkName = name;
 	}
@@ -23,7 +23,7 @@ public class BungeeFrontend implements ConnectionFrontend {
 	public String getAgentName() {
 		return this.networkName;
 	}
-	
+
 	@Override
 	public String getNetworkName() {
 		return this.networkName;
@@ -34,5 +34,5 @@ public class BungeeFrontend implements ConnectionFrontend {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 }

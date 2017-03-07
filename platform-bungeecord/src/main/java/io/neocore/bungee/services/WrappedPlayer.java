@@ -10,25 +10,26 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class WrappedPlayer implements ConnectingPlayer {
-	
+
 	protected UUID uuid;
-	
+
 	public WrappedPlayer(UUID uuid) {
 		this.uuid = uuid;
 	}
-	
+
 	protected ProxiedPlayer getPlayerOrThrow() {
-		
-		ProxyServer server = ProxyServer.getInstance(); // FIXME Breaks encapsulation.
+
+		ProxyServer server = ProxyServer.getInstance(); // FIXME Breaks
+														// encapsulation.
 		ProxiedPlayer player = server.getPlayer(this.uuid);
 		if (player != null) {
 			return player;
 		} else {
 			throw new UnsupportedOperationException("Player " + this.uuid + " isn't online!");
 		}
-		
+
 	}
-	
+
 	@Override
 	public UUID getUniqueId() {
 		return this.uuid;
@@ -46,16 +47,16 @@ public class WrappedPlayer implements ConnectingPlayer {
 
 	@Override
 	public boolean isOnline() {
-		
+
 		try {
-			
+
 			this.getPlayerOrThrow();
 			return true;
-			
+
 		} catch (UnsupportedOperationException e) {
 			return false;
 		}
-		
+
 	}
 
 }

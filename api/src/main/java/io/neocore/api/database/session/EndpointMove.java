@@ -6,11 +6,13 @@ import io.neocore.api.database.Persistent;
 import io.neocore.api.infrastructure.NetworkEndpoint;
 
 public interface EndpointMove extends Persistent {
-	
+
 	public void setTime(Date time);
+
 	public Date getTime();
-	
+
 	public void setDestination(NetworkEndpoint ep);
+
 	public NetworkEndpoint getDestination();
-	
+
 }

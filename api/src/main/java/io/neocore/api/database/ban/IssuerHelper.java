@@ -8,11 +8,11 @@ import java.util.UUID;
  * @author treyzania
  */
 public class IssuerHelper {
-	
+
 	public static String serialize(BanIssuer issuer) {
-		
+
 		Class<? extends BanIssuer> clazz = issuer.getClass();
-		
+
 		if (clazz.equals(NameLiteralIssuer.class)) {
 			return "name:" + ((NameLiteralIssuer) issuer).name;
 		} else if (clazz.equals(PlayerBanIssuer.class)) {
@@ -20,14 +20,14 @@ public class IssuerHelper {
 		} else {
 			return "name:undefined"; // Just say fuck it.
 		}
-		
+
 	}
-	
+
 	public static BanIssuer deserialize(String str) {
-		
+
 		String[] parts = str.split(":", 2);
 		String type = parts[0];
-		
+
 		if (type.equals("name")) {
 			return new NameLiteralIssuer(parts[1]);
 		} else if (type.equals("uuid")) {
@@ -35,7 +35,7 @@ public class IssuerHelper {
 		} else {
 			return new NameLiteralIssuer("undefined");
 		}
-		
+
 	}
-	
+
 }

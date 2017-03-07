@@ -6,13 +6,13 @@ package io.neocore.api.database.ban;
  * @author treyzania
  */
 public class NameLiteralIssuer extends BanIssuer {
-	
+
 	protected String name;
-	
+
 	public NameLiteralIssuer(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public String getDisplayName() {
 		return this.name;
@@ -22,5 +22,5 @@ public class NameLiteralIssuer extends BanIssuer {
 	public String toString() {
 		return "explicit:" + this.name;
 	}
-	
+
 }

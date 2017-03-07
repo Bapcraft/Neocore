@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * To be placed on a database IdentityProvider, specifying that it should be
- * loaded from the database asynchronously, but does not enforce this. 
+ * loaded from the database asynchronously, but does not enforce this.
  * 
  * @author treyzania
  */

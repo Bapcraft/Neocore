@@ -7,12 +7,14 @@ package io.neocore.api.host.chat;
  * @author treyzania
  */
 public interface ChatAcceptor {
-	
+
 	/**
-	 * Should be called whenever there is an event to be processed by micrmodules.
+	 * Should be called whenever there is an event to be processed by
+	 * micrmodules.
 	 * 
-	 * @param event The chat event itself.
+	 * @param event
+	 *            The chat event itself.
 	 */
 	public void onChatMessage(ChatEvent event);
-	
+
 }

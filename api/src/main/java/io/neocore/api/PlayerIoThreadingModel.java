@@ -6,12 +6,9 @@ package io.neocore.api;
  * @author treyzania
  */
 public enum PlayerIoThreadingModel {
-	
-	SINGLE_THREAD,
-	FORCE_ASYNC,
-	FORCE_DEFERRED,
-	
-	AUTO,
-	AUTO_DEFERRED;
-	
+
+	SINGLE_THREAD, FORCE_ASYNC, FORCE_DEFERRED,
+
+	AUTO, AUTO_DEFERRED;
+
 }

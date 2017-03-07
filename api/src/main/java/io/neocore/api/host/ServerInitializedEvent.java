@@ -10,7 +10,7 @@ import io.neocore.api.event.Raisable;
  */
 @Raisable
 public interface ServerInitializedEvent extends Event {
-	
+
 	// This is really just a signaling event.
-	
+
 }

@@ -10,34 +10,34 @@ import io.neocore.api.infrastructure.NetworkHost;
 import io.neocore.api.infrastructure.NetworkPlayer;
 
 public class RemoteAgent implements AgentIdentity, NetworkHost, NmNetworkComponent {
-	
+
 	private UUID agentId;
 	private String name, network;
-	
+
 	private Set<NmNetworkPlayer> players = new HashSet<>();
-	
+
 	public RemoteAgent(UUID id, String name, String network) {
-		
+
 		this.agentId = id;
 		this.name = name;
 		this.network = network;
-		
+
 	}
-	
+
 	public RemoteAgent(UUID id, String name) {
 		this(id, name, null);
 	}
-	
+
 	@Override
 	public UUID getAgentId() {
 		return this.agentId;
 	}
-	
+
 	@Override
 	public String getAgentName() {
 		return this.name;
 	}
-	
+
 	@Override
 	public String getNetworkName() {
 		return this.network;
@@ -47,16 +47,16 @@ public class RemoteAgent implements AgentIdentity, NetworkHost, NmNetworkCompone
 	public Set<NetworkPlayer> getPlayers() {
 		return Collections.unmodifiableSet(this.players);
 	}
-	
+
 	@Override
 	public void addPlayer(NmNetworkPlayer nnp) {
 		this.players.add(nnp);
 	}
-	
+
 	public void removePlayer(UUID uuid) {
 		this.players.removeIf(p -> p.getUniqueId().equals(uuid));
 	}
-	
+
 	@Override
 	public boolean removePlayer(NmNetworkPlayer nnp) {
 		return this.players.remove(nnp);
@@ -64,13 +64,14 @@ public class RemoteAgent implements AgentIdentity, NetworkHost, NmNetworkCompone
 
 	@Override
 	public boolean hasPlayerId(UUID uuid) {
-		
+
 		for (NmNetworkPlayer nnp : this.players) {
-			if (nnp.getUniqueId().equals(uuid)) return true;
+			if (nnp.getUniqueId().equals(uuid))
+				return true;
 		}
-		
+
 		return false;
-		
+
 	}
-	
+
 }

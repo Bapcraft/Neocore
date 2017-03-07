@@ -21,105 +21,97 @@ import io.neocore.manage.proto.NeomanageProtocol.UpdatePermissionsNotification;
 import io.neocore.manage.proto.NeomanageProtocol.UpdatePermissionsNotification.ReloadExtent;
 
 public class NmdNetworkSync extends NetworkSync {
-	
+
 	private UUID agentId;
 	private NmNetwork network;
-	
+
 	private Consumer<UUID> invalidationCallback;
-	
+
 	public NmdNetworkSync(UUID agentId, NmNetwork net) {
-		
+
 		this.agentId = agentId;
 		this.network = net;
-		
+
 	}
-	
+
 	private ClientMessage.Builder getBuilder() {
 		return ClientMessageUtils.newBuilder(this.agentId);
 	}
-	
+
 	@Override
 	public void updateSubscriptionState(UUID uuid, boolean state) {
-		
+
 		ClientMessage.Builder b = this.getBuilder();
 		b.setSubUpdate(PlayerSubscriptionUpdate.newBuilder().setUuid(uuid.toString()).setState(state));
-		
+
 		this.network.getActiveServer().queueMessage(b.build());
-		
+
 	}
-	
+
 	@Override
 	public void updatePlayerList(Set<UUID> uuids) {
 
 		ClientMessage.Builder b = this.getBuilder();
-		
+
 		List<String> uuidStrs = new ArrayList<>();
 		uuids.forEach(id -> uuidStrs.add(id.toString()));
 		b.setPlayerListUpdate(PlayerListUpdate.newBuilder().addAllUuids(uuidStrs));
-		
+
 		this.network.getActiveServer().queueMessage(b.build());
-		
+
 	}
-	
+
 	@Override
 	public void announceInvalidation(UUID uuid) {
-		
+
 		NeocoreAPI.getLogger().fine("Announcing invalidation of " + uuid + "...");
-		
+
 		ClientMessage.Builder b = this.getBuilder();
-		b.setUpdateNotification(
-			PlayerUpdateNotification.newBuilder()
-				.setPlayerId(uuid.toString())
-				.build());
-		
+		b.setUpdateNotification(PlayerUpdateNotification.newBuilder().setPlayerId(uuid.toString()).build());
+
 		this.network.getActiveServer().queueMessage(b.build());
-		
+
 	}
-	
+
 	@Override
 	public void setInvalidationCallback(Consumer<UUID> callback) {
-		
+
 		NeocoreAPI.getLogger().fine("Invalidation callback installed.");
 		this.invalidationCallback = callback;
-		
+
 	}
-	
+
 	public void handleInvalidation(UUID uuid) {
-		if (this.invalidationCallback != null) this.invalidationCallback.accept(uuid);
+		if (this.invalidationCallback != null)
+			this.invalidationCallback.accept(uuid);
 	}
-	
+
 	@Override
 	public LockCoordinator getLockCoordinator() {
 		return new NmdLockCoordinator(this.agentId, this.network);
 	}
-	
+
 	@Override
 	public void announcePermissionsRefresh() {
-		
+
 		NmServer serv = this.network.getActiveServer();
-		
-		ClientMessage m =
-			this.getBuilder()
-				.setPermsUpdateNotification(UpdatePermissionsNotification.newBuilder()
-					.setExtent(ReloadExtent.EVERYTHING))
-				.build();
-		
+
+		ClientMessage m = this.getBuilder().setPermsUpdateNotification(
+				UpdatePermissionsNotification.newBuilder().setExtent(ReloadExtent.EVERYTHING)).build();
+
 		serv.queueMessage(m);
-		
+
 	}
-	
+
 	@Override
 	public void announceBansReload() {
-		
+
 		NmServer serv = this.network.getActiveServer();
-		
-		ClientMessage m =
-			this.getBuilder()
-				.setBansUpdateNotification(UpdateBansNotification.newBuilder())
-				.build();
-		
+
+		ClientMessage m = this.getBuilder().setBansUpdateNotification(UpdateBansNotification.newBuilder()).build();
+
 		serv.queueMessage(m);
-		
+
 	}
-	
+
 }

@@ -14,15 +14,15 @@ public class PlayerListUpdateHandler extends MessageHandler {
 
 	@Override
 	public void handle(DaemonServer server, NmClient client, ClientMessage message) {
-		
+
 		PlayerListUpdate plu = message.getPlayerListUpdate();
-		
+
 		Nmd.logger.finer("Updaing all " + plu.getUuidsCount() + " subs from " + client.getIdentString() + ".");
-		
+
 		List<UUID> uuids = new ArrayList<>(plu.getUuidsCount());
 		plu.getUuidsList().forEach(u -> uuids.add(UUID.fromString(u)));
 		client.updateSubscriptions(uuids);
-		
+
 	}
 
 }

@@ -9,17 +9,17 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BungeeNetworkPlayer implements NetworkPlayer {
-	
+
 	private DownstreamWrapper downstream;
 	private ProxiedPlayer player;
-	
+
 	public BungeeNetworkPlayer(DownstreamWrapper down, ProxiedPlayer player) {
-		
+
 		this.downstream = down;
 		this.player = player;
-		
+
 	}
-	
+
 	@Override
 	public InetAddress getAddress() {
 		return this.player.getAddress().getAddress();

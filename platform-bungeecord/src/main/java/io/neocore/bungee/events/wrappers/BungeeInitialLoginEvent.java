@@ -7,13 +7,13 @@ import io.neocore.api.host.login.InitialLoginEvent;
 import net.md_5.bungee.api.event.LoginEvent;
 
 public class BungeeInitialLoginEvent implements InitialLoginEvent {
-	
+
 	private LoginEvent event;
-	
+
 	public BungeeInitialLoginEvent(LoginEvent event) {
 		this.event = event;
 	}
-	
+
 	@Override
 	public UUID getPlayerUniqueId() {
 		return this.event.getConnection().getUniqueId();
@@ -31,10 +31,10 @@ public class BungeeInitialLoginEvent implements InitialLoginEvent {
 
 	@Override
 	public void disallow(String message) {
-		
+
 		this.event.setCancelled(true);
 		this.event.setCancelReason(message);
-		
+
 	}
 
 	@Override

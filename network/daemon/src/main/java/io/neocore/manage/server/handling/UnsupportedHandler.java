@@ -9,9 +9,10 @@ public class UnsupportedHandler extends MessageHandler {
 
 	@Override
 	public void handle(DaemonServer server, NmClient client, ClientMessage message) {
-		
-		Nmd.logger.warning("Got unsupported message from client " + client.getIdentString() + "! (" + client.getAddressString() + ")");
-		
+
+		Nmd.logger.warning("Got unsupported message from client " + client.getIdentString() + "! ("
+				+ client.getAddressString() + ")");
+
 	}
 
 }

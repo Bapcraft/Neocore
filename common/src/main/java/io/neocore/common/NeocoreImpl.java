@@ -55,14 +55,14 @@ import io.neocore.common.service.ServiceManagerImpl;
 import io.neocore.common.tasks.Worker;
 
 public class NeocoreImpl implements Neocore {
-	
+
 	private final UUID agentId;
 	private final FullHostPlugin host;
 	private volatile boolean active = false;
-	
+
 	private CommonPlayerManager playerManager;
 	private PlayerManagerWrapperImpl playerManWrapper;
-	
+
 	private DatabaseManagerImpl dbManager;
 	private ModuleManagerImpl moduleManager;
 	private ServiceManagerImpl serviceManager;
@@ -71,22 +71,22 @@ public class NeocoreImpl implements Neocore {
 	private PermissionManagerImpl permManager;
 	private IdentifierManager identManager;
 	private NetworkManagerImpl netManager;
-	
+
 	@SuppressWarnings("unused")
 	private LoginAcceptor loginAcceptor;
 	@SuppressWarnings("unused")
 	private ProxyAcceptor proxyAcceptor;
-	
+
 	private TaskQueue tasks;
-	
+
 	public NeocoreImpl(FullHostPlugin host) {
-		
+
 		this.agentId = UUID.randomUUID();
 		this.host = host;
 
 		// Set up the task queue.
 		this.tasks = new TaskQueue();
-		
+
 		// Define various managers.
 		this.serviceManager = new ServiceManagerImpl();
 		this.eventManager = new CommonEventManager();
@@ -94,96 +94,98 @@ public class NeocoreImpl implements Neocore {
 		this.identManager = new IdentifierManager();
 		this.dbManager = new DatabaseManagerImpl(this.serviceManager);
 		this.moduleManager = new ModuleManagerImpl(this, host.getMicromoduleDirectory());
-		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager, host.getNeocoreConfig().getPlayerThreadingModel(), host.getScheduler(), this.tasks);
+		this.playerManager = new CommonPlayerManager(this.serviceManager, this.eventManager,
+				host.getNeocoreConfig().getPlayerThreadingModel(), host.getScheduler(), this.tasks);
 		this.playerManWrapper = new PlayerManagerWrapperImpl(this.playerManager);
-		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager, host.getNeocoreConfig().getContexts());
+		this.permManager = new PermissionManagerImpl(this.playerManWrapper, this.serviceManager,
+				host.getNeocoreConfig().getContexts());
 		this.netManager = new NetworkManagerImpl(this.playerManager);
-		
+
 		// Set up acceptors.
-		this.loginAcceptor = new LoginAcceptorImpl(this.eventManager, this.serviceManager, this.identManager, host.getContexts());
+		this.loginAcceptor = new LoginAcceptorImpl(this.eventManager, this.serviceManager, this.identManager,
+				host.getContexts());
 		this.proxyAcceptor = new ProxyAcceptorImpl(this.serviceManager);
-		
+
 	}
-	
+
 	public synchronized void init() {
-		
+
 		// Sanity check.
-		if (this.active) return;
+		if (this.active)
+			return;
 		Logger log = NeocoreAPI.getLogger();
-		
+
 		// Register ALL these commands.
 		log.info("Installing commands...");
 		this.host.registerCommand(new CommandActiveUserManager(this.playerManWrapper, this.playerManager));
 		this.host.registerCommand(new CommandArtifactManager(this.serviceManager));
 		this.host.registerCommand(new CommandBroadcast(this.serviceManager));
-		this.host.registerCommand(new TreeCommand(
-			"permissions",
-			"neocore.cmd.permissions",
-			Arrays.asList(
-				new CommandCreateGroup(this.serviceManager),
-				new CommandReloadPermissions(),
-				new CommandSetPermission(),
-				new CommandCheckPerms(),
-				new CommandSetGroupParent())));
+		this.host.registerCommand(new TreeCommand("permissions", "neocore.cmd.permissions",
+				Arrays.asList(new CommandCreateGroup(this.serviceManager), new CommandReloadPermissions(),
+						new CommandSetPermission(), new CommandCheckPerms(), new CommandSetGroupParent())));
 		this.host.registerCommand(new CommandCheckPerm());
 		this.host.registerCommand(new CommandException());
-		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "blame", ArtifactTypes.ADMIN_EVIDENCE, "neocore.cmd.blame"));
-		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "warn", ArtifactTypes.ADMIN_WARNING, "neocore.cmd.warn"));
+		this.host.registerCommand(new CommandAdminArtifact(this.serviceManager, "blame", ArtifactTypes.ADMIN_EVIDENCE,
+				"neocore.cmd.blame"));
+		this.host.registerCommand(
+				new CommandAdminArtifact(this.serviceManager, "warn", ArtifactTypes.ADMIN_WARNING, "neocore.cmd.warn"));
 		this.host.registerCommand(new CommandForcePlayerLoad(this.playerManWrapper, host.getScheduler()));
 		this.host.registerCommand(new CommandDumpPerms());
 		this.host.registerCommand(new CommandBan(this.serviceManager));
-		
+
 		// Register the host right now.
 		this.moduleManager.registerModule(this.host);
-		
+
 		// Enable micromodules.
 		log.info("Setting up micromodules...");
 		this.moduleManager.enableMicromodules();
-		
+
 		// Set up databases.
 		log.info("Initializing database(s)...");
 		DatabaseConfig dbc = new DatabaseConfImpl(this.host.getDatabaseConfigFile());
 		log.finer("Loaded Configs: " + dbc.getNumDiscreteConfigs());
 		this.dbManager.configure(dbc);
-		
-		// Now that the database(s) is(/are) set up, we can init the services themselves.
+
+		// Now that the database(s) is(/are) set up, we can init the services
+		// themselves.
 		log.info("Initializing services...");
 		this.serviceManager.initializeServices();
-		
+
 		// Permissions.
 		log.info("Loading groups...");
 		this.permManager.reloadGroups();
-		
+
 		log.info("Doing final cleanup and things...");
-		
+
 		// TODO Move these elsewhere.
 		this.identManager.setArtifactService(this.serviceManager.getService(ArtifactService.class));
 		this.identManager.setPlayerService(this.serviceManager.getService(PlayerService.class));
-		
+
 		// This is OK
 		this.host.getScheduler().invokeAsync(new Worker(this.tasks, NeocoreAPI.getLogger()));
-		
+
 		// Announce.
 		NeocoreAPI.announceCompletion();
 		this.active = true;
-		
+
 	}
-	
+
 	public synchronized void shutdown() {
-		
+
 		// Sanity check.
-		if (!this.active) return;
-		
+		if (!this.active)
+			return;
+
 		Logger log = NeocoreAPI.getLogger();
-		
+
 		// Disable micromodules...
 		log.info("Disabling micromodules...");
 		this.moduleManager.disableMicromodules();
-		
+
 		this.active = false;
-		
+
 	}
-	
+
 	@Override
 	public String getAgentName() {
 		return this.getServerName();
@@ -198,70 +200,70 @@ public class NeocoreImpl implements Neocore {
 	public HostPlugin getHost() {
 		return this.host;
 	}
-	
+
 	@Override
 	public PlayerManager getPlayerManager() {
 		return this.playerManWrapper;
 	}
-	
+
 	public CommonPlayerManager getPlayerAssembler() {
 		return this.playerManager;
 	}
-	
+
 	@Override
 	public NeoPlayer getPlayer(UUID uuid) {
 		return this.getPlayerManager().getPlayer(uuid);
 	}
-	
+
 	@Override
 	public DatabaseManager getDatabaseManager() {
 		return this.dbManager;
 	}
-	
+
 	@Override
 	public ServiceManager getServiceManager() {
 		return this.serviceManager;
 	}
-	
+
 	@Override
 	public void registerServiceProvider(ServiceType type, ServiceProvider prov, Module module) {
 		this.getServiceManager().registerServiceProvider(module, type, prov);
 	}
-	
+
 	@Override
 	public ServiceProvider getService(ServiceType serviceType) {
 		return this.getServiceManager().getService(serviceType.getServiceClass());
 	}
-	
+
 	@Override
 	public ModuleManager getModuleManager() {
 		return this.moduleManager;
 	}
-	
+
 	@Override
 	public EventManager getEventManager() {
 		return this.eventManager;
 	}
-	
+
 	@Override
 	public ExtensionManager getExtensionManager() {
 		return this.extManager;
 	}
-	
+
 	@Override
 	public PermissionManager getPermissionManager() {
 		return this.permManager;
 	}
-	
+
 	@Override
 	public IdentifierManager getIdentifierManager() {
 		return this.identManager;
 	}
-	
+
 	public NetworkManagerImpl getNetworkManager() {
 		return this.netManager;
 	}
-	
+
 	@Override
 	public TaskQueue getTaskQueue() {
 		return this.tasks;
@@ -271,5 +273,5 @@ public class NeocoreImpl implements Neocore {
 	public boolean isInited() {
 		return this.active;
 	}
-	
+
 }

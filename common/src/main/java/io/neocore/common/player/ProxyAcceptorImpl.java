@@ -10,35 +10,36 @@ import io.neocore.api.player.NeoPlayer;
 import io.neocore.common.service.ServiceManagerImpl;
 
 public class ProxyAcceptorImpl implements ProxyAcceptor {
-	
+
 	public ProxyAcceptorImpl(ServiceManagerImpl man) {
-		man.registerRegistrationHandler(ProxyService.class, r -> ((ProxyService) r.getServiceProvider()).setAcceptor(this));
+		man.registerRegistrationHandler(ProxyService.class,
+				r -> ((ProxyService) r.getServiceProvider()).setAcceptor(this));
 	}
-	
+
 	@Override
 	public void onDownstreamTransfer(DownstreamTransferEvent event) {
-		
+
 		NeoPlayer player = event.getPlayer();
-		
+
 		if (player.hasIdentity(Session.class)) {
-			
+
 			Session sess = player.getSession();
-			
+
 			if (sess.isNetworked()) {
-				
+
 				ProxiedSession ps = sess.getAsProxiedSession();
-				
+
 				EndpointMove move = ps.createEndpointMove();
 				move.setDestination(event.getDestination());
-				
+
 				move.dirty();
 				ps.dirty();
 				ps.flush();
-				
+
 			}
-			
+
 		}
-		
+
 	}
 
 }

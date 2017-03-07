@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 public @interface NeocoreEventHandler {
 
 	int priority() default -1;
-	
+
 }

@@ -29,104 +29,104 @@ import io.neocore.common.NeocoreImpl;
 import net.md_5.bungee.api.plugin.Plugin;
 
 public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
-	
+
 	public static NeocoreBungeePlugin inst;
 	private NeocoreImpl neocore;
-	
+
 	private BungeeNeocoreConfig config;
-	
+
 	private BungeeLoginService loginService;
 	private BungeeProxyService proxyService;
 	private BungeePermissionService permsService;
 	private BungeeBroadcastService broadcastService;
 	private BungeeNetworkMapService netMapService;
-	
+
 	private List<EventForwarder> forwarders = new ArrayList<>();
 	private PlayerConnectionForwarder loginForwarder;
-	
+
 	private BungeeScheduler scheduler;
-	
+
 	@Override
 	public void onEnable() {
-		
+
 		inst = this;
-		
+
 		// Basic prep.
 		BungeeNeocoreConfig.verifyConfig(this.getConfigFile(), this);
 		this.config = new BungeeNeocoreConfig(ConfigFactory.parseFile(this.getConfigFile()));
 		this.scheduler = new BungeeScheduler(this, this.getProxy().getScheduler());
-		
+
 		// Actual setup.
 		NeocoreInstaller.applyLogger(this.getProxy().getLogger());
 		NeocoreImpl neo = new NeocoreImpl(this);
 		NeocoreInstaller.install(neo);
 		this.neocore = neo; // Alias because we use it a lot here.
-		
+
 		// Event forwarders
 		this.loginForwarder = new PlayerConnectionForwarder(neo);
 		this.forwarders.add(this.loginForwarder);
-		
+
 		// Services
 		this.loginService = new BungeeLoginService(this.loginForwarder);
 		this.proxyService = new BungeeProxyService(this.loginForwarder);
 		this.permsService = new BungeePermissionService();
 		this.broadcastService = new BungeeBroadcastService(this.getProxy());
 		this.netMapService = new BungeeNetworkMapService(this.getNeocoreConfig().getServerName(), this.getProxy());
-		
+
 		// Actually register the services.
 		neo.registerServiceProvider(HostService.LOGIN, this.loginService, this);
 		neo.registerServiceProvider(HostService.BROADCAST, this.broadcastService, this);
 		neo.registerServiceProvider(HostService.PERMISSIONS, this.permsService, this);
 		neo.registerServiceProvider(InfrastructureService.PROXY, this.proxyService, this);
 		neo.registerServiceProvider(InfrastructureService.NETWORKMAP, this.netMapService, this);
-		
+
 		// Set up player manager services that we can provide here.
 		PlayerManager pm = neo.getPlayerManager();
 		pm.addService(HostService.LOGIN);
 		pm.addService(HostService.PERMISSIONS);
-		
+
 		// Event forwarder registration
 		for (EventForwarder fwdr : this.forwarders) {
 			this.getProxy().getPluginManager().registerListener(this, fwdr);
 		}
-		
+
 		// Set up a broadcast for server initialization.
 		neo.getTaskQueue().enqueue(new Task(new DumbTaskDelegator("Neocore-Init")) {
-			
+
 			@Override
 			public void run() {
 				neo.getEventManager().broadcast(new BungeeServerInitializedEvent());
 			}
-			
+
 		});
-		
+
 		// Queue up a thing to initialize Neocore.
 		this.getProxy().getScheduler().runAsync(this, () -> {
-			
+
 			/*
 			 * If a player connects before this actually gets invoked then the
 			 * prelogin event handler will initialize Neocore from that thread,
-			 * then once this is allowed to enter it will exit it pretty
-			 * quickly because it's already inited.
+			 * then once this is allowed to enter it will exit it pretty quickly
+			 * because it's already inited.
 			 */
 			neo.init();
-			
+
 		});
-		
+
 	}
-	
+
 	@Override
 	public void onDisable() {
-		
+
 		// Do all the other things automatically.
 		this.neocore.shutdown();
-		
+
 	}
-	
+
 	private File getConfigFile() {
 		return new File(this.getDataFolder(), BungeeNeocoreConfig.CONFIG_FILE_NAME);
 	}
-	
+
 	@Override
 	public File getMicromoduleDirectory() {
 		return new File(this.getProxy().getPluginsFolder().getParentFile(), "micromodules");
@@ -141,40 +141,40 @@ public class NeocoreBungeePlugin extends Plugin implements FullHostPlugin {
 	public File getDatabaseConfigFile() {
 		return new File(this.getDataFolder(), "databases.conf");
 	}
-	
+
 	@Override
 	public Context getPrimaryContext() {
 		return this.config.getPrimaryContext();
 	}
-	
+
 	@Override
 	public List<Context> getContexts() {
 		return this.config.getContexts();
 	}
-	
+
 	@Override
 	public String getName() {
 		return "Neocore";
 	}
-	
+
 	@Override
 	public String getVersion() {
 		return "0.0-DEVELOPMENT";
 	}
-	
+
 	@Override
 	public void registerCommand(AbstractCommand cmd) {
 		this.getProxy().getPluginManager().registerCommand(this, new CommandWrapper(cmd));
 	}
-	
+
 	@Override
 	public boolean isFrontServer() {
 		return true;
 	}
-	
+
 	@Override
 	public Scheduler getScheduler() {
 		return this.scheduler;
 	}
-	
+
 }

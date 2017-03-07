@@ -13,7 +13,7 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void setName(String name) {
-		
+
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void setDisplayName(String displayName) {
-		
+
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void setParent(Group parent) {
-		
+
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void addFlair(Flair flair) {
-		
+
 	}
 
 	@Override
@@ -58,12 +58,12 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void setPermission(Context context, String node, boolean state) {
-		
+
 	}
 
 	@Override
 	public void unsetPermission(Context context, String node) {
-		
+
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void setPriority(int priority) {
-		
+
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void setRestrictionLevel(int restriction) {
-		
+
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void setFlushProcedure(Runnable callback) {
-		
+
 	}
 
 	@Override
@@ -113,12 +113,12 @@ public class PlaceholderGroup implements Group {
 
 	@Override
 	public void setSecret(boolean secret) {
-		
+
 	}
 
 	@Override
 	public boolean isSecret() {
 		return false;
 	}
-	
+
 }

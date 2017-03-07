@@ -11,19 +11,20 @@ import io.neocore.api.event.Raisable;
  */
 @Raisable
 public interface ChatEvent extends PlayerEvent, Cancellable {
-	
+
 	/**
 	 * Overrides the message the player sent.
 	 * 
-	 * @param message The text to override with.
+	 * @param message
+	 *            The text to override with.
 	 */
 	public void setMessage(String message);
-	
+
 	/**
 	 * Gets the message that the player sent.
 	 * 
 	 * @return The message.
 	 */
 	public String getMessage();
-	
+
 }

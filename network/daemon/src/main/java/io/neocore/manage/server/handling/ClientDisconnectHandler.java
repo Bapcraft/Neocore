@@ -10,12 +10,13 @@ public class ClientDisconnectHandler extends MessageHandler {
 
 	@Override
 	public void handle(DaemonServer server, NmClient client, ClientMessage message) {
-		
+
 		UnregisterClient unreg = message.getUnregClient();
-		
-		Nmd.logger.fine("Disconnecting client " + client.getIdentString() + " for reason " + unreg.getReasonStr() + "...");
+
+		Nmd.logger.fine(
+				"Disconnecting client " + client.getIdentString() + " for reason " + unreg.getReasonStr() + "...");
 		server.unregister(client);
-		
+
 	}
 
 }

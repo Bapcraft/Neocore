@@ -7,10 +7,10 @@ import io.neocore.api.player.PlayerIdentity;
 
 @LoadAsync
 public interface SessionService extends DatabaseServiceProvider, IdentityLinkage<Session> {
-	
+
 	@Override
 	default Class<? extends PlayerIdentity> getIdentityClass() {
 		return Session.class;
 	}
-	
+
 }

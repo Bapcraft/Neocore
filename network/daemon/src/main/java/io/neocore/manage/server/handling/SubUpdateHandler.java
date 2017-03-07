@@ -12,18 +12,18 @@ public class SubUpdateHandler extends MessageHandler {
 
 	@Override
 	public void handle(DaemonServer server, NmClient client, ClientMessage message) {
-		
+
 		PlayerSubscriptionUpdate psu = message.getSubUpdate();
-		
+
 		UUID uuid = UUID.fromString(psu.getUuid());
 		Nmd.logger.finer("Setting sub state of " + client.getIdentString() + " to " + uuid + " to " + psu.getState());
-		
+
 		if (psu.getState()) {
 			client.subscribe(uuid);
 		} else {
 			client.unsubscribe(uuid);
 		}
-		
+
 	}
 
 }

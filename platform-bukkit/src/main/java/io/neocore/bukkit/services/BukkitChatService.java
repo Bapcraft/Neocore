@@ -16,18 +16,18 @@ import io.neocore.bukkit.events.ChatEventForwarder;
 import io.neocore.bukkit.services.chat.BukkitChattablePlayer;
 
 public class BukkitChatService implements ChatService {
-	
+
 	private ChatEventForwarder forwarder;
-	
+
 	public BukkitChatService(ChatEventForwarder fwdr) {
 		this.forwarder = fwdr;
 	}
-	
+
 	@Override
 	public ChattablePlayer load(UUID uuid) throws IOException {
 		return new BukkitChattablePlayer(uuid);
 	}
-	
+
 	@Override
 	public void setChatAcceptor(ChatAcceptor acceptor) {
 		this.forwarder.setAcceptor(acceptor);
@@ -40,11 +40,12 @@ public class BukkitChatService implements ChatService {
 
 	@Override
 	public void sendMessageFrom(ChattablePlayer sender, String message) {
-		
-		// Create an event and just give it to Bukkit.  They can deal with it.
-		AsyncPlayerChatEvent event = new AsyncPlayerChatEvent(true, Bukkit.getPlayer(sender.getUniqueId()), message, new HashSet<Player>(Bukkit.getOnlinePlayers()));
+
+		// Create an event and just give it to Bukkit. They can deal with it.
+		AsyncPlayerChatEvent event = new AsyncPlayerChatEvent(true, Bukkit.getPlayer(sender.getUniqueId()), message,
+				new HashSet<Player>(Bukkit.getOnlinePlayers()));
 		NeocoreBukkitPlugin.inst.getServer().getPluginManager().callEvent(event);
-		
+
 	}
-	
+
 }

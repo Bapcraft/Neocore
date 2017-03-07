@@ -10,17 +10,19 @@ import io.neocore.api.event.Raisable;
  */
 @Raisable
 public interface DisconnectEvent extends PlayerEvent {
-	
+
 	/**
-	 * Sets the message to be displayed in chat.  Setting to <code>null</code> results in no message being sent.
+	 * Sets the message to be displayed in chat. Setting to <code>null</code>
+	 * results in no message being sent.
 	 * 
-	 * @param message The disconnect message.
+	 * @param message
+	 *            The disconnect message.
 	 */
 	public void setQuitMessage(String message);
-	
+
 	/**
 	 * @return The current disconnect message.
 	 */
 	public String getQuitMessage();
-	
+
 }

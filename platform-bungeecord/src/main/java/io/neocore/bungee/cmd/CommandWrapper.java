@@ -14,43 +14,44 @@ import net.md_5.bungee.api.plugin.Command;
 public class CommandWrapper extends Command {
 
 	private AbstractCommand command;
-	
+
 	public CommandWrapper(AbstractCommand cmd) {
-		
+
 		super(cmd.getProxyName());
-		
+
 		this.command = cmd;
-		
+
 	}
-	
+
 	@Override
 	public void execute(CommandSender sender, String[] args) {
-		
+
 		CommandSenderWrapper wrapper = new CommandSenderWrapper(sender);
-		
+
 		try {
-			
+
 			// This throws things based on the resolution.
 			this.command.onExecute(wrapper, args);
-			
+
 		} catch (SuccessSignal s) {
 			return; // idk.
 		} catch (ErrorSignal s) {
 			return; // idk.
 		} catch (InsufficientPermissionsSignal s) {
-			
+
 			sender.sendMessage(new TextComponent(ChatColor.RED + "Insufficient permissions."));
 			return;
-			
+
 		} catch (InvalidUsageSignal s) {
-			
+
 			sender.sendMessage(new TextComponent(ChatColor.RED + "Insufficient permissions."));
 			return;
-			
+
 		}
-		
-		NeocoreAPI.getLogger().warning("Command " + this.getName() + " finished execution but no explicit resolution was announced!");
-		
+
+		NeocoreAPI.getLogger()
+				.warning("Command " + this.getName() + " finished execution but no explicit resolution was announced!");
+
 	}
 
 }

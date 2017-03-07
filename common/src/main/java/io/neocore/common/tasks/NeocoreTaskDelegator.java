@@ -12,10 +12,10 @@ public class NeocoreTaskDelegator implements TaskDelegator {
 
 	@Override
 	public boolean recoverFromProblem(Task task, Throwable problem) {
-		
+
 		// FIXME
 		return false;
-		
+
 	}
 
 }

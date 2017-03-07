@@ -7,15 +7,15 @@ import io.neocore.api.infrastructure.NetworkEndpoint;
 import io.neocore.api.infrastructure.NetworkPlayer;
 
 public class NmNetworkPlayer implements NetworkPlayer {
-	
+
 	private final UUID uuid;
-	
+
 	private InetAddress address;
-	
+
 	public NmNetworkPlayer(UUID uuid) {
 		this.uuid = uuid;
 	}
-	
+
 	@Override
 	public InetAddress getAddress() {
 		return this.address;
@@ -23,7 +23,7 @@ public class NmNetworkPlayer implements NetworkPlayer {
 
 	@Override
 	public void kick(String message) {
-		
+
 	}
 
 	@Override

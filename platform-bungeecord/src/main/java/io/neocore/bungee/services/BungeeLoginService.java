@@ -10,9 +10,9 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BungeeLoginService implements LoginService {
-	
+
 	private PlayerConnectionForwarder forwarder;
-	
+
 	public BungeeLoginService(PlayerConnectionForwarder fwdr) {
 		this.forwarder = fwdr;
 	}
@@ -21,12 +21,12 @@ public class BungeeLoginService implements LoginService {
 	public ServerPlayer load(UUID uuid) {
 		return new BungeePlayer(uuid);
 	}
-	
+
 	@Override
 	public void setLoginAcceptor(LoginAcceptor acceptor) {
 		this.forwarder.loginAcceptor = acceptor;
 	}
-	
+
 	@Override
 	public LoginAcceptor getLoginAcceptor() {
 		return this.forwarder.loginAcceptor;
@@ -34,15 +34,15 @@ public class BungeeLoginService implements LoginService {
 
 	@Override
 	public ServerPlayer findPlayerByName(String name) {
-		
+
 		ProxiedPlayer pp = ProxyServer.getInstance().getPlayer(name);
-		
+
 		if (pp != null) {
 			return this.load(pp.getUniqueId());
 		} else {
 			return null;
 		}
-		
+
 	}
-	
+
 }

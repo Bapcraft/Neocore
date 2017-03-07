@@ -4,9 +4,9 @@ import io.neocore.api.host.login.DisconnectEvent;
 import io.neocore.api.player.NeoPlayer;
 
 public class BungeeQuitEvent implements DisconnectEvent {
-	
+
 	private NeoPlayer player;
-	
+
 	public BungeeQuitEvent(NeoPlayer np) {
 		this.player = np;
 	}
@@ -18,7 +18,7 @@ public class BungeeQuitEvent implements DisconnectEvent {
 
 	@Override
 	public void setQuitMessage(String message) {
-		
+
 	}
 
 	@Override

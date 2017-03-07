@@ -9,22 +9,22 @@ import io.neocore.api.infrastructure.NetworkEndpoint;
 import io.neocore.api.infrastructure.NetworkPlayer;
 
 public class StandaloneNetPlayer implements NetworkPlayer {
-	
+
 	private Player player;
 	private NetworkEndpoint endpoint;
-	
+
 	public StandaloneNetPlayer(Player p, NetworkEndpoint self) {
-		
+
 		this.player = p;
 		this.endpoint = self;
-		
+
 	}
-	
+
 	@Override
 	public UUID getUniqueId() {
 		return this.player.getUniqueId();
 	}
-	
+
 	@Override
 	public InetAddress getAddress() {
 		return this.player.getAddress().getAddress();
@@ -34,7 +34,7 @@ public class StandaloneNetPlayer implements NetworkPlayer {
 	public void kick(String message) {
 		this.player.kickPlayer(message);
 	}
-	
+
 	@Override
 	public NetworkEndpoint getDownstreamServer() {
 		return this.endpoint;
@@ -49,5 +49,5 @@ public class StandaloneNetPlayer implements NetworkPlayer {
 	public boolean isOnline() {
 		return true;
 	}
-	
+
 }

@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Must be placed on all Extension classes to specify the name.  Should not be
+ * Must be placed on all Extension classes to specify the name. Should not be
  * modified after the fact or could lead to some unpredictable/uncomfortable
  * behavior by no fault of the database.
  * 
@@ -18,6 +18,7 @@ import java.lang.annotation.Target;
 public @interface ExtensionType {
 
 	String name();
+
 	Class<? extends ExtensionBuilder> builder();
 
 }

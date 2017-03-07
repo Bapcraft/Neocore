@@ -9,30 +9,31 @@ import io.neocore.api.player.PlayerLease;
 import io.neocore.api.player.PlayerManager;
 
 public class CommandForcePlayerLoad extends AbstractCommand {
-	
+
 	private PlayerManager manager;
 	private Scheduler sched;
-	
+
 	public CommandForcePlayerLoad(PlayerManager pm, Scheduler s) {
-		
+
 		super("forceplayerload");
-		
+
 		this.manager = pm;
 		this.sched = s;
-		
+
 	}
-	
+
 	@Override
 	public void onExecute(CmdSender sender, String[] args) {
-		
-		if (!sender.hasPermission("neocore.cmd.forceplayerload")) this.noPerms();
-		
+
+		if (!sender.hasPermission("neocore.cmd.forceplayerload"))
+			this.noPerms();
+
 		UUID uuid = UUID.fromString(args[0]);
 		long duration = Long.parseLong(args[1]);
-		
+
 		PlayerLease lease = this.manager.requestLease(uuid);
 		this.sched.invokeAsync(() -> {
-			
+
 			sender.sendMessage("ah balls");
 			try {
 				Thread.sleep(duration);
@@ -41,13 +42,13 @@ public class CommandForcePlayerLoad extends AbstractCommand {
 				e.printStackTrace();
 			}
 			sender.sendMessage("okay!");
-			
+
 			lease.release();
-			
+
 		});
-		
+
 		this.success();
-		
+
 	}
 
 }
