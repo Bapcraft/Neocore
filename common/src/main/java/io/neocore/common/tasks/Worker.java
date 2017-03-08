@@ -64,6 +64,10 @@ public class Worker implements Runnable {
 
 	}
 
+	public void stop() {
+		this.isRunning = false;
+	}
+	
 	@Override
 	public void run() {
 
@@ -81,15 +85,13 @@ public class Worker implements Runnable {
 				// All the heavy lifting is done by the container.
 				Task t = this.queue.dequeue();
 
-				System.out.println("starting job " + t.getName());
 				this.container.invoke(exoName, t);
-				System.out.println("completed job " + t.getName());
 
 			}
 
 		}
 
-		NeocoreAPI.getLogger().warning("Worker stopped!");
+		this.reporter.warning("Worker stopped!");
 
 	}
 

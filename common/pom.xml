@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>neocore-common</artifactId>
@@ -10,38 +11,45 @@
 		<artifactId>neocore-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	
+
 	<repositories>
-		
+
 		<repository>
 			<id>bungeecord-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
-		
+
 	</repositories>
-	
+
 	<dependencies>
-		
+
 		<dependency>
 			<groupId>io.neocore</groupId>
 			<artifactId>neocore-api</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.treyzania</groupId>
 			<artifactId>jzania</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
-	
+
 	<build>
-		
+
 		<sourceDirectory>src/main/java</sourceDirectory>
-		
+
 		<plugins>
-			
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
@@ -50,9 +58,15 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-			
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+			</plugin>
+
 		</plugins>
-		
+
 	</build>
-	
+
 </project>

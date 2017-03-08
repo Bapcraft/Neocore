@@ -1,4 +1,4 @@
-package io.neocore.api._test;
+package io.neocore.test;
 
 import org.junit.Assert;
 import org.junit.Test;
