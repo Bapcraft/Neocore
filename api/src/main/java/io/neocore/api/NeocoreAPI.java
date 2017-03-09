@@ -1,8 +1,10 @@
 package io.neocore.api;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import io.neocore.api.database.DatabaseController;
@@ -20,7 +22,9 @@ import io.neocore.api.player.extension.RegisteredExtension;
 public class NeocoreAPI {
 
 	protected static Neocore agent;
-	protected static Logger logger;
+
+	private static final String NEOCORE_LOGGER_NAME = "Neocore";
+	protected static Logger logger = Logger.getLogger(NEOCORE_LOGGER_NAME);
 
 	/**
 	 * @return The Neocore instance managing all of the suite
@@ -37,65 +41,76 @@ public class NeocoreAPI {
 	}
 
 	/**
-	 * Logs all the current state of Neocore services and state to the logger
-	 * provided.
+	 * @return a human-readable version of the Neocore agent services state and
+	 *         everything.
 	 */
-	public static void announceCompletion() {
+	public static String dumpNeocoreConfigurationState() {
 
-		logger.info("=== Neocore Status Dump ===");
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("=== Neocore Status Dump ===\n");
 
 		// Display host info
-		logger.info("Host Class: " + agent.getHost().getClass().getName());
-		logger.info("Host Version: " + agent.getHost().getVersion());
-		logger.info("Host Server Name: " + agent.getHost().getNeocoreConfig().getServerName());
-		logger.info("Agent ID: " + agent.getAgentId());
+		sb.append("Host Class: " + agent.getHost().getClass().getName() + "\n");
+		sb.append("Host Version: " + agent.getHost().getVersion() + "\n");
+		sb.append("Host Server Name: " + agent.getHost().getNeocoreConfig().getServerName() + "\n");
+		sb.append("Agent ID: " + agent.getAgentId() + "\n");
 
 		// Display contexts listed
-		logger.info("Host Contexts:");
+		sb.append("Host Contexts:\n");
 		List<Context> contexts = agent.getHost().getContexts();
 		for (Context c : contexts) {
-			logger.info(" - " + c.getName());
+			sb.append(" - " + c.getName() + "\n");
 		}
 
 		// Display module info
-		logger.info("Registered Modules:");
+		sb.append("Registered Modules:\n");
 		Set<Module> mods = agent.getModuleManager().getModules();
 		for (Module m : mods) {
-			logger.info(String.format(" - %s v%s (%s)", m.getName(), m.getVersion(), m.getModuleType().name()));
+			sb.append(String.format(" - %s v%s (%s)\n", m.getName(), m.getVersion(), m.getModuleType().name()));
 		}
 
 		// List extensions registered
-		logger.info("Registered Extensions:");
+		sb.append("Registered Extensions:\n");
 		List<RegisteredExtension> exts = agent.getExtensionManager().getTypes();
 		for (RegisteredExtension reg : exts) {
-			logger.info(String.format(" - %s (%s)", reg.getName(), reg.getExtensionClass().getSimpleName()));
+			sb.append(String.format(" - %s (%s)\n", reg.getName(), reg.getExtensionClass().getSimpleName()));
 		}
 
 		// Display database engines
-		logger.info("Database Controllers:");
+		sb.append("Database Controllers:\n");
 		DatabaseManager dbm = agent.getDatabaseManager();
 		for (Class<? extends DatabaseController> dbc : dbm.getControllerClasses()) {
-			logger.info(" - " + dbc.getSimpleName());
+			sb.append(" - " + dbc.getSimpleName() + "\n");
 		}
 
 		// Display service info
-		logger.info("Registered Services:");
+		sb.append("Registered Services:");
 		List<RegisteredService> servs = agent.getServiceManager().getServices();
 		for (RegisteredService rs : servs) {
 			ServiceType st = rs.getType();
-			logger.info(String.format(" - %s: %s %s (%s)", st.getName(), rs.getModule().getName(),
+			sb.append(String.format(" - %s: %s %s (%s)", st.getName(), rs.getModule().getName(),
 					rs.getServiceProvider().getClass().getSimpleName(), st.getClass().getSimpleName()));
 		}
 
 		// List off all the other services that need to be dealt with eventually
-		logger.info("Unprovisioned Services:");
+		sb.append("Unprovisioned Services:\n");
 		List<ServiceType> types = agent.getServiceManager().getUnprovidedServices();
 		for (ServiceType st : types) {
-			logger.info(String.format(" - %s (%s)", st.getName(), st.getClass().getSimpleName()));
+			sb.append(String.format(" - %s (%s)\n", st.getName(), st.getClass().getSimpleName()));
 		}
 
-		logger.info("===========================");
+		sb.append("===========================\n");
+		return sb.toString();
 
+	}
+
+	/**
+	 * Logs all the current state of Neocore services and state to the logger
+	 * provided.
+	 */
+	public static void announceCompletion() {
+		logger.info(dumpNeocoreConfigurationState());
 	}
 
 	/**
@@ -163,6 +178,24 @@ public class NeocoreAPI {
 		}
 
 		return null;
+
+	}
+
+	static {
+
+		Logger log = Logger.getLogger(NEOCORE_LOGGER_NAME);
+
+		try {
+
+			FileHandler lh = new FileHandler("neocore.log");
+			log.addHandler(lh);
+			lh.setFormatter(new NeocoreLogFormatter());
+
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 	}
 

@@ -28,10 +28,10 @@ public class NeocoreInstaller {
 
 		log.info(">>>>NEOCORE LOGGER INSTALLED.");
 
-		NeocoreAPI.logger = log;
+		NeocoreAPI.logger.setParent(log);
 
 		Timer t = Timer.getTimer();
-		t.setLogger(log);
+		t.setLogger(NeocoreAPI.logger);
 		t.setLevel(Level.INFO);
 		t.setNewTokenMessage("[New Timer Token (%s)]");
 
