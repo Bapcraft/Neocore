@@ -20,13 +20,14 @@ public class NeocoreLogFormatter extends Formatter {
 
 		String message = r.getMessage();
 		Level l = r.getLevel();
-		String clazz = r.getSourceClassName();
+		String[] clazzpath = r.getSourceClassName().split("\\.");
 		String meth = r.getSourceMethodName();
 		Throwable t = r.getThrown();
 		String threadName = Thread.currentThread().getName();
 		String time = DATE_FORMAT.format(new Date(r.getMillis()));
 
-		String formatted = String.format(LOG_FORMAT, time, l.getName(), threadName, clazz, meth, message);
+		String formatted = String.format(LOG_FORMAT, time, l.getName(), threadName, clazzpath[clazzpath.length - 1],
+				meth, message);
 		StringBuilder sb = new StringBuilder(formatted);
 		if (t != null) {
 
@@ -36,7 +37,7 @@ public class NeocoreLogFormatter extends Formatter {
 
 		}
 
-		return sb.toString();
+		return sb.toString() + "\n";
 
 	}
 

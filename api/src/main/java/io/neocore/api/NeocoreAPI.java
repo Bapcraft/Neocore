@@ -85,11 +85,11 @@ public class NeocoreAPI {
 		}
 
 		// Display service info
-		sb.append("Registered Services:");
+		sb.append("Registered Services:\n");
 		List<RegisteredService> servs = agent.getServiceManager().getServices();
 		for (RegisteredService rs : servs) {
 			ServiceType st = rs.getType();
-			sb.append(String.format(" - %s: %s %s (%s)", st.getName(), rs.getModule().getName(),
+			sb.append(String.format(" - %s: %s %s (%s)\n", st.getName(), rs.getModule().getName(),
 					rs.getServiceProvider().getClass().getSimpleName(), st.getClass().getSimpleName()));
 		}
 
@@ -100,7 +100,7 @@ public class NeocoreAPI {
 			sb.append(String.format(" - %s (%s)\n", st.getName(), st.getClass().getSimpleName()));
 		}
 
-		sb.append("===========================\n");
+		sb.append("===========================");
 		return sb.toString();
 
 	}
