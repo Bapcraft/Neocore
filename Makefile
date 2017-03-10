@@ -2,7 +2,7 @@ BUILD_OUTPUT_DIR=target
 JZ_DIR=jzania
 
 build: clean
-	mvn clean install
+	mvn install
 	mkdir -p ${BUILD_OUTPUT_DIR}
 	find . -name '*.jar' -exec cp {} ${BUILD_OUTPUT_DIR} \;
 	find ${BUILD_OUTPUT_DIR} -name 'original-*' -exec rm {} \;
