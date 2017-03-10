@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.neocore.api.database.DatabaseController;
@@ -190,6 +191,10 @@ public class NeocoreAPI {
 			FileHandler lh = new FileHandler("neocore.log");
 			log.addHandler(lh);
 			lh.setFormatter(new NeocoreLogFormatter());
+
+			// We want everything.
+			lh.setLevel(Level.ALL);
+			log.setLevel(Level.ALL);
 
 		} catch (SecurityException e) {
 			e.printStackTrace();

@@ -46,9 +46,9 @@ public class JdbcController implements DatabaseController {
 
 		// Set up the authentication.
 		String url = this.config.getString("jdbc-url");
-		ConfigValue authConf = this.config.getValue("auth");
+		ConfigValue authConf = this.config.hasPath("auth") ? this.config.getValue("auth") : null;
 
-		if (authConf.valueType() == ConfigValueType.OBJECT) {
+		if (authConf != null && authConf.valueType() == ConfigValueType.OBJECT) {
 
 			ConfigObject authObj = (ConfigObject) authConf;
 
@@ -61,7 +61,7 @@ public class JdbcController implements DatabaseController {
 				NeocoreAPI.getLogger().log(Level.SEVERE, "Could not init connection to database!", e);
 			}
 
-		} else if (authConf.valueType() == ConfigValueType.NULL) {
+		} else if (authConf == null || authConf.valueType() == ConfigValueType.NULL) {
 
 			try {
 				this.source = new JdbcPooledConnectionSource(url);
