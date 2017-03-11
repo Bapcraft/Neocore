@@ -65,6 +65,21 @@ public class PermissionManagerImpl implements PermissionManager {
 		long end = System.currentTimeMillis();
 
 		NeocoreAPI.getLogger().info("Loaded " + this.cache.size() + " groups in " + (end - start) + " ms.");
+		StringBuilder sb = new StringBuilder();
+		for (Group g : this.cache) {
+
+			if (g == null) {
+				
+				sb.append(" - (null)\n");
+				continue;
+				
+			}
+			
+			sb.append(" - " + g.getName() + " : " + g.getPermissions().size() + " perms\n");
+			
+		}
+
+		NeocoreAPI.getLogger().info("Groups:\n" + sb.toString());
 
 	}
 
@@ -150,8 +165,7 @@ public class PermissionManagerImpl implements PermissionManager {
 		// Clear the relevant permission collection.
 		List<PermissionCollection> cols = pp.getCollections();
 		for (PermissionCollection col : cols) {
-			if (col.hasTag(COLLECTION_GROUP_CFG_TAG))
-				pp.removeCollection(col);
+			if (col.hasTag(COLLECTION_GROUP_CFG_TAG)) pp.removeCollection(col);
 		}
 
 		List<Group> totalGroups = new ArrayList<>();
@@ -159,8 +173,7 @@ public class PermissionManagerImpl implements PermissionManager {
 		for (GroupMembership gm : dbp.getGroupMemberships()) {
 
 			// Check for validity.
-			if (!gm.isCurrentlyValid())
-				continue;
+			if (!gm.isCurrentlyValid()) continue;
 			Group g = gm.getGroup();
 
 			if (g == null) {

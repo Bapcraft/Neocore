@@ -105,7 +105,11 @@ public class CommandActiveUserManager extends AbstractCommand {
 				for (GroupMembership gm : gms) {
 
 					Group g = gm.getGroup();
-					sender.sendMessage("     - " + g.getDisplayName() + " &7" + g.getName());
+					if (g != null) {
+						sender.sendMessage("     - " + g.getDisplayName() + " &7" + g.getName());
+					} else {
+						sender.sendMessage("     - (invalid)");
+					}
 
 				}
 

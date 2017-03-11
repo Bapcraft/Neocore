@@ -77,9 +77,8 @@ public class BukkitPermPlayer extends WrappedPlayer implements PermissedPlayer {
 		Player p = this.getPlayerOrThrow();
 
 		BukkitScheduler bs = p.getServer().getScheduler();
-
 		bs.scheduleSyncDelayedTask(this.plugin, () -> {
-
+			p.recalculatePermissions();
 		});
 
 	}

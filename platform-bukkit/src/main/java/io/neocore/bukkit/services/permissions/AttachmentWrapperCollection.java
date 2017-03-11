@@ -26,13 +26,8 @@ public class AttachmentWrapperCollection implements PermissionCollection {
 
 	@Override
 	public boolean isPermissionSet(String perm) {
-		return this.attachment.getPermissible().isPermissionSet(perm); // Not
-																		// strictly
-																		// speaking
-																		// compliant,
-																		// but
-																		// close
-																		// enough.
+		// Not strictly speaking compliant, but close enough.
+		return this.attachment.getPermissible().isPermissionSet(perm);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
+
 import io.neocore.api.NeocoreAPI;
 import io.neocore.api.host.chat.ChattablePlayer;
 import io.neocore.api.host.login.ServerPlayer;
@@ -46,17 +47,9 @@ public class BukkitPlayer extends WrappedPlayer implements ServerPlayer, Chattab
 
 	@Override
 	public Date getLoginTime() {
-		return new Date(this.getOfflinePlayer().getLastPlayed()); // TODO Not
-																	// what we
-																	// want,
-																	// should
-																	// make a
-																	// record
-																	// when they
-																	// log in
-																	// and
-																	// record
-																	// that.
+		// TODO Not what we want, should make a record when they log in and
+		// record that.
+		return new Date(this.getOfflinePlayer().getLastPlayed());
 	}
 
 }

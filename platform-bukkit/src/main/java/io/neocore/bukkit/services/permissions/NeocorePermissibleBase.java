@@ -8,6 +8,8 @@ import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.ServerOperator;
 
+import io.neocore.api.NeocoreAPI;
+
 public class NeocorePermissibleBase extends PermissibleBase {
 
 	private static final Random rand = new Random();
@@ -22,17 +24,8 @@ public class NeocorePermissibleBase extends PermissibleBase {
 	@Override
 	public boolean hasPermission(Permission perm) {
 
-		if (perm == null)
-			throw new IllegalArgumentException("Permission cannot be null"); // no
-																				// period
-																				// o
-																				// man
-																				// (but
-																				// gotta
-																				// follow
-																				// the
-																				// API's
-																				// spec)
+		// no period o man (but gotta follow the API's spec)
+		if (perm == null) throw new IllegalArgumentException("Permission cannot be null");
 		return this.hasPermission(perm.getName());
 
 	}
@@ -45,8 +38,7 @@ public class NeocorePermissibleBase extends PermissibleBase {
 		}
 
 		// To check if it works.
-		if (inName.equals("!test"))
-			throw new UnsupportedOperationException("PASSED");
+		if (inName.equals("!test")) throw new UnsupportedOperationException("PASSED");
 
 		String[] parts = inName.split("\\.");
 
@@ -58,8 +50,8 @@ public class NeocorePermissibleBase extends PermissibleBase {
 			}
 
 			String comp = sb.toString() + "*";
-			if (super.isPermissionSet(comp))
-				return this.cachingHasPermission(comp);
+			NeocoreAPI.getLogger().finest("Checking perm " + comp + " on " + super.toString());
+			if (super.isPermissionSet(comp)) return this.cachingHasPermission(comp);
 
 		}
 
